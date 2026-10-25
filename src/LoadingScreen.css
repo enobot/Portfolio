@@ -1,0 +1,260 @@
+.welcome {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% 38%, #453c38 0%, #2a2724 46%, #141210 100%);
+  transition: opacity 0.7s ease;
+}
+
+.welcome-leave {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.welcome-sky {
+  position: absolute;
+  inset: 0;
+}
+
+.sky-dot,
+.sky-star,
+.sparkle {
+  position: absolute;
+  color: #fffaf6;
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+.sky-dot {
+  border-radius: 50%;
+  background: #fffaf6;
+  box-shadow: 0 0 8px rgba(255, 214, 232, 0.9);
+}
+
+.sky-star,
+.sparkle {
+  filter: drop-shadow(0 0 6px rgba(255, 186, 214, 0.85));
+}
+
+.sparkle {
+  animation-name: sparkle-pop;
+}
+
+.welcome-copy {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  pointer-events: none;
+}
+
+.welcome-title {
+  margin: 0;
+  text-align: center;
+  font-family: var(--serif);
+  font-weight: 650;
+  font-size: clamp(2rem, 6.4vw, 5.6rem);
+  line-height: 0.96;
+  letter-spacing: 0.045em;
+  color: #fffaf6;
+  text-shadow:
+    0 0 12px rgba(255, 186, 214, 0.95),
+    0 0 28px rgba(255, 160, 200, 0.75),
+    0 0 60px rgba(255, 214, 230, 0.45);
+}
+
+.pom-lane {
+  position: absolute;
+  left: 0;
+  width: var(--size);
+  z-index: 2;
+  animation: run-right var(--dur) linear infinite;
+  animation-delay: var(--delay);
+}
+
+.pom-lane.flip {
+  animation-name: run-left;
+  z-index: 1;
+}
+
+.pom-lane.flip .pom {
+  transform: scaleX(-1);
+}
+
+.lane-bottom {
+  bottom: 2%;
+}
+
+.lane-bottom-front {
+  bottom: 14%;
+  z-index: 5;
+}
+
+.lane-low {
+  bottom: 26%;
+}
+
+.lane-mid {
+  top: 16%;
+}
+
+.lane-high {
+  top: 4%;
+}
+
+.lane-upper {
+  top: 28%;
+}
+
+.pom {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.pom-shadow {
+  fill: rgba(0, 0, 0, 0.28);
+}
+
+.pom-bob {
+  animation: bob 0.28s ease-in-out infinite;
+}
+
+.pom-tail {
+  transform-origin: 62px 88px;
+  animation: wag 0.34s ease-in-out infinite;
+}
+
+.leg {
+  animation: leg-swing 0.28s linear infinite;
+}
+
+.leg-a {
+  transform-origin: 92px 114px;
+}
+
+.leg-b {
+  transform-origin: 111px 116px;
+  animation-direction: reverse;
+}
+
+.leg-c {
+  transform-origin: 138px 112px;
+}
+
+.leg-d {
+  transform-origin: 158px 114px;
+  animation-direction: reverse;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.7) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(20deg);
+  }
+}
+
+@keyframes sparkle-pop {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.3) rotate(0deg);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1) rotate(18deg);
+  }
+  70% {
+    opacity: 0.2;
+    transform: scale(0.6) rotate(28deg);
+  }
+}
+
+@keyframes run-right {
+  from {
+    transform: translateX(-30vw);
+  }
+  to {
+    transform: translateX(112vw);
+  }
+}
+
+@keyframes run-left {
+  from {
+    transform: translateX(112vw);
+  }
+  to {
+    transform: translateX(-30vw);
+  }
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes wag {
+  0%,
+  100% {
+    transform: rotate(-12deg);
+  }
+  50% {
+    transform: rotate(12deg);
+  }
+}
+
+@keyframes leg-swing {
+  0%,
+  100% {
+    transform: rotate(28deg);
+  }
+  50% {
+    transform: rotate(-30deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sky-dot,
+  .sky-star,
+  .sparkle,
+  .pom-lane,
+  .pom-bob,
+  .pom-tail,
+  .leg {
+    animation: none;
+  }
+
+  .pom-lane {
+    left: 6%;
+  }
+
+  .lane-low {
+    left: 28%;
+  }
+
+  .lane-mid {
+    left: 52%;
+  }
+
+  .lane-high {
+    left: 74%;
+  }
+
+  .lane-bottom-front {
+    left: 40%;
+  }
+}

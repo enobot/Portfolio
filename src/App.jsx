@@ -1,181 +1,264 @@
-import { experience, profile, projects, skillGroups } from "./data.js";
+import { useCallback, useId, useRef, useState } from "react";
+import {
+  achievements,
+  education,
+  experience,
+  proficiencies,
+  profile,
+  projects,
+  summary,
+} from "./data.js";
+import AboutModal from "./AboutModal.jsx";
+import FeedbackModal from "./FeedbackModal.jsx";
+import FittmmModal from "./FittmmModal.jsx";
+import LoadingScreen from "./LoadingScreen.jsx";
+import StarCursor from "./StarCursor.jsx";
+import TracerModal from "./TracerModal.jsx";
 
-function External({ href, children, className }) {
-  if (!href) return null;
-  const external = href.startsWith("http");
+function HotLink({ href, tip, children }) {
+  const tipId = useId();
+  return (
+    <span className="hot-wrap">
+      <a
+        className="hot"
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-describedby={tip ? tipId : undefined}
+      >
+        {children}
+      </a>
+      {tip ? (
+        <span className="tip" id={tipId} role="tooltip">
+          {tip}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
+function SchoolLink() {
   return (
     <a
-      className={className}
-      href={href}
-      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      className="hot"
+      href={profile.schoolUrl}
+      target="_blank"
+      rel="noopener noreferrer"
     >
-      {children}
+      {profile.school}
     </a>
   );
 }
 
 export default function App() {
-  const year = new Date().getFullYear();
+  const [tracerOpen, setTracerOpen] = useState(false);
+  const [fittmmOpen, setFittmmOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
+  const tracerTipId = useId();
+  const fittmmTipId = useId();
+  const aboutTipId = useId();
+  const tracerButtonRef = useRef(null);
+  const fittmmButtonRef = useRef(null);
+  const aboutButtonRef = useRef(null);
+  const feedbackButtonRef = useRef(null);
+  const closeTracer = useCallback(() => {
+    setTracerOpen(false);
+    tracerButtonRef.current?.focus();
+  }, []);
+  const closeFittmm = useCallback(() => {
+    setFittmmOpen(false);
+    fittmmButtonRef.current?.focus();
+  }, []);
+  const closeAbout = useCallback(() => {
+    setAboutOpen(false);
+    aboutButtonRef.current?.focus();
+  }, []);
+  const closeFeedback = useCallback(() => {
+    setFeedbackOpen(false);
+    feedbackButtonRef.current?.focus();
+  }, []);
 
   return (
-    <div className="page">
-      <a className="skip" href="#work">
-        Skip to work
-      </a>
-
-      <header className="site-header">
-        <div className="shell header-inner">
-          <a className="wordmark" href="#top">
-            {profile.name}
-          </a>
-          <nav className="nav" aria-label="Sections">
-            <a href="#work">Work</a>
-            <a href="#skills">Skills</a>
-            <a href="#experience">Experience</a>
-            <a href="#contact">Contact</a>
-          </nav>
-        </div>
-      </header>
-
-      <main id="top" className="shell">
-        <section className="hero">
-          <div>
-            <p className="kicker">
-              <span className="mark" aria-hidden="true" />
-              {profile.role}
-              {profile.location ? ` · ${profile.location}` : ""}
-            </p>
-            <h1>{profile.name}</h1>
-            <p className="focus">{profile.focus.join("  ·  ")}</p>
-            <p className="lede">{profile.headline}</p>
-          </div>
-
-          <div className="hero-copy">
-            <p>{profile.summary}</p>
-            <dl className="facts">
-              <div>
-                <dt>School</dt>
-                <dd>{profile.school}</dd>
-              </div>
-              <div>
-                <dt>Degree</dt>
-                <dd>
-                  {profile.degree}
-                  {profile.graduation ? `, ${profile.graduation}` : ""}
-                </dd>
-              </div>
-              <div>
-                <dt>Status</dt>
-                <dd>{profile.availability}</dd>
-              </div>
-            </dl>
-            <div className="actions">
-              <External className="button" href={`mailto:${profile.email}`}>
-                Email me
-              </External>
-              <External className="button button-ghost" href={profile.resume}>
-                Resume
-              </External>
-              <External href={profile.github}>{profile.githubLabel}</External>
-              <External href={profile.linkedin}>{profile.linkedinLabel}</External>
-            </div>
-          </div>
-        </section>
-
-        <section id="work" className="section">
-          <div className="section-head">
-            <h2>Selected work</h2>
-            <p>Systems, tools, and a catalog I wished I had.</p>
-          </div>
-          <div className="projects">
-            {projects.map((project, index) => (
-              <article className="project" key={project.title}>
-                <p className="project-index">{String(index + 1).padStart(2, "0")}</p>
-                <div>
-                  <h3>{project.title}</h3>
-                  <p>{project.summary}</p>
-                  <ul className="stack">
-                    {project.stack.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                  {(project.repo || project.demo) && (
-                    <p className="project-links">
-                      <External href={project.repo}>Source</External>
-                      <External href={project.demo}>Demo</External>
-                    </p>
-                  )}
-                </div>
-                <p className="project-year">{project.year}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section id="skills" className="section">
-          <div className="section-head">
-            <h2>Skills</h2>
-            <p>What I use, and what I have studied.</p>
-          </div>
-          <div className="skill-grid">
-            {skillGroups.map((group) => (
-              <div key={group.label}>
-                <h3>{group.label}</h3>
-                <ul>
-                  {group.items.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section id="experience" className="section">
-          <div className="section-head">
-            <h2>Experience</h2>
-            <p>Roles, labs, clubs, and jobs.</p>
-          </div>
-          <div className="jobs">
-            {experience.map((job) => (
-              <article className="job" key={`${job.role}-${job.org}`}>
-                <p className="job-dates">{job.dates}</p>
-                <div>
-                  <h3>
-                    {job.role}
-                    <span> · {job.org}</span>
-                  </h3>
-                  <p>{job.detail}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section id="contact" className="section contact">
-          <p className="kicker">
-            <span className="mark" aria-hidden="true" />
-            Contact
-          </p>
-          <h2>Tell me what you are building.</h2>
-          <p className="contact-links">
-            <a className="email" href={`mailto:${profile.email}`}>
+    <div className="desk">
+      <StarCursor />
+      {showWelcome ? (
+        <LoadingScreen onDone={() => setShowWelcome(false)} />
+      ) : null}
+      <article className="paper">
+        <header className="mast">
+          <h1>
+            <span className="hot-wrap name-wrap">
+              <button
+                type="button"
+                className="name-button"
+                ref={aboutButtonRef}
+                aria-describedby={aboutTipId}
+                onClick={() => setAboutOpen(true)}
+              >
+                {profile.name}
+              </button>
+              <span className="tip" id={aboutTipId} role="tooltip">
+                Get to know me
+              </span>
+            </span>
+          </h1>
+          <p className="contact-line">
+            <span>{profile.location}</span>
+            <span className="dot" aria-hidden="true">
+              ·
+            </span>
+            <HotLink href={profile.linkedin} tip="Check out my LinkedIn">
+              {profile.linkedinLabel}
+            </HotLink>
+            <span className="dot" aria-hidden="true">
+              ·
+            </span>
+            <HotLink href={profile.gmailUrl} tip="Send me a direct email!">
               {profile.email}
-            </a>
-            <External href={profile.github}>{profile.githubLabel}</External>
-            <External href={profile.linkedin}>{profile.linkedinLabel}</External>
+            </HotLink>
           </p>
-        </section>
-      </main>
+        </header>
 
-      <footer className="site-footer">
-        <div className="shell footer-inner">
-          <p>
-            {profile.name} · {year}
-          </p>
-          <a href="#top">Back to top</a>
-        </div>
-      </footer>
+        <section>
+          <h2>Professional Summary</h2>
+          <p>{summary}</p>
+        </section>
+
+        <section>
+          <h2>Technical Proficiencies</h2>
+          <ul className="skills">
+            {proficiencies.map(([label, value]) => (
+              <li key={label}>
+                <strong>{label}:</strong> {value}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section>
+          <h2>Education</h2>
+          <div className="entry">
+            <div className="entry-head">
+              <p className="dates">{education.dates}</p>
+              <p className="place">{education.place}</p>
+            </div>
+            <p className="role">
+              <strong>{education.degree}</strong>, <SchoolLink />
+            </p>
+          </div>
+          <div className="entry">
+            <p className="role">
+              <strong>{education.certificate.title}</strong>
+            </p>
+            <p>{education.certificate.detail}</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Software Engineering Projects</h2>
+          {projects.map((project) => (
+            <div className="entry" key={project.name}>
+              <h3>
+                {project.id === "tracer" ? (
+                  <span className="hot-wrap">
+                    <button
+                      type="button"
+                      className="hot"
+                      ref={tracerButtonRef}
+                      aria-describedby={tracerTipId}
+                      onClick={() => setTracerOpen(true)}
+                    >
+                      {project.name}
+                    </button>
+                    <span className="tip" id={tracerTipId} role="tooltip">
+                      Check out my project
+                    </span>
+                  </span>
+                ) : project.id === "fittmm" ? (
+                  <span className="hot-wrap">
+                    <button
+                      type="button"
+                      className="hot"
+                      ref={fittmmButtonRef}
+                      aria-describedby={fittmmTipId}
+                      onClick={() => setFittmmOpen(true)}
+                    >
+                      {project.name}
+                    </button>
+                    <span className="tip" id={fittmmTipId} role="tooltip">
+                      Check out my project
+                    </span>
+                  </span>
+                ) : project.repo ? (
+                  <HotLink href={project.repo} tip="Check out my project">
+                    {project.name}
+                  </HotLink>
+                ) : (
+                  project.name
+                )}
+                <span className="tagline"> — {project.tagline}</span>
+              </h3>
+              <p className="stack">{project.stack}</p>
+              <ul className="bullets">
+                {project.bullets.map((bullet) => (
+                  <li key={bullet}>{bullet}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </section>
+
+        <section>
+          <h2>Experience</h2>
+          {experience.map((job) => (
+            <div className="entry" key={job.role}>
+              <p className="dates">{job.dates}</p>
+              <p className="role">
+                <strong>{job.role}</strong>
+                {job.org === "school" ? (
+                  <>
+                    , <SchoolLink />
+                  </>
+                ) : (
+                  <>, {job.org}</>
+                )}
+              </p>
+              <ul className="bullets">
+                {job.bullets.map((bullet) => (
+                  <li key={bullet}>{bullet}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </section>
+
+        <section>
+          <h2>Achievements</h2>
+          <ul className="bullets">
+            {achievements.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </section>
+
+        <p className="get-in-touch">
+          <button
+            type="button"
+            className="hot get-in-touch-button"
+            ref={feedbackButtonRef}
+            onClick={() => setFeedbackOpen(true)}
+          >
+            Get in touch
+          </button>
+        </p>
+      </article>
+
+      {tracerOpen ? <TracerModal onClose={closeTracer} /> : null}
+      {fittmmOpen ? <FittmmModal onClose={closeFittmm} /> : null}
+      {aboutOpen ? <AboutModal onClose={closeAbout} /> : null}
+      {feedbackOpen ? <FeedbackModal onClose={closeFeedback} /> : null}
     </div>
   );
 }
