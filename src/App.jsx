@@ -9,6 +9,7 @@ import {
   summary,
 } from "./data.js";
 import AboutModal from "./AboutModal.jsx";
+import BluModal from "./BluModal.jsx";
 import FeedbackModal from "./FeedbackModal.jsx";
 import FittmmModal from "./FittmmModal.jsx";
 import LoadingScreen from "./LoadingScreen.jsx";
@@ -53,14 +54,17 @@ function SchoolLink() {
 export default function App() {
   const [tracerOpen, setTracerOpen] = useState(false);
   const [fittmmOpen, setFittmmOpen] = useState(false);
+  const [bluOpen, setBluOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const tracerTipId = useId();
   const fittmmTipId = useId();
+  const bluTipId = useId();
   const aboutTipId = useId();
   const tracerButtonRef = useRef(null);
   const fittmmButtonRef = useRef(null);
+  const bluButtonRef = useRef(null);
   const aboutButtonRef = useRef(null);
   const feedbackButtonRef = useRef(null);
   const closeTracer = useCallback(() => {
@@ -70,6 +74,10 @@ export default function App() {
   const closeFittmm = useCallback(() => {
     setFittmmOpen(false);
     fittmmButtonRef.current?.focus();
+  }, []);
+  const closeBlu = useCallback(() => {
+    setBluOpen(false);
+    bluButtonRef.current?.focus();
   }, []);
   const closeAbout = useCallback(() => {
     setAboutOpen(false);
@@ -191,6 +199,21 @@ export default function App() {
                       Check out my project
                     </span>
                   </span>
+                ) : project.id === "blu" ? (
+                  <span className="hot-wrap">
+                    <button
+                      type="button"
+                      className="hot"
+                      ref={bluButtonRef}
+                      aria-describedby={bluTipId}
+                      onClick={() => setBluOpen(true)}
+                    >
+                      {project.name}
+                    </button>
+                    <span className="tip" id={bluTipId} role="tooltip">
+                      Check out my project
+                    </span>
+                  </span>
                 ) : project.repo ? (
                   <HotLink href={project.repo} tip="Check out my project">
                     {project.name}
@@ -257,6 +280,7 @@ export default function App() {
 
       {tracerOpen ? <TracerModal onClose={closeTracer} /> : null}
       {fittmmOpen ? <FittmmModal onClose={closeFittmm} /> : null}
+      {bluOpen ? <BluModal onClose={closeBlu} /> : null}
       {aboutOpen ? <AboutModal onClose={closeAbout} /> : null}
       {feedbackOpen ? <FeedbackModal onClose={closeFeedback} /> : null}
     </div>

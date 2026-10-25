@@ -105,6 +105,7 @@ export const projects = [
     ],
   },
   {
+    id: "blu",
     name: "BLU",
     tagline: "Full-Stack Social Platform for Gamers",
     stack: "Node.js | Express | JavaScript | REST APIs | Discord Integration",
