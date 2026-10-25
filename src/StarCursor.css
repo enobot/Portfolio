@@ -5,8 +5,12 @@ html.has-star-cursor * {
 
 .star-cursor-layer {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
   z-index: 80;
+  overflow: visible;
   pointer-events: none;
 }
 
@@ -18,10 +22,6 @@ html.has-star-cursor * {
   height: 18px;
   margin: -9px 0 0 -9px;
   color: #ff7eb3;
-  filter:
-    drop-shadow(0 0 1px #fff)
-    drop-shadow(0 0 6px rgba(255, 90, 150, 0.95));
-  will-change: transform;
 }
 
 .cursor-star svg {
@@ -35,8 +35,4 @@ html.has-star-cursor * {
   height: 30px;
   margin: -15px 0 0 -15px;
   color: #ffd4e6;
-  filter:
-    drop-shadow(0 0 1px #fff)
-    drop-shadow(0 0 3px #ff4f93)
-    drop-shadow(0 0 10px rgba(255, 120, 170, 0.95));
 }

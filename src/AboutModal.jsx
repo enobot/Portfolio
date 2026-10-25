@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef } from "react";
 import { about } from "./data.js";
+import { lockPageScroll } from "./lockPageScroll.js";
 
 export default function AboutModal({ onClose }) {
   const titleId = useId();
@@ -34,11 +35,10 @@ export default function AboutModal({ onClose }) {
     }
 
     document.addEventListener("keydown", onKey);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlockScroll = lockPageScroll();
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = previousOverflow;
+      unlockScroll();
     };
   }, [onClose]);
 

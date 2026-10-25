@@ -1,7 +1,13 @@
 .welcome {
   position: fixed;
-  inset: 0;
   z-index: 40;
+  top: 0;
+  left: 0;
+  width: 100%;
+  width: 100vw;
+  height: 100%;
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background:
     radial-gradient(ellipse at 50% 38%, #453c38 0%, #2a2724 46%, #141210 100%);
@@ -44,11 +50,37 @@
 .welcome-copy {
   position: absolute;
   inset: 0;
-  z-index: 4;
+  z-index: 6;
   display: grid;
   place-items: center;
   padding: 1.5rem;
   pointer-events: none;
+}
+
+.welcome-stack {
+  display: grid;
+  justify-items: center;
+  gap: clamp(0.85rem, 2.4vh, 1.35rem);
+}
+
+.welcome-note {
+  margin: 0;
+  max-width: 36em;
+  text-align: center;
+  font-family: var(--sans);
+  font-size: clamp(1.05rem, 2.5vw, 1.45rem);
+  font-weight: 600;
+  line-height: 1.35;
+  color: #fffaf6;
+}
+
+.welcome-note span {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 8px rgba(255, 168, 204, 0.95),
+    0 0 18px rgba(255, 150, 196, 0.8),
+    0 0 32px rgba(255, 186, 214, 0.55);
 }
 
 .welcome-title {

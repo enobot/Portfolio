@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import "./BluModal.css";
+import { lockPageScroll } from "./lockPageScroll.js";
 
 const repo = "https://github.com/Blu-Organization/FinalGFFinder";
 
@@ -133,11 +134,10 @@ export default function BluModal({ onClose }) {
     }
 
     document.addEventListener("keydown", onKey);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlockScroll = lockPageScroll();
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = previousOverflow;
+      unlockScroll();
     };
   }, [onClose]);
 
@@ -304,7 +304,8 @@ export default function BluModal({ onClose }) {
                     type="email"
                     autoComplete="username"
                     value={login.email}
-                    onChange={(event) => setLogin({ ...login, email: event.target.value })}
+                    maxLength={254}
+                    onChange={(event) => setLogin({ ...login, email: event.target.value.slice(0, 254) })}
                   />
                 </label>
                 <label>
@@ -314,7 +315,8 @@ export default function BluModal({ onClose }) {
                     type="text"
                     autoComplete="current-password"
                     value={login.password}
-                    onChange={(event) => setLogin({ ...login, password: event.target.value })}
+                    maxLength={80}
+                    onChange={(event) => setLogin({ ...login, password: event.target.value.slice(0, 80) })}
                   />
                 </label>
                 {formError ? <p className="blu-error">{formError}</p> : null}
@@ -332,7 +334,8 @@ export default function BluModal({ onClose }) {
                   <input
                     name="username"
                     value={signup.username}
-                    onChange={(event) => setSignup({ ...signup, username: event.target.value })}
+                    maxLength={40}
+                    onChange={(event) => setSignup({ ...signup, username: event.target.value.slice(0, 40) })}
                   />
                 </label>
                 <label>
@@ -341,7 +344,8 @@ export default function BluModal({ onClose }) {
                     name="email"
                     type="email"
                     value={signup.email}
-                    onChange={(event) => setSignup({ ...signup, email: event.target.value })}
+                    maxLength={254}
+                    onChange={(event) => setSignup({ ...signup, email: event.target.value.slice(0, 254) })}
                   />
                 </label>
                 <label>
@@ -350,7 +354,8 @@ export default function BluModal({ onClose }) {
                     name="password"
                     type="text"
                     value={signup.password}
-                    onChange={(event) => setSignup({ ...signup, password: event.target.value })}
+                    maxLength={80}
+                    onChange={(event) => setSignup({ ...signup, password: event.target.value.slice(0, 80) })}
                   />
                 </label>
                 {formError ? <p className="blu-error">{formError}</p> : null}
@@ -380,9 +385,10 @@ export default function BluModal({ onClose }) {
                     <span className="blu-sr">Find a friend by game</span>
                     <input
                       value={query}
+                      maxLength={40}
                       placeholder="Enter a game to find a friend..."
                       onChange={(event) => {
-                        setQuery(event.target.value);
+                        setQuery(event.target.value.slice(0, 40));
                         setActiveFriend(null);
                       }}
                     />

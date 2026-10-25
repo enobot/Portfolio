@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
+import { lockPageScroll } from "./lockPageScroll.js";
 
 const repo = "https://github.com/enobot/FITTMM";
 
@@ -81,11 +82,10 @@ export default function FittmmModal({ onClose }) {
     }
 
     document.addEventListener("keydown", onKey);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlockScroll = lockPageScroll();
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = previousOverflow;
+      unlockScroll();
     };
   }, [onClose]);
 

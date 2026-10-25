@@ -248,11 +248,16 @@ export default function LoadingScreen({ onDone }) {
         ))}
       </div>
       <div className="welcome-copy">
-        <p className="welcome-title">
-          WELCOME TO MY
-          <br />
-          INTERACTIVE RESUME
-        </p>
+        <div className="welcome-stack">
+          <p className="welcome-title">
+            WELCOME TO MY
+            <br />
+            INTERACTIVE RESUME
+          </p>
+          <p className="welcome-note">
+            Feel free to click anything that <span>glows</span> for more info.
+          </p>
+        </div>
       </div>
     </div>
   );

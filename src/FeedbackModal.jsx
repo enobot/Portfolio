@@ -1,8 +1,10 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { profile } from "./data.js";
+import { clampInput, EMAIL_PATTERN, FIELD_LIMITS, finalizeText } from "./formSafety.js";
+import { lockPageScroll } from "./lockPageScroll.js";
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const FEEDBACK_SUBJECT = "My Portfolio Suggestions and Feedback";
+const MAILTO_LIMIT = 1800;
 
 function FeedbackForm() {
   const baseId = useId();
@@ -16,45 +18,64 @@ function FeedbackForm() {
   const [errors, setErrors] = useState({});
 
   function update(name, value) {
-    setFields((current) => ({ ...current, [name]: value }));
+    const nextValue = clampInput(value, FIELD_LIMITS[name], {
+      keepNewlines: name === "message",
+    });
+    setFields((current) => ({ ...current, [name]: nextValue }));
     setErrors((current) => {
-      if (!current[name]) return current;
+      if (!current[name] && !current.form) return current;
       const next = { ...current };
       delete next[name];
+      delete next.form;
       return next;
     });
   }
 
+  function collected() {
+    return {
+      firstName: finalizeText(fields.firstName, FIELD_LIMITS.firstName),
+      lastName: finalizeText(fields.lastName, FIELD_LIMITS.lastName),
+      company: finalizeText(fields.company, FIELD_LIMITS.company),
+      email: finalizeText(fields.email, FIELD_LIMITS.email),
+      message: finalizeText(fields.message, FIELD_LIMITS.message, { keepNewlines: true }),
+    };
+  }
+
   function validate(values) {
     const next = {};
-    if (!values.firstName.trim()) next.firstName = "Enter your first name.";
-    if (!values.lastName.trim()) next.lastName = "Enter your last name.";
-    if (!values.company.trim()) next.company = "Enter your company.";
-    const email = values.email.trim();
-    if (!email) next.email = "Enter your email address.";
-    else if (!EMAIL_PATTERN.test(email)) next.email = "Enter a valid email address.";
-    if (!values.message.trim()) next.message = "Write your feedback before sending.";
+    if (!values.firstName) next.firstName = "Enter your first name.";
+    if (!values.lastName) next.lastName = "Enter your last name.";
+    if (!values.company) next.company = "Enter your company.";
+    if (!values.email) next.email = "Enter your email address.";
+    else if (!EMAIL_PATTERN.test(values.email)) next.email = "Enter a valid email address.";
+    if (!values.message) next.message = "Write your feedback before sending.";
     return next;
   }
 
   function onSubmit(event) {
     event.preventDefault();
-    const next = validate(fields);
-    setErrors(next);
+    const values = collected();
+    const next = validate(values);
     if (Object.keys(next).length > 0) {
+      setErrors(next);
       const firstInvalid = Object.keys(next)[0];
       document.getElementById(`${baseId}-${firstInvalid}`)?.focus();
       return;
     }
     const body = [
-      `First name: ${fields.firstName.trim()}`,
-      `Last name: ${fields.lastName.trim()}`,
-      `Company: ${fields.company.trim()}`,
-      `Email: ${fields.email.trim()}`,
+      `First name: ${values.firstName}`,
+      `Last name: ${values.lastName}`,
+      `Company: ${values.company}`,
+      `Email: ${values.email}`,
       "",
-      fields.message.trim(),
+      values.message,
     ].join("\n");
     const href = `mailto:${profile.email}?subject=${encodeURIComponent(FEEDBACK_SUBJECT)}&body=${encodeURIComponent(body)}`;
+    if (href.length > MAILTO_LIMIT) {
+      setErrors({ form: "That message is too long to send by email. Shorten it and try again." });
+      return;
+    }
+    setErrors({});
     window.location.href = href;
   }
 
@@ -88,6 +109,7 @@ function FeedbackForm() {
                         : "family-name"
                 }
                 value={fields[name]}
+                maxLength={FIELD_LIMITS[name]}
                 aria-invalid={errors[name] ? "true" : "false"}
                 aria-describedby={errors[name] ? errorId : undefined}
                 onChange={(event) => update(name, event.target.value)}
@@ -108,6 +130,7 @@ function FeedbackForm() {
           name="message"
           rows={6}
           value={fields.message}
+          maxLength={FIELD_LIMITS.message}
           aria-invalid={errors.message ? "true" : "false"}
           aria-describedby={errors.message ? `${baseId}-message-error` : undefined}
           onChange={(event) => update("message", event.target.value)}
@@ -118,6 +141,11 @@ function FeedbackForm() {
           </p>
         ) : null}
       </div>
+      {errors.form ? (
+        <p className="field-error" role="alert">
+          {errors.form}
+        </p>
+      ) : null}
       <button type="submit" className="send-note">
         Send
       </button>
@@ -158,11 +186,10 @@ export default function FeedbackModal({ onClose }) {
     }
 
     document.addEventListener("keydown", onKey);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlockScroll = lockPageScroll();
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = previousOverflow;
+      unlockScroll();
     };
   }, [onClose]);
 

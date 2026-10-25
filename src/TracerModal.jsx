@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { tracer } from "./data.js";
+import { lockPageScroll } from "./lockPageScroll.js";
 
 const TRACEBACK = `Traceback (most recent call last):
   File "plans.py", line 42, in build_week
@@ -52,12 +53,11 @@ export default function TracerModal({ onClose }) {
     }
 
     document.addEventListener("keydown", onKey);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlockScroll = lockPageScroll();
     return () => {
       window.clearTimeout(timerRef.current);
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = previousOverflow;
+      unlockScroll();
     };
   }, [onClose]);
 
