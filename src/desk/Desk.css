@@ -219,87 +219,6 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
 }
 
-/* Night (7pm to 6am on the visitor's clock): the room goes dim and a desk lamp
-   lights a pool over the résumé, with a cooler glow from the laptop screen.
-   --lamp-* and --screen-* are offsets from the scene's center, set per layout
-   below. The dark layer has both pools cut out of it. */
-.desk-scene {
-  --lamp-x: calc(-4.75 * var(--in) - 0.15 * var(--ex));
-  --lamp-y: calc(0.4 * var(--in));
-  --screen-x: calc(6.2 * var(--in) + 0.4 * var(--ex));
-  --screen-y: calc(-4.3 * var(--in));
-}
-
-.desk-scene::before,
-.desk-scene::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 7;
-  display: none;
-  pointer-events: none;
-}
-
-.desk.is-night .desk-scene::before {
-  display: block;
-  background: rgba(12, 10, 24, 0.66);
-  -webkit-mask-image:
-    radial-gradient(circle calc(9 * var(--in)) at calc(50% + var(--lamp-x)) calc(50% + var(--lamp-y)), transparent 0%, transparent 25%, #000 100%),
-    radial-gradient(circle calc(6 * var(--in)) at calc(50% + var(--screen-x)) calc(50% + var(--screen-y)), transparent 0%, #000 100%);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    radial-gradient(circle calc(9 * var(--in)) at calc(50% + var(--lamp-x)) calc(50% + var(--lamp-y)), transparent 0%, transparent 25%, #000 100%),
-    radial-gradient(circle calc(6 * var(--in)) at calc(50% + var(--screen-x)) calc(50% + var(--screen-y)), transparent 0%, #000 100%);
-  mask-composite: intersect;
-}
-
-.desk.is-night .desk-scene::after {
-  display: block;
-  background:
-    radial-gradient(circle calc(8 * var(--in)) at calc(50% + var(--lamp-x)) calc(50% + var(--lamp-y)), rgba(255, 196, 120, 0.16), transparent 70%),
-    radial-gradient(circle calc(5 * var(--in)) at calc(50% + var(--screen-x)) calc(50% + var(--screen-y)), rgba(190, 210, 255, 0.1), transparent 70%);
-}
-
-.desk.is-night .desk-world::before {
-  display: none;
-}
-
-/* Daytime: a cloud's shadow drifts across the desk now and then. Soft-edged
-   gradients, moved only with transform. */
-.desk-cloud {
-  position: absolute;
-  z-index: 7;
-  top: -20vh;
-  left: 0;
-  width: 90vmax;
-  height: 60vmax;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse 30% 34% at 30% 50%, rgba(28, 22, 34, 0.13), transparent 70%),
-    radial-gradient(ellipse 28% 30% at 52% 40%, rgba(28, 22, 34, 0.12), transparent 70%),
-    radial-gradient(ellipse 30% 30% at 70% 56%, rgba(28, 22, 34, 0.11), transparent 70%),
-    radial-gradient(ellipse 22% 24% at 46% 64%, rgba(28, 22, 34, 0.1), transparent 70%);
-  will-change: transform;
-  animation: cloud-pass 70s linear infinite;
-  animation-delay: -18s;
-}
-
-@keyframes cloud-pass {
-  0% {
-    transform: translate(-95vmax, 0);
-  }
-  60%,
-  100% {
-    transform: translate(110vw, 24vh);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .desk-cloud {
-    display: none;
-  }
-}
-
 .pose {
   position: absolute;
   inset: 0;
@@ -2046,10 +1965,6 @@
     --in: min(calc(100cqw / 23), calc(100cqh / 28.4));
     --ex: calc((100cqw - 23 * var(--in)) / 2);
     --ey: calc((100cqh - 28.4 * var(--in)) / 2);
-    --lamp-x: calc(-0.85 * var(--in));
-    --lamp-y: calc(7.9 * var(--in) + 0.4 * var(--ey));
-    --screen-x: 0px;
-    --screen-y: calc(-10 * var(--in) - 0.4 * var(--ey));
   }
 
   .mac:not(.is-open) {
@@ -2092,10 +2007,6 @@
 @media (max-width: 800px), (max-aspect-ratio: 4/5) {
   .desk-scene {
     --in: min(calc(100cqw / 14.4), calc(100cqh / 29));
-    --lamp-x: calc(-2.35 * var(--in));
-    --lamp-y: calc(7.5 * var(--in));
-    --screen-x: 0px;
-    --screen-y: calc(-10.4 * var(--in));
   }
 
   .decor {

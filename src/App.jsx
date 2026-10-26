@@ -17,18 +17,7 @@ const FeedbackModal = lazy(() => import("./FeedbackModal.jsx"));
 const FittmmModal = lazy(() => import("./FittmmModal.jsx"));
 const TracerModal = lazy(() => import("./TracerModal.jsx"));
 
-// Night is 7pm to 6am on the visitor's clock. ?night or ?day in the address
-// previews either one.
-function isNight() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.has("night")) return true;
-  if (params.has("day")) return false;
-  const hour = new Date().getHours();
-  return hour >= 19 || hour < 6;
-}
-
 export default function App() {
-  const [night] = useState(isNight);
   const [tracerOpen, setTracerOpen] = useState(false);
   const [fittmmOpen, setFittmmOpen] = useState(false);
   const [bluOpen, setBluOpen] = useState(false);
@@ -231,7 +220,7 @@ export default function App() {
   }, [aboutOpen, bluOpen, closeDesk, feedbackOpen, fittmmOpen, ready, tracerOpen, which]);
 
   return (
-    <div className={night ? "desk is-night" : "desk"}>
+    <div className="desk">
       <StarCursor />
       {showWelcome ? (
         <LoadingScreen onDone={() => setShowWelcome(false)} />
@@ -372,7 +361,6 @@ export default function App() {
       </motion.div>
       </motion.div>
       </div>
-      {night ? null : <div className="desk-cloud" aria-hidden="true" />}
       </div>
 
       <Suspense fallback={null}>
