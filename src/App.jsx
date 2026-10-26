@@ -1,55 +1,19 @@
-import { useCallback, useId, useRef, useState } from "react";
-import {
-  achievements,
-  education,
-  experience,
-  proficiencies,
-  profile,
-  projects,
-  summary,
-} from "./data.js";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
+import { flatShadow, hoverShadow, liftShadow, liftTransition } from "./desk/lift.js";
 import AboutModal from "./AboutModal.jsx";
 import BluModal from "./BluModal.jsx";
+import DeskDecor from "./desk/DeskDecor.jsx";
+import { DeskPhone, MacBook } from "./desk/DeskDevices.jsx";
+import NameTag from "./desk/NameTag.jsx";
+import ResumePaper from "./desk/ResumePaper.jsx";
+import "./desk/Desk.css";
 import FeedbackModal from "./FeedbackModal.jsx";
 import FittmmModal from "./FittmmModal.jsx";
 import LoadingScreen from "./LoadingScreen.jsx";
+import { lockPageScroll } from "./lockPageScroll.js";
 import StarCursor from "./StarCursor.jsx";
 import TracerModal from "./TracerModal.jsx";
-
-function HotLink({ href, tip, children }) {
-  const tipId = useId();
-  return (
-    <span className="hot-wrap">
-      <a
-        className="hot"
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-describedby={tip ? tipId : undefined}
-      >
-        {children}
-      </a>
-      {tip ? (
-        <span className="tip" id={tipId} role="tooltip">
-          {tip}
-        </span>
-      ) : null}
-    </span>
-  );
-}
-
-function SchoolLink() {
-  return (
-    <a
-      className="hot"
-      href={profile.schoolUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      {profile.school}
-    </a>
-  );
-}
 
 export default function App() {
   const [tracerOpen, setTracerOpen] = useState(false);
@@ -58,35 +22,200 @@ export default function App() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [which, setWhich] = useState(null);
+  const [posed, setPosed] = useState(false);
+  const [ready, setReady] = useState(false);
   const tracerTipId = useId();
   const fittmmTipId = useId();
   const bluTipId = useId();
   const aboutTipId = useId();
+  const paperTipId = useId();
+  const macTitleId = useId();
+  const phoneTitleId = useId();
+  const badgeTitleId = useId();
   const tracerButtonRef = useRef(null);
   const fittmmButtonRef = useRef(null);
   const bluButtonRef = useRef(null);
   const aboutButtonRef = useRef(null);
   const feedbackButtonRef = useRef(null);
+  const paperRef = useRef(null);
+  const macRef = useRef(null);
+  const phoneRef = useRef(null);
+  const badgeRef = useRef(null);
+  const sheetRef = useRef(null);
+  const macBoxRef = useRef(null);
+  const phoneBoxRef = useRef(null);
+  const badgeBoxRef = useRef(null);
+  const openerRef = useRef(null);
+  const [pageCount, setPageCount] = useState(2);
+  const aboutOpenerRef = useRef(null);
+  const projectOpenerRef = useRef(null);
+  const closeTimer = useRef(0);
   const closeTracer = useCallback(() => {
     setTracerOpen(false);
-    tracerButtonRef.current?.focus();
+    (projectOpenerRef.current || tracerButtonRef.current)?.focus();
+    projectOpenerRef.current = null;
   }, []);
   const closeFittmm = useCallback(() => {
     setFittmmOpen(false);
-    fittmmButtonRef.current?.focus();
+    (projectOpenerRef.current || fittmmButtonRef.current)?.focus();
+    projectOpenerRef.current = null;
   }, []);
   const closeBlu = useCallback(() => {
     setBluOpen(false);
-    bluButtonRef.current?.focus();
+    (projectOpenerRef.current || bluButtonRef.current)?.focus();
+    projectOpenerRef.current = null;
   }, []);
   const closeAbout = useCallback(() => {
     setAboutOpen(false);
-    aboutButtonRef.current?.focus();
+    (aboutOpenerRef.current || aboutButtonRef.current)?.focus();
+    aboutOpenerRef.current = null;
   }, []);
+  const prefersReduced = useReducedMotion();
+  const reducedMotion = useCallback(
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    [],
+  );
+  const lift = liftTransition(prefersReduced);
+  const paperOpen = which === "paper" && posed;
+  const openDesk = useCallback((id, element) => {
+    if (which) return;
+    openerRef.current = element ?? null;
+    window.clearTimeout(closeTimer.current);
+    setReady(false);
+    setWhich(id);
+    setPosed(true);
+  }, [which]);
+  const openProject = useCallback((id, element) => {
+    projectOpenerRef.current = element ?? null;
+    if (id === "tracer") setTracerOpen(true);
+    else if (id === "fittmm") setFittmmOpen(true);
+    else if (id === "blu") setBluOpen(true);
+  }, []);
+  const closeDesk = useCallback(() => {
+    if (!which) return;
+    setReady(false);
+    setPosed(false);
+    const wait = reducedMotion() ? 0 : 560;
+    window.clearTimeout(closeTimer.current);
+    closeTimer.current = window.setTimeout(() => setWhich(null), wait);
+  }, [reducedMotion, which]);
   const closeFeedback = useCallback(() => {
     setFeedbackOpen(false);
     feedbackButtonRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    if (!which) return undefined;
+    return lockPageScroll();
+  }, [which]);
+
+  useEffect(() => {
+    const sheet = sheetRef.current;
+    if (!sheet) return undefined;
+    const paper = sheet.querySelector(".letter-stack .paper");
+    const page = sheet.querySelector(".letter-page");
+    if (!paper || !page) return undefined;
+    const apply = () => {
+      if (sheet.classList.contains("is-open")) return;
+      const previewW = 816;
+      const pageH = 1056;
+      sheet.style.setProperty("--doc-w", `${previewW}px`);
+      sheet.style.setProperty("--page-h", String(pageH));
+      const docH = paper.scrollHeight;
+      if (page.clientWidth < 8 || docH < 8) return;
+      const pages = Math.min(4, Math.max(1, Math.ceil((docH - 12) / pageH)));
+      const restFit = page.clientWidth / previewW;
+      sheet.style.setProperty("--rest-fit", restFit.toFixed(4));
+      sheet.style.setProperty("--open-fit", "1");
+      sheet.style.setProperty("--doc-h", String(Math.ceil(docH)));
+      sheet.dataset.pages = String(pages);
+      sheet.classList.add("is-measured");
+      setPageCount((current) => (current === pages ? current : pages));
+    };
+
+    apply();
+    document.fonts?.ready.then(apply);
+    const observer = new ResizeObserver(() => {
+      if (!sheet.classList.contains("is-open")) apply();
+    });
+    observer.observe(page);
+    observer.observe(paper);
+    window.addEventListener("resize", apply);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", apply);
+    };
+  }, [pageCount]);
+
+  const lastDesk = useRef(null);
+  useEffect(() => {
+    if (which) {
+      lastDesk.current = which;
+      return undefined;
+    }
+    const previous = lastDesk.current;
+    if (!previous) return undefined;
+    const opener = openerRef.current;
+    openerRef.current = null;
+    if (opener && document.contains(opener)) {
+      opener.focus();
+      return undefined;
+    }
+    const target =
+      previous === "paper" ? paperRef : previous === "mac" ? macRef : previous === "phone" ? phoneRef : badgeRef;
+    target.current?.focus();
+    return undefined;
+  }, [which]);
+
+  useEffect(() => {
+    if (!which || !posed) return undefined;
+    const wait = reducedMotion() ? 0 : 700;
+    const id = window.setTimeout(() => setReady(true), wait);
+    return () => window.clearTimeout(id);
+  }, [posed, reducedMotion, which]);
+
+  useEffect(() => {
+    if (!ready || !which) return undefined;
+    if (tracerOpen || fittmmOpen || bluOpen || aboutOpen || feedbackOpen) return undefined;
+    const root =
+      which === "paper"
+        ? sheetRef.current
+        : which === "mac"
+          ? macBoxRef.current
+          : which === "phone"
+            ? phoneBoxRef.current
+            : badgeBoxRef.current;
+    if (!root) return undefined;
+    const focusable = () =>
+      [...root.querySelectorAll("a, button")].filter(
+        (node) => !node.hasAttribute("disabled"),
+      );
+    focusable()[0]?.focus();
+
+    function onKey(event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeDesk();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const items = focusable();
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [aboutOpen, bluOpen, closeDesk, feedbackOpen, fittmmOpen, ready, tracerOpen, which]);
 
   return (
     <div className="desk">
@@ -94,189 +223,142 @@ export default function App() {
       {showWelcome ? (
         <LoadingScreen onDone={() => setShowWelcome(false)} />
       ) : null}
-      <article className="paper">
-        <header className="mast">
-          <h1>
-            <span className="hot-wrap name-wrap">
-              <button
-                type="button"
-                className="name-button"
-                ref={aboutButtonRef}
-                aria-describedby={aboutTipId}
-                onClick={() => setAboutOpen(true)}
-              >
-                {profile.name}
-              </button>
-              <span className="tip" id={aboutTipId} role="tooltip">
-                Get to know me
-              </span>
-            </span>
-          </h1>
-          <p className="contact-line">
-            <span>{profile.location}</span>
-            <span className="dot" aria-hidden="true">
-              ·
-            </span>
-            <HotLink href={profile.linkedin} tip="Check out my LinkedIn">
-              {profile.linkedinLabel}
-            </HotLink>
-            <span className="dot" aria-hidden="true">
-              ·
-            </span>
-            <HotLink href={profile.gmailUrl} tip="Send me a direct email!">
-              {profile.email}
-            </HotLink>
-          </p>
-        </header>
-
-        <section>
-          <h2>Professional Summary</h2>
-          <p>{summary}</p>
-        </section>
-
-        <section>
-          <h2>Technical Proficiencies</h2>
-          <ul className="skills">
-            {proficiencies.map(([label, value]) => (
-              <li key={label}>
-                <strong>{label}:</strong> {value}
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section>
-          <h2>Education</h2>
-          <div className="entry">
-            <div className="entry-head">
-              <p className="dates">{education.dates}</p>
-              <p className="place">{education.place}</p>
-            </div>
-            <p className="role">
-              <strong>{education.degree}</strong>, <SchoolLink />
-            </p>
+      <div
+        className={`desk-world ${posed ? "is-lifted" : ""}`}
+        inert={showWelcome ? true : undefined}
+      >
+      <button
+        type="button"
+        className="desk-dim"
+        aria-label="Close"
+        tabIndex={posed ? 0 : -1}
+        onClick={closeDesk}
+      />
+      <nav className="desk-fallback" aria-label="Portfolio" inert={posed ? true : undefined}>
+        <button type="button" onClick={(event) => openDesk("paper", event.currentTarget)}>
+          Résumé
+        </button>
+        <button type="button" onClick={(event) => openDesk("mac", event.currentTarget)}>
+          Projects
+        </button>
+        <button type="button" onClick={(event) => openDesk("badge", event.currentTarget)}>
+          About Me
+        </button>
+        <button type="button" onClick={(event) => openDesk("phone", event.currentTarget)}>
+          Contact
+        </button>
+      </nav>
+      <div className="desk-scene">
+      <DeskDecor />
+      <div ref={badgeBoxRef}>
+        <NameTag
+          open={which === "badge" && posed}
+          ready={which === "badge" && ready}
+          titleId={badgeTitleId}
+          buttonRef={badgeRef}
+          onOpen={(event) => openDesk("badge", event.currentTarget)}
+          onClose={closeDesk}
+        />
+      </div>
+      <div ref={macBoxRef}>
+        <MacBook
+          open={which === "mac" && posed}
+          ready={which === "mac" && ready}
+          titleId={macTitleId}
+          buttonRef={macRef}
+          onOpen={(event) => openDesk("mac", event.currentTarget)}
+          onClose={closeDesk}
+          onOpenProject={openProject}
+        />
+      </div>
+      <div ref={phoneBoxRef}>
+        <DeskPhone
+          open={which === "phone" && posed}
+          ready={which === "phone" && ready}
+          titleId={phoneTitleId}
+          buttonRef={phoneRef}
+          onOpen={(event) => openDesk("phone", event.currentTarget)}
+          onClose={closeDesk}
+        />
+      </div>
+      <motion.div
+        layout
+        className={`sheet ${paperOpen ? "is-open" : ""}`}
+        ref={sheetRef}
+        style={{ borderRadius: 2 }}
+        transition={lift}
+      >
+      <motion.div
+        className="pose"
+        initial={false}
+        animate={{ rotate: paperOpen ? 0 : -2, filter: paperOpen ? liftShadow : flatShadow }}
+        whileHover={paperOpen || prefersReduced ? undefined : { y: -6, filter: hoverShadow }}
+        transition={lift}
+      >
+      {which !== "paper" && (
+        <button
+          type="button"
+          className="lift-hit"
+          ref={paperRef}
+          aria-describedby={paperTipId}
+          onClick={(event) => openDesk("paper", event.currentTarget)}
+        >
+          <span className="lift-name">Open résumé</span>
+          <span className="tip" id={paperTipId} role="tooltip" aria-hidden="true">
+            Résumé
+          </span>
+        </button>
+      )}
+      {which === "paper" && posed && (
+        <button type="button" className="sheet-close close" onClick={closeDesk}>
+          Close
+        </button>
+      )}
+      <div className="letter-stack" aria-hidden="true">
+        {pageCount > 1 ? <div className="letter-under" /> : null}
+        <div className="letter-page" style={{ "--page": 0 }}>
+          <div className="letter-slice">
+            <ResumePaper />
           </div>
-          <div className="entry">
-            <p className="role">
-              <strong>{education.certificate.title}</strong>
-            </p>
-            <p>{education.certificate.detail}</p>
-          </div>
-        </section>
-
-        <section>
-          <h2>Software Engineering Projects</h2>
-          {projects.map((project) => (
-            <div className="entry" key={project.name}>
-              <h3>
-                {project.id === "tracer" ? (
-                  <span className="hot-wrap">
-                    <button
-                      type="button"
-                      className="hot"
-                      ref={tracerButtonRef}
-                      aria-describedby={tracerTipId}
-                      onClick={() => setTracerOpen(true)}
-                    >
-                      {project.name}
-                    </button>
-                    <span className="tip" id={tracerTipId} role="tooltip">
-                      Check out my project
-                    </span>
-                  </span>
-                ) : project.id === "fittmm" ? (
-                  <span className="hot-wrap">
-                    <button
-                      type="button"
-                      className="hot"
-                      ref={fittmmButtonRef}
-                      aria-describedby={fittmmTipId}
-                      onClick={() => setFittmmOpen(true)}
-                    >
-                      {project.name}
-                    </button>
-                    <span className="tip" id={fittmmTipId} role="tooltip">
-                      Check out my project
-                    </span>
-                  </span>
-                ) : project.id === "blu" ? (
-                  <span className="hot-wrap">
-                    <button
-                      type="button"
-                      className="hot"
-                      ref={bluButtonRef}
-                      aria-describedby={bluTipId}
-                      onClick={() => setBluOpen(true)}
-                    >
-                      {project.name}
-                    </button>
-                    <span className="tip" id={bluTipId} role="tooltip">
-                      Check out my project
-                    </span>
-                  </span>
-                ) : project.repo ? (
-                  <HotLink href={project.repo} tip="Check out my project">
-                    {project.name}
-                  </HotLink>
-                ) : (
-                  project.name
-                )}
-                <span className="tagline"> — {project.tagline}</span>
-              </h3>
-              <p className="stack">{project.stack}</p>
-              <ul className="bullets">
-                {project.bullets.map((bullet) => (
-                  <li key={bullet}>{bullet}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </section>
-
-        <section>
-          <h2>Experience</h2>
-          {experience.map((job) => (
-            <div className="entry" key={job.role}>
-              <p className="dates">{job.dates}</p>
-              <p className="role">
-                <strong>{job.role}</strong>
-                {job.org === "school" ? (
-                  <>
-                    , <SchoolLink />
-                  </>
-                ) : (
-                  <>, {job.org}</>
-                )}
-              </p>
-              <ul className="bullets">
-                {job.bullets.map((bullet) => (
-                  <li key={bullet}>{bullet}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </section>
-
-        <section>
-          <h2>Achievements</h2>
-          <ul className="bullets">
-            {achievements.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </section>
-
-        <p className="get-in-touch">
-          <button
-            type="button"
-            className="hot get-in-touch-button"
-            ref={feedbackButtonRef}
-            onClick={() => setFeedbackOpen(true)}
-          >
-            Get in touch
-          </button>
-        </p>
-      </article>
+        </div>
+      </div>
+      <div className="sheet-clip">
+      <div className="paper-fit">
+      <ResumePaper
+        interactive={which === "paper" && posed}
+        aboutButtonRef={aboutButtonRef}
+        aboutTipId={aboutTipId}
+        tracerButtonRef={tracerButtonRef}
+        tracerTipId={tracerTipId}
+        fittmmButtonRef={fittmmButtonRef}
+        fittmmTipId={fittmmTipId}
+        bluButtonRef={bluButtonRef}
+        bluTipId={bluTipId}
+        feedbackButtonRef={feedbackButtonRef}
+        onAbout={() => {
+          aboutOpenerRef.current = aboutButtonRef.current;
+          setAboutOpen(true);
+        }}
+        onTracer={() => {
+          projectOpenerRef.current = null;
+          setTracerOpen(true);
+        }}
+        onFittmm={() => {
+          projectOpenerRef.current = null;
+          setFittmmOpen(true);
+        }}
+        onBlu={() => {
+          projectOpenerRef.current = null;
+          setBluOpen(true);
+        }}
+        onFeedback={() => setFeedbackOpen(true)}
+      />
+      </div>
+      </div>
+      </motion.div>
+      </motion.div>
+      </div>
+      </div>
 
       {tracerOpen ? <TracerModal onClose={closeTracer} /> : null}
       {fittmmOpen ? <FittmmModal onClose={closeFittmm} /> : null}

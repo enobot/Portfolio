@@ -1,169 +1,115 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./LoadingScreen.css";
 
-const POMS = [
-  {
-    coat: "#f2a45a",
-    dark: "#d4783a",
-    light: "#ffe6c8",
-    ear: "#c4622c",
-    lane: "bottom",
-    size: "200px",
-    duration: "8s",
-    delay: "-1.6s",
-    flip: false,
-  },
-  {
-    coat: "#fff6ee",
-    dark: "#f0ddd0",
-    light: "#ffffff",
-    ear: "#f3d2c0",
-    lane: "low",
-    size: "146px",
-    duration: "9s",
-    delay: "-4.2s",
-    flip: true,
-  },
-  {
-    coat: "#6a5648",
-    dark: "#4a3b32",
-    light: "#f0c89a",
-    ear: "#3a2e28",
-    lane: "mid",
-    size: "158px",
-    duration: "10s",
-    delay: "-6.4s",
-    flip: false,
-  },
-  {
-    coat: "#e8b07a",
-    dark: "#c4844e",
-    light: "#fff1de",
-    ear: "#b56a38",
-    lane: "high",
-    size: "118px",
-    duration: "11s",
-    delay: "-2.4s",
-    flip: true,
-  },
-  {
-    coat: "#f6d7a8",
-    dark: "#e0b07a",
-    light: "#fff8ee",
-    ear: "#d4925a",
-    lane: "bottom-front",
-    size: "128px",
-    duration: "7.4s",
-    delay: "-5.1s",
-    flip: false,
-  },
-  {
-    coat: "#f7c4d4",
-    dark: "#e59ab4",
-    light: "#fff0f5",
-    ear: "#d984a4",
-    lane: "upper",
-    size: "136px",
-    duration: "8.8s",
-    delay: "-3.3s",
-    flip: true,
-  },
+const PETAL_TONES = [
+  ["#ffe6ef", "#f7a9c4"],
+  ["#fff0f5", "#f4b8cd"],
+  ["#ffdbe8", "#ee97b6"],
+  ["#fff6f0", "#f5c3d2"],
 ];
 
-function Star({ className, style }) {
-  return (
-    <svg
-      className={className}
-      style={style}
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        fill="currentColor"
-        d="M12 0l1.7 8.3L22 12l-8.3 1.7L12 22l-1.7-8.3L2 12l8.3-1.7z"
-      />
-    </svg>
-  );
+// Petals are pushed away from the pointer inside this radius (CSS px).
+const DODGE_RADIUS = 140;
+const DODGE_FORCE = 1700;
+
+function petalPath(ctx, size) {
+  const w = size * 0.62;
+  const h = size;
+  ctx.beginPath();
+  ctx.moveTo(0, h / 2);
+  ctx.bezierCurveTo(-w * 0.95, h * 0.22, -w * 0.78, -h * 0.42, -w * 0.2, -h / 2);
+  ctx.lineTo(0, -h * 0.36);
+  ctx.lineTo(w * 0.2, -h / 2);
+  ctx.bezierCurveTo(w * 0.78, -h * 0.42, w * 0.95, h * 0.22, 0, h / 2);
+  ctx.closePath();
 }
 
-function Pomeranian({ coat, dark, light, ear }) {
-  return (
-    <svg className="pom" viewBox="0 0 240 160" aria-hidden="true">
-      <ellipse className="pom-shadow" cx="118" cy="150" rx="54" ry="7" />
-      <g className="pom-bob">
-        <g className="pom-tail">
-          <circle cx="46" cy="78" r="22" fill={coat} />
-          <circle cx="32" cy="62" r="16" fill={dark} />
-          <circle cx="50" cy="50" r="14" fill={coat} />
-          <circle cx="38" cy="44" r="11" fill={light} />
-        </g>
-        <circle cx="78" cy="98" r="36" fill={coat} />
-        <circle cx="98" cy="110" r="28" fill={dark} />
-        <ellipse cx="114" cy="114" rx="34" ry="20" fill={light} />
-        <circle cx="132" cy="92" r="38" fill={coat} />
-        <circle cx="146" cy="84" r="26" fill={dark} />
-        <g className="leg leg-a">
-          <path d="M86 114h12v24a6 6 0 0 1-12 0z" fill={dark} />
-          <ellipse cx="92" cy="142" rx="10" ry="5" fill={coat} />
-        </g>
-        <g className="leg leg-b">
-          <path d="M106 116h11v22a5.5 5.5 0 0 1-11 0z" fill={coat} />
-          <ellipse cx="111" cy="142" rx="9" ry="4.5" fill={dark} />
-        </g>
-        <g className="leg leg-c">
-          <path d="M132 112h12v26a6 6 0 0 1-12 0z" fill={dark} />
-          <ellipse cx="138" cy="142" rx="10" ry="5" fill={coat} />
-        </g>
-        <g className="leg leg-d">
-          <path d="M152 114h12v24a6 6 0 0 1-12 0z" fill={coat} />
-          <ellipse cx="158" cy="142" rx="10" ry="5" fill={light} />
-        </g>
-        <circle cx="176" cy="72" r="34" fill={coat} />
-        <circle cx="166" cy="68" r="18" fill={dark} />
-        <path d="M154 56 L146 26 L170 48 Z" fill={ear} />
-        <path d="M184 50 L196 18 L208 54 Z" fill={ear} />
-        <ellipse cx="198" cy="78" rx="18" ry="13" fill={light} />
-        <ellipse cx="210" cy="76" rx="5.5" ry="4.2" fill="#2b211c" />
-        <circle cx="182" cy="66" r="3.4" fill="#241c18" />
-        <circle cx="183.3" cy="64.7" r="1.1" fill="#fff" />
-        <path d="M204 86 q5 9 0 11 q-5-2 0-11" fill="#f4a0b0" />
-      </g>
-    </svg>
+function sprite(size, paint) {
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  ctx.translate(size / 2, size / 2);
+  paint(ctx);
+  return canvas;
+}
+
+// Each petal colour and the five-petal blossom are drawn once, then stamped
+// every frame, so the animation stays cheap.
+function makeSprites(ratio) {
+  const size = Math.round(48 * ratio);
+  const petals = PETAL_TONES.map(([tip, base]) =>
+    sprite(size, (ctx) => {
+      const fill = ctx.createLinearGradient(0, size * 0.42, 0, -size * 0.42);
+      fill.addColorStop(0, base);
+      fill.addColorStop(1, tip);
+      petalPath(ctx, size * 0.84);
+      ctx.fillStyle = fill;
+      ctx.fill();
+      ctx.strokeStyle = "rgba(214, 112, 150, 0.35)";
+      ctx.lineWidth = ratio;
+      ctx.beginPath();
+      ctx.moveTo(0, size * 0.36);
+      ctx.lineTo(0, -size * 0.12);
+      ctx.stroke();
+    }),
   );
+
+  const bloomSize = Math.round(64 * ratio);
+  const bloom = sprite(bloomSize, (ctx) => {
+    for (let index = 0; index < 5; index += 1) {
+      ctx.save();
+      ctx.rotate((Math.PI * 2 * index) / 5);
+      ctx.translate(0, -bloomSize * 0.2);
+      const fill = ctx.createLinearGradient(0, bloomSize * 0.2, 0, -bloomSize * 0.2);
+      fill.addColorStop(0, "#f39dbd");
+      fill.addColorStop(1, "#fff1f6");
+      petalPath(ctx, bloomSize * 0.42);
+      ctx.fillStyle = fill;
+      ctx.fill();
+      ctx.restore();
+    }
+    ctx.fillStyle = "#f6d27a";
+    ctx.beginPath();
+    ctx.arc(0, 0, bloomSize * 0.07, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  return { petals, bloom };
+}
+
+// anywhere: scatter over the whole screen (first frame); otherwise start just
+// above the top, a little to the left since the breeze carries them right.
+function makePetal(width, height, anywhere) {
+  const depth = 0.55 + Math.random() * 0.45;
+  const turn = (Math.random() - 0.5) * 2.2;
+  const bloom = Math.random() < 0.12;
+  return {
+    x: anywhere ? Math.random() * width : Math.random() * (width + 120) - 120,
+    y: anywhere ? Math.random() * height : -40 - Math.random() * height * 0.3,
+    vx: 0,
+    vy: 0,
+    depth,
+    fall: (34 + Math.random() * 40) * depth,
+    sway: 18 + Math.random() * 30,
+    swaySpeed: 0.6 + Math.random() * 1.1,
+    phase: Math.random() * Math.PI * 2,
+    angle: Math.random() * Math.PI * 2,
+    turn,
+    spin: turn,
+    flip: Math.random() * Math.PI * 2,
+    flipSpeed: 1.4 + Math.random() * 2.4,
+    size: (22 + Math.random() * 18) * depth * (bloom ? 1.45 : 1),
+    tone: Math.floor(Math.random() * PETAL_TONES.length),
+    bloom,
+  };
 }
 
 export default function LoadingScreen({ onDone }) {
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
+  const canvasRef = useRef(null);
   const [leaving, setLeaving] = useState(false);
-
-  const stars = useMemo(
-    () =>
-      Array.from({ length: 46 }, (_, id) => ({
-        id,
-        left: Math.random() * 100,
-        top: Math.random() * 100,
-        size: 2 + Math.random() * 3.5,
-        delay: Math.random() * 3,
-        duration: 1.4 + Math.random() * 2.4,
-        spark: Math.random() > 0.72,
-      })),
-    [],
-  );
-
-  const sparkles = useMemo(
-    () =>
-      Array.from({ length: 16 }, (_, id) => ({
-        id,
-        left: 6 + Math.random() * 88,
-        top: 8 + Math.random() * 84,
-        size: 12 + Math.random() * 18,
-        delay: Math.random() * 2.2,
-        duration: 1.2 + Math.random() * 1.6,
-        color: ["#fffaf6", "#ffd0e4", "#ffe7a8", "#ffb7d5"][id % 4],
-      })),
-    [],
-  );
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -177,87 +123,118 @@ export default function LoadingScreen({ onDone }) {
     };
   }, []);
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!ctx) return undefined;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const ratio = Math.min(window.devicePixelRatio || 1, 2);
+    const sprites = makeSprites(ratio);
+    const pointer = { x: -9999, y: -9999 };
+    let width = 0;
+    let height = 0;
+    let petals = [];
+    let frame = 0;
+    let last = performance.now();
+
+    function draw() {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const petal of petals) {
+        const image = petal.bloom ? sprites.bloom : sprites.petals[petal.tone];
+        const size = petal.size;
+        ctx.setTransform(ratio, 0, 0, ratio, petal.x * ratio, petal.y * ratio);
+        ctx.rotate(petal.angle);
+        // Tumbling: the petal turns edge-on and back as it falls.
+        ctx.scale(1, 0.25 + 0.75 * Math.abs(Math.cos(petal.flip)));
+        ctx.globalAlpha = 0.55 + petal.depth * 0.45;
+        ctx.drawImage(image, -size / 2, -size / 2, size, size);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function fit() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.round(width * ratio);
+      canvas.height = Math.round(height * ratio);
+      const count = Math.round(Math.min(110, Math.max(36, (width * height) / 16000)));
+      while (petals.length < count) petals.push(makePetal(width, height, true));
+      petals.length = count;
+      draw();
+    }
+
+    function step(now) {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      const time = now / 1000;
+      const breeze = 14 + Math.sin(time * 0.35) * 16;
+      const settle = Math.min(1, dt * 1.6);
+      for (const petal of petals) {
+        const dx = petal.x - pointer.x;
+        const dy = petal.y - pointer.y;
+        const distance = Math.hypot(dx, dy);
+        if (distance < DODGE_RADIUS && distance > 0.01) {
+          const push = (1 - distance / DODGE_RADIUS) * DODGE_FORCE * dt;
+          petal.vx += (dx / distance) * push;
+          petal.vy += (dy / distance) * push;
+          petal.spin += (Math.random() - 0.5) * push * 0.05;
+        }
+        // Ease back to drifting with the breeze.
+        petal.vx -= petal.vx * settle;
+        petal.vy -= petal.vy * settle;
+        petal.spin += (petal.turn - petal.spin) * settle;
+        petal.x += (petal.vx + breeze * petal.depth + Math.sin(time * petal.swaySpeed + petal.phase) * petal.sway) * dt;
+        petal.y += (petal.vy + petal.fall) * dt;
+        petal.angle += petal.spin * dt;
+        petal.flip += petal.flipSpeed * dt;
+        if (petal.y > height + 40 || petal.x > width + 60 || petal.x < -160) {
+          Object.assign(petal, makePetal(width, height, false));
+        }
+      }
+      draw();
+      frame = requestAnimationFrame(step);
+    }
+
+    function onMove(event) {
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+    }
+
+    function onLeave(event) {
+      if (event?.pointerType === "mouse") return;
+      pointer.x = -9999;
+      pointer.y = -9999;
+    }
+
+    fit();
+    if (!reduce) frame = requestAnimationFrame(step);
+    window.addEventListener("resize", fit);
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerdown", onMove);
+    window.addEventListener("pointerup", onLeave);
+    window.addEventListener("pointercancel", onLeave);
+    document.documentElement.addEventListener("mouseleave", onLeave);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("resize", fit);
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerdown", onMove);
+      window.removeEventListener("pointerup", onLeave);
+      window.removeEventListener("pointercancel", onLeave);
+      document.documentElement.removeEventListener("mouseleave", onLeave);
+    };
+  }, []);
+
   return (
-    <div
-      className={leaving ? "welcome welcome-leave" : "welcome"}
-      role="status"
-      aria-live="polite"
-    >
-      <div className="welcome-sky" aria-hidden="true">
-        {stars.map((star) =>
-          star.spark ? (
-            <Star
-              key={star.id}
-              className="sky-star"
-              style={{
-                left: `${star.left}%`,
-                top: `${star.top}%`,
-                width: `${star.size * 3.2}px`,
-                height: `${star.size * 3.2}px`,
-                animationDelay: `${star.delay}s`,
-                animationDuration: `${star.duration}s`,
-              }}
-            />
-          ) : (
-            <span
-              key={star.id}
-              className="sky-dot"
-              style={{
-                left: `${star.left}%`,
-                top: `${star.top}%`,
-                width: `${star.size}px`,
-                height: `${star.size}px`,
-                animationDelay: `${star.delay}s`,
-                animationDuration: `${star.duration}s`,
-              }}
-            />
-          ),
-        )}
-        {sparkles.map((sparkle) => (
-          <Star
-            key={sparkle.id}
-            className="sparkle"
-            style={{
-              left: `${sparkle.left}%`,
-              top: `${sparkle.top}%`,
-              width: `${sparkle.size}px`,
-              height: `${sparkle.size}px`,
-              color: sparkle.color,
-              animationDelay: `${sparkle.delay}s`,
-              animationDuration: `${sparkle.duration}s`,
-            }}
-          />
-        ))}
-        {POMS.map((pom) => (
-          <div
-            key={`${pom.lane}-${pom.delay}`}
-            className={pom.flip ? `pom-lane flip lane-${pom.lane}` : `pom-lane lane-${pom.lane}`}
-            style={{
-              "--size": pom.size,
-              "--dur": pom.duration,
-              "--delay": pom.delay,
-            }}
-          >
-            <Pomeranian
-              coat={pom.coat}
-              dark={pom.dark}
-              light={pom.light}
-              ear={pom.ear}
-            />
-          </div>
-        ))}
-      </div>
+    <div className={leaving ? "welcome welcome-leave" : "welcome"} role="status" aria-live="polite">
+      <canvas className="welcome-petals" ref={canvasRef} aria-hidden="true" />
       <div className="welcome-copy">
-        <div className="welcome-stack">
-          <p className="welcome-title">
-            WELCOME TO MY
-            <br />
-            INTERACTIVE RESUME
-          </p>
-          <p className="welcome-note">
-            Feel free to click anything that <span>glows</span> for more info.
-          </p>
-        </div>
+        <p className="welcome-title">
+          WELCOME TO MY
+          <br />
+          INTERACTIVE RESUME
+        </p>
       </div>
     </div>
   );

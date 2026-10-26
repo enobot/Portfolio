@@ -1,0 +1,14 @@
+{
+  "laptop": {
+    "left": 2.93,
+    "top": 2.01,
+    "width": 92.08,
+    "height": 56.23
+  },
+  "phone": {
+    "left": 9.03,
+    "top": 12.98,
+    "width": 82.24,
+    "height": 74.04
+  }
+}

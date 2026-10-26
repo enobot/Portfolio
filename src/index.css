@@ -124,7 +124,6 @@ a {
   max-width: 100%;
   min-height: 100vh;
   min-height: 100dvh;
-  padding: clamp(1rem, 2.2vw, 2.25rem);
 }
 
 .paper {
@@ -166,7 +165,7 @@ a {
 .mast h1 {
   font-family: var(--serif);
   font-weight: 650;
-  font-size: clamp(2.4rem, 12vw, 10.4rem);
+  font-size: clamp(1.8rem, 9vw, 7.8rem);
   max-width: 100%;
   line-height: 0.92;
   letter-spacing: -0.045em;
@@ -887,6 +886,108 @@ a {
   animation: flash 0.7s ease;
 }
 
+/* Tracer demo: the frozen screen you drag a box on. */
+.desktop.frozen {
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+}
+
+.desktop.frozen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 16, 12, 0.32);
+  pointer-events: none;
+}
+
+.freeze-hint {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: 0.7rem;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 1.4rem);
+  margin: 0;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  background: #1d1b19;
+  color: #f7f3ea;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  pointer-events: none;
+}
+
+.freeze-box {
+  position: absolute;
+  z-index: 1;
+  border: 2px solid #f4a7c3;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 0 1px rgba(20, 16, 12, 0.5);
+  pointer-events: none;
+}
+
+.prompt-field {
+  display: block;
+  margin-top: 0.75rem;
+}
+
+.prompt-field span {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: #c8c0b4;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.prompt-field textarea {
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid #5a534c;
+  border-radius: 0.35rem;
+  background: #2a2724;
+  color: #f7f3ea;
+  font: inherit;
+  resize: vertical;
+}
+
+.prompt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.55rem;
+}
+
+.prompt-chips button {
+  padding: 0.3rem 0.65rem;
+  border: 1px solid #5a534c;
+  border-radius: 999px;
+  background: transparent;
+  color: #e8e1d6;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.prompt-chips button[aria-pressed="true"] {
+  border-color: #f4a7c3;
+  color: #fff;
+}
+
+.prompt-chips button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.reply-note {
+  margin-top: 0.75rem;
+  color: #c8c0b4;
+  font-size: 0.88rem;
+}
+
 .demo-status,
 .demo-kicker,
 .reply-label,
@@ -935,6 +1036,7 @@ a {
 
 .reply {
   font-size: 1.02rem;
+  white-space: pre-line;
 }
 
 .demo-controls {

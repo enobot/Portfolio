@@ -1,0 +1,1902 @@
+.showcase-lead,
+.phone-note {
+  margin-top: 0.35rem;
+  text-align: center;
+}
+
+.project-grid {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1.1rem;
+}
+
+.project-card {
+  padding: 0.95rem 1rem 1rem;
+  border: 1px solid rgba(214, 92, 140, 0.28);
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.project-card h3 {
+  font-family: var(--serif);
+  font-size: 1.7rem;
+  letter-spacing: -0.03em;
+  text-transform: none;
+}
+
+.card-kicker {
+  margin-top: 0.15rem;
+  color: var(--muted);
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.7rem;
+}
+
+.chip {
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(255, 186, 214, 0.35);
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.card-list {
+  margin-top: 0.7rem;
+  padding-left: 1.1rem;
+}
+
+.card-list li + li {
+  margin-top: 0.28rem;
+}
+
+.status-line {
+  margin-top: 0.7rem;
+  font-size: 0.98rem;
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.card-actions a,
+.card-actions button,
+.phone-actions a,
+.phone-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(214, 92, 140, 0.55);
+  background: #fff;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.card-actions .primary,
+.phone-actions .primary {
+  background: #f8d5e4;
+  border-color: transparent;
+  font-weight: 700;
+}
+
+.phone-screen {
+  width: min(22rem, 100%);
+  margin: 1rem auto 0;
+  padding: 1.1rem 1rem 1.2rem;
+  border-radius: 1.6rem;
+  background: #1c1918;
+  color: #fffaf6;
+  box-shadow: inset 0 0 0 2px rgba(255, 214, 228, 0.35);
+}
+
+.phone-screen p,
+.phone-screen a,
+.phone-screen button {
+  color: #fffaf6;
+}
+
+.phone-actions {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+}
+
+.phone-actions a,
+.phone-actions button {
+  background: #2c2826;
+  border-color: rgba(255, 186, 214, 0.35);
+}
+
+.copy-note {
+  min-height: 1.2em;
+  margin-top: 0.65rem;
+  text-align: center;
+  font-size: 0.92rem;
+  color: #ffd0e2;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .paper {
+    transition: box-shadow 0.4s ease;
+  }
+
+  .paper:hover {
+    box-shadow:
+      0 3px 6px rgba(0, 0, 0, 0.08),
+      0 16px 28px rgba(0, 0, 0, 0.14),
+      12px 26px 42px rgba(0, 0, 0, 0.2),
+      0 42px 70px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desk-art,
+  .steam,
+  .paper {
+    transition: none;
+    animation: none;
+  }
+
+  .desk-object:hover .desk-art,
+  .desk-object:focus-visible .desk-art {
+    transform: none;
+  }
+}
+
+@property --fit {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+.desk {
+  height: 100vh;
+  height: 100dvh;
+  padding: 0;
+  overflow: hidden;
+}
+
+.desk-world {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.desk {
+  padding: 0;
+}
+
+/* The scene is the whole window. No transform here: one would make the scene
+   its own stacking context and trap opened objects under .desk-dim.
+
+   --in is one real inch on this desk, and every object is sized from its real
+   dimensions so they all share one scale. The arrangement is composed on a
+   30in x 16.8in patch of desk and fit to the window. When the window is wider
+   or taller than that, --ex and --ey are the spare wood on each side, and each
+   object drifts a small share of it outward, so the cluster stays together
+   but the desk doesn't look emptied out at the edges. */
+.desk-scene {
+  position: absolute;
+  inset: 0;
+  display: block;
+  container-type: size;
+  --in: min(calc(100cqw / 30), calc(100cqh / 16.8));
+  --ex: calc((100cqw - 30 * var(--in)) / 2);
+  --ey: calc((100cqh - 16.8 * var(--in)) / 2);
+}
+
+/* One light for the whole photo: warm window light from the upper left (the wood
+   is lit that way too), falling off toward the lower right, plus a fine grain so
+   the drawn objects and the photographed wood read as the same picture. */
+.desk-world::before,
+.desk-world::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.desk-world::before {
+  background:
+    radial-gradient(ellipse 70% 80% at 8% 0%, rgba(255, 244, 222, 0.2), transparent 70%),
+    radial-gradient(ellipse 80% 75% at 100% 100%, rgba(52, 30, 12, 0.2), transparent 72%);
+}
+
+.desk-world::after {
+  opacity: 0.32;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+.pose {
+  position: absolute;
+  inset: 0;
+  transform-origin: center center;
+}
+
+/* Still life (DeskDecor.jsx). Its shadow follows the same upper-left light,
+   long because the tree stands about 6in tall. */
+.decor {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.decor svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* A tiny cherry bonsai, about 4.8in across the canopy and 6in tall. */
+.decor-bonsai {
+  z-index: 3;
+  left: calc(50% - 14.5 * var(--in) - 0.4 * var(--ex));
+  top: calc(50% - 7.5 * var(--in) - 0.4 * var(--ey));
+  width: calc(4.8 * var(--in));
+  height: calc(4.8 * var(--in));
+  filter:
+    drop-shadow(calc(0.04 * var(--in)) calc(0.06 * var(--in)) calc(0.05 * var(--in)) rgba(30, 18, 8, 0.3))
+    drop-shadow(calc(0.75 * var(--in)) calc(0.95 * var(--in)) calc(0.45 * var(--in)) rgba(40, 24, 10, 0.24));
+}
+
+/* A breeze: the whole canopy sways around the trunk, each pad rustles a
+   little out of step, and now and then a petal lets go and drifts down. */
+.bonsai-canopy,
+.bonsai-pad {
+  transform-box: view-box;
+  transform-origin: 240px 256px;
+}
+
+.bonsai-canopy {
+  animation: bonsai-sway 7s ease-in-out infinite;
+}
+
+.bonsai-pad {
+  animation: bonsai-rustle 5s ease-in-out infinite;
+}
+
+.bonsai-petal {
+  opacity: 0;
+  transform-box: view-box;
+  animation: bonsai-petal 10s linear infinite;
+}
+
+@keyframes bonsai-sway {
+  0%,
+  100% { transform: rotate(-2.6deg); }
+  50% { transform: rotate(2.8deg) translate(4px, 2px); }
+}
+
+@keyframes bonsai-rustle {
+  0%,
+  100% { transform: translate(0, 0) rotate(0deg); }
+  30% { transform: translate(5px, -3px) rotate(1.4deg); }
+  65% { transform: translate(-3px, 4px) rotate(-1.2deg); }
+}
+
+/* Falling toward the desk reads, from overhead, as drifting outward, tumbling
+   and shrinking a little before it settles and fades. */
+@keyframes bonsai-petal {
+  0% {
+    opacity: 0;
+    transform: translate(var(--x), var(--y)) rotate(0deg) scale(1.8);
+  }
+  8% {
+    opacity: 1;
+  }
+  35% {
+    transform: translate(calc(var(--x) + var(--dx) * 0.3 + 14px), calc(var(--y) + var(--dy) * 0.35)) rotate(140deg) scale(1.7, 0.7);
+  }
+  70% {
+    transform: translate(calc(var(--x) + var(--dx) * 0.75 - 10px), calc(var(--y) + var(--dy) * 0.8)) rotate(260deg) scale(1.5, 1.2);
+  }
+  82% {
+    opacity: 1;
+    transform: translate(calc(var(--x) + var(--dx)), calc(var(--y) + var(--dy))) rotate(310deg) scale(1.4);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--x) + var(--dx)), calc(var(--y) + var(--dy))) rotate(310deg) scale(1.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bonsai-canopy,
+  .bonsai-pad {
+    animation: none;
+  }
+
+  .bonsai-petal {
+    display: none;
+  }
+}
+
+
+.desk-dim {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  border: 0;
+  padding: 0;
+  background: rgba(28, 18, 12, 0.46);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.desk-world.is-lifted .desk-dim {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.lift-hit {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.lift-name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.lift-hit .tip {
+  bottom: calc(100% + 0.35rem);
+  top: auto;
+}
+
+.lift-hit .tip::after {
+  top: 100%;
+  bottom: auto;
+  border-bottom-color: transparent;
+  border-top-color: #1a1a1a;
+}
+
+.lift-hit:hover .tip,
+.lift-hit:focus-visible .tip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.lift-hit:focus-visible {
+  outline: 3px solid #e7a8be;
+  outline-offset: 3px;
+}
+
+.sheet:not(.is-measured) .paper {
+  transition: none;
+}
+
+/* US Letter, 8.5in x 11in. */
+.sheet {
+  position: absolute;
+  z-index: 2;
+  left: calc(50% - 9 * var(--in) - 0.15 * var(--ex));
+  top: calc(50% - 5.5 * var(--in));
+  width: calc(8.5 * var(--in));
+  height: auto;
+  aspect-ratio: 8.5 / 11;
+  background: transparent;
+  overflow: visible;
+  --fit: var(--rest-fit, 0.28);
+  --doc-w: 816px;
+  --page-h: 1056;
+}
+
+.sheet.is-open {
+  z-index: 12;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  height: min(920px, calc(100dvh - 1.4rem), calc((100vw - 1.4rem) / 0.7727));
+  width: min(calc(920px * 0.7727), calc((100dvh - 1.4rem) * 0.7727), calc(100vw - 1.4rem));
+  aspect-ratio: auto;
+  --fit: var(--open-fit, 1);
+}
+
+.letter-stack {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: visible;
+}
+
+.letter-under {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 1px;
+  background: #f3eee4;
+  transform: translate(10px, 12px) rotate(0.6deg);
+  transform-origin: 40% 80%;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.45) inset,
+    0.5px 1px 1px rgba(40, 24, 10, 0.16);
+}
+
+/* Paper lies flat, so it only gets a contact edge here; the cast shadow comes
+   from the pose filter (flatShadow in lift.js). */
+.letter-page {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 1px;
+  background: var(--paper);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0.5px 1px 1px rgba(40, 24, 10, 0.12);
+}
+
+.letter-slice {
+  width: calc(var(--doc-w) * var(--fit));
+  height: calc(var(--page-h) * var(--fit) * 1px);
+  overflow: hidden;
+}
+
+.sheet.is-open .letter-stack,
+.sheet:not(.is-open) .sheet-clip {
+  display: none;
+}
+
+.sheet-clip {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 1px;
+  background: var(--paper);
+  box-shadow: none;
+}
+
+.sheet.is-open .paper-fit {
+  width: 100%;
+  height: auto;
+}
+
+.sheet.is-open .paper {
+  width: 100%;
+  transform: none;
+}
+
+.sheet.is-open .sheet-clip {
+  overflow: auto;
+  overscroll-behavior: contain;
+  box-shadow: none;
+}
+
+.sheet .paper {
+  box-shadow: none;
+  border: none;
+}
+
+.paper-fit {
+  width: 100%;
+  height: auto;
+}
+
+.sheet .paper {
+  width: var(--doc-w, 816px);
+  max-width: none;
+  margin: 0;
+  min-height: 0;
+  transform-origin: top left;
+}
+
+.letter-slice .paper {
+  transform: scale(var(--fit)) translateY(calc(var(--page) * var(--page-h) * -1px));
+}
+
+.sheet:not(.is-open) .paper {
+  padding: 0.58in 0.62in 0.5in;
+  font-size: 11pt;
+  line-height: 1.38;
+}
+
+.sheet:not(.is-open) .mast {
+  padding-bottom: 0.35rem;
+}
+
+.sheet:not(.is-open) .mast h1 {
+  font-size: 22pt;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.sheet:not(.is-open) .contact-line {
+  margin-top: 0.35rem;
+  font-size: 10.5pt;
+  gap: 0.15rem 0.4rem;
+}
+
+.sheet:not(.is-open) .paper section {
+  margin-top: 0.72rem;
+}
+
+.sheet:not(.is-open) .paper h2 {
+  margin-bottom: 0.22rem;
+  padding-bottom: 0.08rem;
+  font-size: 11pt;
+  letter-spacing: 0.08em;
+}
+
+.sheet:not(.is-open) .paper h3 {
+  font-size: 11.5pt;
+}
+
+.sheet:not(.is-open) .paper p,
+.sheet:not(.is-open) .paper li {
+  font-size: 10.5pt;
+  line-height: 1.38;
+}
+
+.sheet:not(.is-open) .entry + .entry {
+  margin-top: 0.45rem;
+}
+
+.sheet:not(.is-open) .get-in-touch {
+  margin-top: 0.75rem;
+}
+
+.sheet-close {
+  position: absolute;
+  z-index: 5;
+  top: 0.7rem;
+  right: 0.8rem;
+}
+
+.mac,
+.iphone {
+  position: absolute;
+}
+
+.device-scale {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--frame-w) * 1px);
+  height: calc(var(--frame-h) * 1px);
+  transform: scale(var(--scale));
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+.mac.is-open .device-scale,
+.iphone.is-open .device-scale {
+  pointer-events: auto;
+}
+
+/* MacBook Pro 14in. The resting model is drawn in frame pixels where the base is
+   1040px = 12.31in wide and 736px = 8.71in deep (84.5px per inch), then scaled
+   onto the desk's inch.
+
+   It is photographed by the same overhead camera as the paper and phone: the
+   base lies flat, and only the lid rises toward the lens, opened to about 128deg.
+   --cam is where the camera sits over the desk (the scene's center) in the rig's
+   own pixels, so the lid's perspective agrees with everything else. */
+.mac {
+  --frame-w: 1212;
+  --frame-h: 736;
+  --scale: calc(12.31 * var(--in) / 1040px);
+  --tilt: 6deg;
+  --lid: -52deg;
+  --dx: calc(-0.973 * var(--in) + 0.4 * var(--ex));
+  --dy: calc(-1.56 * var(--in));
+  --cam: calc(-1 * var(--dx) / var(--scale)) calc(-1 * var(--dy) / var(--scale));
+  z-index: 4;
+  left: calc(50% + var(--dx));
+  top: calc(50% + var(--dy));
+  width: calc(var(--frame-w) * var(--scale) * 1px);
+  height: calc(var(--frame-h) * var(--scale) * 1px);
+}
+
+.mac .mockframe.macbook-pro {
+  margin: 0 0 0 108px;
+}
+
+/* Shadows on the wood, cast by the same upper-left light as everything else.
+   .mac-seat sits exactly under the base and turns with it. */
+.mac-seat {
+  position: absolute;
+  z-index: 0;
+  left: 7.1%;
+  top: -1.09%;
+  width: 85.81%;
+  height: 100%;
+  pointer-events: none;
+  transform: rotate(var(--tilt));
+}
+
+.mac-seat::before,
+.mac-seat::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 2.4% / 3.4%;
+}
+
+/* Contact: where the rubber feet and edges meet the desk. */
+.mac-seat::before {
+  background: rgba(30, 18, 8, 0.4);
+  transform: translate(calc(0.05 * var(--in)), calc(0.07 * var(--in)));
+  filter: blur(calc(0.05 * var(--in)));
+}
+
+/* Cast: the 0.6in-thick base, light at about 55deg. */
+.mac-seat::after {
+  background: rgba(40, 24, 10, 0.24);
+  transform: translate(calc(0.3 * var(--in)), calc(0.3 * var(--in)));
+  filter: blur(calc(0.24 * var(--in)));
+}
+
+/* The raised lid's shadow. It falls behind the hinge and shows past the lid's
+   right edge. Box is in base-local inches: x 0..16.4, y -2.2..0.8. */
+.mac::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 7.09%;
+  top: -26.35%;
+  width: 114.3%;
+  height: 34.44%;
+  pointer-events: none;
+  transform: rotate(var(--tilt));
+  transform-origin: 37.53% 218.5%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 164 30' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-20%25' y='-60%25' width='140%25' height='220%25'%3E%3CfeGaussianBlur stdDeviation='1.8'/%3E%3C/filter%3E%3Cpolygon points='3,25 126,25 158,6 35,6' fill='rgb(40,24,10)' fill-opacity='0.26' filter='url(%23b)'/%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+}
+
+.mac.is-open::before,
+.mac.is-open .mac-seat,
+.mac.is-open .mac-model,
+.mac:not(.is-open) .mac-live-frame {
+  display: none;
+}
+
+.mac.is-open .mac-rig {
+  display: contents;
+}
+
+.mac:not(.is-open) .mac-rig {
+  width: 1212px;
+  height: 736px;
+  perspective: 7000px;
+  perspective-origin: var(--cam);
+}
+
+/* The hit area also covers the lid, which rises above the base's box. */
+.mac:not(.is-open) .lift-hit {
+  top: -76%;
+  right: -9%;
+  left: 4%;
+}
+
+.mac .lift-hit .tip {
+  top: calc(100% + 0.6rem);
+  bottom: auto;
+}
+
+.mac .lift-hit .tip::after {
+  top: auto;
+  bottom: 100%;
+  border-top-color: transparent;
+  border-bottom-color: #1a1a1a;
+}
+
+.mac-model {
+  --deck: 50px;
+  position: absolute;
+  left: 86px;
+  width: 1040px;
+  height: 736px;
+  bottom: 8px;
+  transform-style: preserve-3d;
+  transform: rotateZ(var(--tilt));
+  transform-origin: 50% 50%;
+}
+
+.mac-base {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.mac-base-top {
+  position: absolute;
+  inset: 0;
+  border-radius: 26px;
+  background:
+    linear-gradient(150deg, #f1f2f4 0%, #e7e8ea 45%, #d8d9db 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 34px 40px -24px rgba(60, 60, 64, 0.2),
+    inset 0 0 0 1px rgba(120, 120, 126, 0.25);
+  transform: translateZ(var(--deck));
+}
+
+/* Edges of the 0.6in base. From above only the side facing the camera shows,
+   as a thin sliver. */
+.mac-base-front,
+.mac-base-left,
+.mac-base-right {
+  position: absolute;
+  background: linear-gradient(90deg, #a6a7a9, #cfd0d2 50%, #b9babc);
+}
+
+.mac-base-front {
+  left: 26px;
+  right: 26px;
+  bottom: 0;
+  height: var(--deck);
+  transform-origin: 50% 100%;
+  transform: rotateX(-90deg);
+}
+
+.mac-base-left,
+.mac-base-right {
+  top: 26px;
+  bottom: 26px;
+  width: var(--deck);
+}
+
+.mac-base-left {
+  left: 0;
+  transform-origin: 0 50%;
+  transform: rotateY(-90deg);
+}
+
+.mac-base-right {
+  right: 0;
+  transform-origin: 100% 50%;
+  transform: rotateY(90deg);
+}
+
+.mac-hinge {
+  position: absolute;
+  top: 0;
+  left: 3.2%;
+  right: 3.2%;
+  height: 16px;
+  border-radius: 0 0 8px 8px;
+  background:
+    linear-gradient(180deg, #1c1c1e 0%, #3a3a3c 42%, #2a2a2c 100%);
+  box-shadow: inset 0 3px 4px rgba(0, 0, 0, 0.45);
+}
+
+/* Speaker grilles either side of the keyboard. */
+.mac-base-top::before,
+.mac-base-top::after {
+  content: "";
+  position: absolute;
+  top: 7%;
+  width: 4.6%;
+  height: 44%;
+  background: radial-gradient(circle, rgba(60, 60, 64, 0.5) 1.4px, transparent 1.9px) 0 0 / 9px 9px;
+}
+
+.mac-base-top::before {
+  left: 2.3%;
+}
+
+.mac-base-top::after {
+  right: 2.3%;
+}
+
+/* Keyboard about 10.1in x 4in, starting just below the hinge. */
+.mac-keys {
+  position: absolute;
+  left: 9%;
+  right: 9%;
+  top: 6.3%;
+  height: 46%;
+  display: grid;
+  grid-template-rows: 0.62fr 1fr 1fr 1fr 1fr 1.05fr;
+  gap: 5px;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.mac-key-row {
+  display: grid;
+  gap: 5px;
+}
+
+.mac-key-row.fn { grid-template-columns: repeat(14, 1fr); }
+.mac-key-row.keys:nth-child(2) { grid-template-columns: repeat(13, 1fr); }
+.mac-key-row.keys:nth-child(3) { grid-template-columns: repeat(14, 1fr); }
+.mac-key-row.keys:nth-child(4) { grid-template-columns: repeat(13, 1fr); }
+.mac-key-row.keys:nth-child(5) { grid-template-columns: repeat(12, 1fr); }
+.mac-key-row.space { grid-template-columns: 1.15fr 1.15fr 6.4fr 1.15fr 1.35fr; }
+
+.mac-key-row span {
+  border-radius: 3px;
+  background: linear-gradient(#3f3f42, #2a2a2c 55%, #1c1c1e);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.mac-trackpad {
+  position: absolute;
+  left: 50%;
+  bottom: 4.6%;
+  width: 45%;
+  height: 39%;
+  transform: translateX(-50%);
+  border-radius: 12px;
+  background: linear-gradient(150deg, #dfe0e2, #cfd0d2);
+  box-shadow:
+    inset 0 0 0 1px rgba(70, 70, 74, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+/* The lid starts laid flat beyond the hinge (fully open) and swings up toward
+   the camera by --lid. 700px is the 8.3in lid. */
+.mac-lid {
+  position: absolute;
+  left: 0;
+  width: 1040px;
+  height: 700px;
+  bottom: 100%;
+  transform-style: preserve-3d;
+  transform: translateZ(var(--deck)) rotateX(var(--lid));
+  transform-origin: 50% 100%;
+}
+
+.mac-lid-back,
+.mac-lid-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 26px 26px 10px 10px;
+}
+
+.mac-lid-back {
+  background: linear-gradient(180deg, #c5c6c8, #ececee 30%, #b7b8ba);
+  transform: translateZ(-10px);
+}
+
+.mac-lid-face {
+  background: #111113;
+  padding: 16px 16px 24px;
+  transform: translateZ(10px);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+    inset 0 0 0 5px #c9cacc;
+}
+
+.mac-notch {
+  position: absolute;
+  z-index: 2;
+  top: 14px;
+  left: 50%;
+  width: 108px;
+  height: 18px;
+  transform: translateX(-50%);
+  border-radius: 0 0 7px 7px;
+  background: #111113;
+}
+
+.mac-notch::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, #3d5f92 0%, #15171a 70%);
+}
+
+.mac-display {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 10px 10px 3px 3px;
+  background: #f6f3ee;
+}
+
+/* Window light reflected in the glass. */
+.mac-display::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(118deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.08) 32%, transparent 48%);
+}
+
+.mac-display .mac-home {
+  padding-top: 36px;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .mac:not(.is-open) .mac-model {
+    transition: transform 0.35s ease;
+  }
+
+  .mac:not(.is-open):hover .mac-model {
+    transform: rotateZ(var(--tilt)) translateZ(40px);
+  }
+}
+
+.mac.is-open {
+  --scale: min(1, calc((100vw - 1.5rem) / 1212px), calc((100dvh - 1.5rem) / 736px));
+  z-index: 12;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+/* An iPhone drawn a little larger than life (3.4in wide) so it holds its own
+   next to the laptop; the 442px frame includes the side buttons. */
+.iphone {
+  --frame-w: 442;
+  --frame-h: 912;
+  --scale: calc(3.4 * var(--in) / 442px);
+  z-index: 5;
+  left: calc(50% - 13.8 * var(--in) - 0.45 * var(--ex));
+  top: calc(50% - 1.4 * var(--in) + 0.4 * var(--ey));
+  width: calc(var(--frame-w) * var(--scale) * 1px);
+  height: calc(var(--frame-h) * var(--scale) * 1px);
+}
+
+.iphone .mockframe.iphone17 {
+  margin: 4px 0 0 4px;
+}
+
+.iphone.is-open {
+  --scale: min(0.9, calc((100vw - 1.5rem) / 442px), calc((100dvh - 1.5rem) / 912px));
+  z-index: 12;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.mac .mockframe .screen {
+  background: #f6f3ee;
+}
+
+.mac-screen,
+.iphone-screen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.mac-screen {
+  background: #f6f3ee;
+  color: var(--ink);
+}
+
+.iphone .mockframe .screen {
+  background: #fff6f8;
+}
+
+.iphone-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 3.5rem 0.95rem 1.1rem;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 12% 0%, #ffe3ef, transparent 46%),
+    radial-gradient(circle at 100% 100%, #e4dcff, transparent 42%),
+    #fff8f5;
+  color: #2c211c;
+  overflow: hidden;
+}
+
+.iphone.is-open .iphone-screen {
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.mac-preview {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 1;
+  background: #fffcf7;
+}
+
+.mac-preview.is-hidden {
+  opacity: 0;
+}
+
+.mac-home {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+  padding: 48px 30px 22px;
+  background:
+    linear-gradient(180deg, #fffaf6 0%, #f4efe8 100%);
+  color: #2c211c;
+}
+
+.mac-home-bar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.mac-home-bar p,
+.mac-home-bar h2 {
+  margin: 0;
+  font-family: var(--serif);
+}
+
+.mac-home-bar p {
+  font-size: 22px;
+  color: #9a6678;
+}
+
+.mac-home-bar h2 {
+  font-size: 40px;
+  line-height: 1;
+}
+
+.mac-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  min-height: 0;
+}
+
+.mac-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #fff;
+  border: 1px solid rgba(214, 150, 170, 0.45);
+  box-shadow: 0 8px 16px rgba(60, 30, 40, 0.06);
+}
+
+.mac-card-art {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  min-height: 180px;
+  font-family: var(--serif);
+  font-size: 78px;
+  line-height: 1;
+}
+
+.tone-tracer .mac-card-art {
+  background: linear-gradient(160deg, #fff4d8, #f3d2b5);
+  color: #6a4630;
+}
+
+.tone-fittmm .mac-card-art {
+  background: linear-gradient(160deg, #ffe4ef, #f7c9da);
+  color: #8a3d58;
+}
+
+.tone-blu .mac-card-art {
+  background: linear-gradient(160deg, #ece4ff, #d5d8fb);
+  color: #3d4578;
+}
+
+.mac-card h3,
+.mac-card p {
+  margin: 0;
+}
+
+.mac-card h3 {
+  padding: 14px 16px 0;
+  font-family: var(--serif);
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.mac-card p {
+  padding: 6px 16px 16px;
+  font-size: 16px;
+  line-height: 1.3;
+  color: #5c463c;
+}
+
+.mac-live {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: grid;
+  align-content: start;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 2.2rem 2.6rem 2.6rem;
+  background: #fffcf7;
+  color: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+.mac-live.is-shown {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* The opened screen: a comfortable reading column with room between projects. */
+.mac-live h2,
+.mac-live .projects-page {
+  width: 100%;
+  max-width: 44rem;
+  margin-inline: auto;
+}
+
+.mac-live h2 {
+  font-family: var(--serif);
+  font-size: 2rem;
+  line-height: 1.1;
+  margin-block: 0 1.4rem;
+  padding-right: 4rem;
+}
+
+.mac-live .mac-project {
+  margin-bottom: 1.6rem;
+  padding-bottom: 1.4rem;
+}
+
+.mac-live .mac-project h3 {
+  font-size: 1.4rem;
+}
+
+.mac-live .mac-kicker {
+  margin-top: 0.3rem;
+}
+
+.mac-live .mac-project p,
+.mac-live .mac-project li {
+  margin-top: 0.6rem;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.mac-live .mac-project ul {
+  margin-top: 0.7rem;
+  padding-left: 1.25rem;
+}
+
+.mac-live .mac-project li + li {
+  margin-top: 0.4rem;
+}
+
+.mac-live .mac-links {
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.mac-live .mac-links a,
+.mac-live .mac-links button {
+  min-height: 2.4rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.82rem;
+}
+
+.mac-project {
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(232, 160, 184, 0.55);
+}
+
+.mac-project h3 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1rem;
+  line-height: 1.15;
+}
+
+.mac-project p,
+.mac-project li {
+  margin: 0.28rem 0 0;
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+
+.mac-project ul {
+  margin: 0.3rem 0 0;
+  padding-left: 1rem;
+}
+
+.mac-kicker,
+.mac-status {
+  color: #7a4e5c;
+}
+
+.mac-stack {
+  color: #5c463c;
+}
+
+.mac-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+}
+
+.mac-links a,
+.mac-links button {
+  min-height: 1.85rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(196, 120, 146, 0.55);
+  background: #fff;
+  color: #3a2a24;
+  font: 600 0.68rem/1.2 var(--sans);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.mac-links a:hover,
+.mac-links button:hover,
+.mac-links a:focus-visible,
+.mac-links button:focus-visible {
+  background: #f4c3d6;
+}
+
+.mac-live .projects-page {
+  grid-column: 1 / -1;
+}
+
+.mac-live .about-photos,
+.mac-live .about-copy,
+.mac-live .about-heading,
+.mac-live .about-facts {
+  grid-column: 1 / -1;
+}
+
+.mac-live .about-photos {
+  margin-top: 0.2rem;
+  gap: 0.35rem;
+}
+
+.mac-live .about-photos img {
+  height: 72px;
+  object-position: center 30%;
+}
+
+.mac-live .about-copy,
+.mac-live .about-facts,
+.mac-live .about-heading {
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.mac-live .about-heading {
+  margin: 0.45rem 0 0.15rem;
+}
+
+.device-close {
+  position: absolute;
+  z-index: 8;
+  top: 0.45rem;
+  right: 0.55rem;
+}
+
+.mac.is-open .device-close,
+.iphone.is-open .device-close {
+  top: 0.55rem;
+  right: 0.7rem;
+}
+
+.iphone.is-open .device-close {
+  color: #fffaf6;
+  background: rgba(28, 25, 24, 0.72);
+}
+
+.phone-kicker {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #9a6678;
+}
+
+.phone-top h2 {
+  margin: 0.15rem 0 0;
+  font-family: var(--serif);
+  font-size: 2.15rem;
+  line-height: 1.02;
+  color: #2c211c;
+}
+
+.phone-role {
+  margin: 0.35rem 0 0.85rem;
+  font-size: 0.92rem;
+  line-height: 1.3;
+  color: #7a4e5c;
+}
+
+.iphone .phone-actions {
+  flex: 1;
+  display: grid;
+  grid-auto-rows: 1fr;
+  gap: 0.55rem;
+  min-height: 0;
+}
+
+.iphone .phone-actions a,
+.iphone .phone-actions button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.1rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 1.05rem;
+  background: rgba(255, 255, 255, 0.88);
+  color: #2c211c;
+  border: 1px solid rgba(214, 150, 170, 0.4);
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(80, 40, 60, 0.05);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.phone-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 0.75rem;
+  background: #ffe3ef;
+  color: #8a3d58;
+}
+
+.phone-actions a:nth-child(2) .phone-icon {
+  background: #ece4ff;
+  color: #3d4578;
+}
+
+.phone-actions a:nth-child(3) .phone-icon {
+  background: #f3e7da;
+  color: #6a4630;
+}
+
+.phone-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.phone-copy strong {
+  font-size: 0.98rem;
+  line-height: 1.15;
+}
+
+.phone-copy small {
+  margin-top: 0.12rem;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  color: #7a6258;
+}
+
+.iphone .phone-actions svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex: none;
+}
+
+.iphone .phone-actions a:active,
+.iphone .phone-actions button:active {
+  transform: scale(0.98);
+}
+
+.phone-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 250, 246, 0.72);
+}
+
+.iphone .phone-actions a:first-child {
+  background: #fff;
+  border-color: rgba(232, 160, 184, 0.7);
+}
+
+.phone-address {
+  display: none;
+}
+
+.iphone .copy-note {
+  min-height: 1.1em;
+  margin: 0.35rem 0 0;
+  text-align: center;
+  font-size: 0.78rem;
+  color: #7a4e5c;
+}
+
+.iphone .copy-note.is-success {
+  color: #8a3d58;
+}
+
+.iphone.is-open .device-close {
+  color: #2c211c;
+  background: rgba(255, 252, 247, 0.94);
+}
+
+/* The name tag and phone get their shadows from the pose filter (lift.js), cast
+   from the same light as the laptop's, so these extra blobs stay off. */
+.badge-seat,
+.phone-seat {
+  display: none;
+}
+
+/* A 3.5in name tag. */
+.badge {
+  position: absolute;
+  z-index: 3;
+  left: calc(50% - 10 * var(--in) - 0.25 * var(--ex));
+  top: calc(50% - 6.6 * var(--in) - 0.4 * var(--ey));
+  width: calc(3.5 * var(--in));
+  aspect-ratio: 1.7 / 1;
+  height: auto;
+}
+
+.badge.is-open {
+  z-index: 12;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: min(760px, calc(100vw - 1.5rem));
+  height: min(860px, calc(100dvh - 1.4rem));
+  aspect-ratio: auto;
+}
+
+.badge-card {
+  --blossom: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cg fill='%23ffb7d0'%3E%3Cellipse cx='20' cy='9' rx='5' ry='7'/%3E%3Cellipse cx='20' cy='9' rx='5' ry='7' transform='rotate(72 20 20)'/%3E%3Cellipse cx='20' cy='9' rx='5' ry='7' transform='rotate(144 20 20)'/%3E%3Cellipse cx='20' cy='9' rx='5' ry='7' transform='rotate(216 20 20)'/%3E%3Cellipse cx='20' cy='9' rx='5' ry='7' transform='rotate(288 20 20)'/%3E%3C/g%3E%3Ccircle cx='20' cy='20' r='3.2' fill='%23ffe08a'/%3E%3C/svg%3E");
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(176, 124, 138, 0.45);
+  background:
+    var(--blossom) 8% 14% / calc(0.45 * var(--in)) calc(0.45 * var(--in)) no-repeat,
+    var(--blossom) 90% 84% / calc(0.37 * var(--in)) calc(0.37 * var(--in)) no-repeat,
+    linear-gradient(180deg, #fffdf9, #fff6ef);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+  color: #2c211c;
+}
+
+.badge-face,
+.badge-live {
+  position: absolute;
+  inset: 0;
+}
+
+.badge-face {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(0.11 * var(--in));
+  padding: calc(0.18 * var(--in)) calc(0.23 * var(--in));
+  text-align: center;
+  background: transparent;
+  transition: opacity 0.25s ease;
+}
+
+.badge-kicker {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: calc(0.2 * var(--in));
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #9a6678;
+}
+
+.badge-face.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.badge-name {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: calc(0.36 * var(--in));
+  line-height: 1.05;
+  white-space: nowrap;
+  letter-spacing: -0.03em;
+}
+
+.badge-rule {
+  width: 42%;
+  height: 1px;
+  background: #e7a8be;
+}
+
+.badge-role {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: calc(0.17 * var(--in));
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: #7a4e5c;
+}
+
+.badge-live {
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 1.35rem 1.2rem 1.6rem;
+  opacity: 0;
+  pointer-events: none;
+  background: #fffcf7;
+  transition: opacity 0.25s ease;
+}
+
+.badge-live.is-shown {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.badge-live h2 {
+  margin: 0 2.2rem 0.2rem 0;
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1.05;
+  text-align: center;
+}
+
+.badge-live .about-photos img {
+  height: clamp(140px, 22vh, 220px);
+}
+
+.badge-live .about-copy,
+.badge-live .about-facts,
+.badge-live .about-heading {
+  text-align: left;
+  font-size: 0.98rem;
+}
+
+/* Opened About: one comfortable reading column with room between sections. */
+.badge-live {
+  padding: 2rem 2.4rem 2.6rem;
+}
+
+.badge-live > * {
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.badge-live .about-copy {
+  margin-top: 0.7rem;
+  line-height: 1.65;
+}
+
+.badge-live .about-lead {
+  margin-top: 1.2rem;
+  font-size: 1.12rem;
+}
+
+.badge-live .about-heading {
+  margin-top: 1.7rem;
+  margin-bottom: 0;
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+.badge-live .about-facts {
+  display: block;
+  margin-top: 0.7rem;
+  padding-left: 1.2rem;
+  list-style: disc;
+  line-height: 1.6;
+}
+
+.badge-live .about-facts li + li {
+  margin-top: 0.4rem;
+}
+
+.badge-live .about-closing {
+  margin-top: 1.8rem;
+}
+
+@media (max-width: 800px) {
+  .badge-live {
+    padding: 1.4rem 1.2rem 1.8rem;
+  }
+}
+
+.badge-close,
+.sheet-close,
+.device-close {
+  min-width: 4.4rem;
+  min-height: 2.4rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 252, 247, 0.94);
+  box-shadow: 0 4px 10px rgba(40, 24, 10, 0.12);
+}
+
+.badge-close {
+  position: absolute;
+  z-index: 6;
+  top: 0.65rem;
+  right: 0.7rem;
+}
+
+.desk-fallback {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.desk-fallback:focus-within {
+  z-index: 30;
+  left: 0.6rem;
+  top: max(0.5rem, env(safe-area-inset-top));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  width: max-content;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+.desk-fallback button {
+  min-height: 2.25rem;
+  padding: 0.2rem 0.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 252, 247, 0.96);
+  color: #3a2a24;
+  font-weight: 600;
+  font-size: 0.75rem;
+  line-height: 1;
+  font-family: var(--sans);
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(40, 24, 10, 0.12);
+}
+
+.desk-fallback button:focus-visible {
+  outline: 2px solid #e7a8be;
+  outline-offset: 2px;
+}
+
+.desk-world.is-lifted .sheet:not(.is-open),
+.desk-world.is-lifted .mac:not(.is-open),
+.desk-world.is-lifted .iphone:not(.is-open),
+.desk-world.is-lifted .badge:not(.is-open) {
+  pointer-events: none;
+}
+
+/* Near-square windows (a narrow browser, an upright tablet in a big window):
+   a 23in x 28.4in patch with the laptop across the top and the bonsai, résumé
+   and phone in a row below it. The overhead camera is in front of the laptop
+   here, so its screen faces the viewer. */
+@media (min-aspect-ratio: 4/5) and (max-aspect-ratio: 11/10) {
+  .desk-scene {
+    --in: min(calc(100cqw / 23), calc(100cqh / 28.4));
+    --ex: calc((100cqw - 23 * var(--in)) / 2);
+    --ey: calc((100cqh - 28.4 * var(--in)) / 2);
+  }
+
+  .mac:not(.is-open) {
+    --tilt: 3deg;
+    --dx: calc(-7.173 * var(--in));
+    --dy: calc(-7.02 * var(--in) - 0.4 * var(--ey));
+  }
+
+  .decor-bonsai {
+    left: calc(50% - 9.9 * var(--in) - 0.5 * var(--ex));
+    top: calc(50% + 5.4 * var(--in) + 0.4 * var(--ey));
+  }
+
+  .badge:not(.is-open) {
+    left: calc(50% - 6.7 * var(--in) - 0.3 * var(--ex));
+    top: calc(50% + 2.7 * var(--in) + 0.4 * var(--ey));
+  }
+
+  .sheet:not(.is-open) {
+    left: calc(50% - 4.25 * var(--in));
+    top: calc(50% + 2.4 * var(--in) + 0.4 * var(--ey));
+  }
+
+  .iphone:not(.is-open) {
+    left: calc(50% + 5.1 * var(--in) + 0.5 * var(--ex));
+    top: calc(50% + 4 * var(--in) + 0.4 * var(--ey));
+  }
+}
+
+/* Phones and portrait tablets: a 14.4in x 29in strip of the same desk, fit to
+   whichever side runs out first. Positions are inches from the scene's center
+   so the arrangement stays centered at any size. */
+@media (max-width: 800px), (max-aspect-ratio: 4/5) {
+  .desk-scene {
+    --in: min(calc(100cqw / 14.4), calc(100cqh / 29));
+  }
+
+  .decor {
+    display: none;
+  }
+
+  /* A laptop scaled down to a phone's width makes Projects unreadable, so
+     opened on a phone the frame steps aside and the screen becomes a sheet. */
+  .mac.is-open {
+    width: calc(100vw - 1.5rem);
+    height: calc(100dvh - 1.5rem);
+  }
+
+  .mac.is-open .device-scale,
+  .mac.is-open .mac-live-frame,
+  .mac.is-open .mockframe.macbook-pro,
+  .mac.is-open .mockframe .screen {
+    width: 100%;
+    height: 100%;
+  }
+
+  .mac.is-open .device-scale {
+    transform: none;
+  }
+
+  .mac.is-open .mockframe.macbook-pro {
+    margin: 0;
+    padding: 0;
+    border-radius: 0.6rem;
+    background: none;
+    box-shadow: none;
+  }
+
+  .mac.is-open .mockframe .screen {
+    overflow: hidden;
+    border-radius: 0.6rem;
+  }
+
+  .mac.is-open .mockframe .notch,
+  .mac.is-open .mockframe .top-bar,
+  .mac.is-open .mockframe .bottom-bar {
+    display: none;
+  }
+
+  .mac-live {
+    padding: 1.3rem 1.2rem 1.8rem;
+  }
+
+  .mac-live h2 {
+    font-size: 1.7rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Laptop on top, then the résumé with the phone and name tag beside it. */
+  .mac:not(.is-open) {
+    --tilt: -3deg;
+    --dx: calc(-7.173 * var(--in));
+    --dy: calc(-7.39 * var(--in));
+  }
+
+  .sheet:not(.is-open) {
+    left: calc(50% - 6.6 * var(--in));
+    top: calc(50% + 2 * var(--in));
+  }
+
+  .iphone:not(.is-open) {
+    left: calc(50% + 2.6 * var(--in));
+    top: calc(50% + 2.4 * var(--in));
+  }
+
+  .badge:not(.is-open) {
+    left: calc(50% + 2.3 * var(--in));
+    top: calc(50% + 10.2 * var(--in));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet,
+  .mac,
+  .iphone,
+  .badge,
+  .badge-face,
+  .badge-live,
+  .mac-screen,
+  .screen-preview,
+  .mac-live,
+  .desk-dim,
+  .iphone .phone-actions a,
+  .iphone .phone-actions button {
+    transition: none;
+  }
+}
+
+@media print {
+  .desk,
+  .desk-world {
+    height: auto;
+    overflow: visible;
+    perspective: none;
+  }
+
+  .mac,
+  .iphone,
+  .badge,
+  .desk-fallback,
+  .letter-stack,
+  .desk-dim,
+  .lift-hit,
+  .sheet-close,
+  .device-close {
+    display: none;
+  }
+
+  .sheet .sheet-clip {
+    display: block;
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+  }
+
+  .paper-fit,
+  .sheet .paper {
+    width: auto;
+    height: auto;
+    transform: none;
+    overflow: visible;
+  }
+
+  .sheet,
+  .sheet.is-open {
+    position: static;
+    transform: none;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    filter: none;
+  }
+
+  .sheet-clip,
+  .sheet.is-open .sheet-clip {
+    overflow: visible;
+    height: auto;
+    box-shadow: none;
+  }
+}

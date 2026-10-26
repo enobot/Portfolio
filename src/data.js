@@ -10,6 +10,8 @@ export const profile = {
   schoolUrl: "https://www.fullerton.edu/",
   gmailUrl:
     "https://mail.google.com/mail/?view=cm&fs=1&to=m.tracy.tran@gmail.com",
+  github: "https://github.com/enobot",
+  githubLabel: "GitHub",
 };
 
 export const summary =
@@ -27,32 +29,46 @@ export const about = {
       alt: "Black and white portrait of Tracy Tran",
     },
   ],
-  intro: [
-    "I'm a first-generation college student, aspiring software engineer, and someone who originally dreamed of becoming a veterinarian. Somehow, life took me from wanting to save animals to writing code, and honestly, I'm pretty happy with where I ended up!",
-    "My journey into tech wasn't exactly traditional. I started by teaching myself how to code, attended a software engineering bootcamp, and eventually decided to return to college to pursue my Computer Science degree at Cal State Fullerton.",
-    "What I love most about programming is that I can take an idea and turn it into something useful. I want to build technology that makes people's everyday lives a little easier, whether that's solving a small inconvenience or creating something that genuinely helps someone.",
-    "But coding isn't my only passion. I love teaching, too! I've spent time tutoring kids and helping my classmates understand difficult concepts, and there's something really special about seeing that moment when everything finally clicks. One of my biggest dreams is to work as a software engineer while also teaching computer science someday. I want to keep learning, but I also want to share what I've learned along the way.",
+  intro:
+    "I'm a Computer Science student at Cal State Fullerton, graduating in May 2027, and a full-stack developer who likes building software that makes everyday life a little easier, especially for people who don't love complicated technology.",
+  sections: [
+    {
+      heading: "How I got here",
+      paragraphs: [
+        "I'm a first-generation college student, and I started college at 16 planning to become a veterinarian. Then I taught myself JavaScript, and building websites and small tools for my family showed me what I actually wanted to do.",
+        "I completed Hack Reactor's software engineering program, then came back to school to finish my Computer Science degree at Cal State Fullerton, where I've made the Dean's List in Fall 2025 and Spring 2026.",
+      ],
+    },
+    {
+      heading: "What I like to build",
+      paragraphs: [
+        "Software for real people. Tracer started from how many steps it takes to get help with whatever is on screen, and it's partly inspired by my parents' experience with technology and language barriers. Merry Nails is the website for my mom's salon. FITTMM was a five-person team project that I led.",
+        "I care about the parts people don't see, too: keeping data private, making things easy to use, and testing what I ship.",
+      ],
+    },
+    {
+      heading: "Teaching",
+      paragraphs: [
+        "I love teaching. I taught JavaScript and Python to kids at Code Ninjas through Roblox and Minecraft projects, and I'm usually the one helping a classmate until something finally clicks. Someday I'd like to teach computer science at the college level while working as a software engineer.",
+      ],
+    },
+    {
+      heading: "How I work",
+      paragraphs: [
+        "I ask a lot of questions (my professors can vouch for that). I'd rather ask one more and get it right than pretend I have everything figured out, and I always say where things stand.",
+      ],
+    },
   ],
-  more: {
-    heading: "A little more about me...",
-    paragraphs: [
-      "One thing you should know about me is that I'm not afraid to ask questions. My professors can definitely vouch for that. I'm usually the student asking one more question after class, showing up with another problem, or sending yet another email.",
-      "I'm naturally curious, I probably overcommunicate, and I'm not afraid to admit when I don't know something. I'd rather ask a hundred questions and learn something new than pretend I have everything figured out.",
-      "So, if you're looking for someone who's curious, eager to learn, communicates (maybe a little too much), and genuinely cares about doing things right, I might just be your person!",
-    ],
-  },
   facts: {
-    heading: "Some fun facts about me!",
+    heading: "Outside of code",
     items: [
-      "I can deadlift 405 lbs! I love lifting heavy things almost as much as I love solving problems.",
-      "I love spicy food challenges. My spice tolerance might actually be stronger than my debugging patience.",
-      "I have 2 cats and 2 dogs. My house is basically a tiny zoo, which is fitting for someone who originally wanted to be a vet.",
-      "I genuinely love teaching. Sometimes explaining a concept to someone else is more exciting than figuring it out myself.",
-      "I'm a lifelong learner. Whether it's a new programming language, a challenging algorithm, or something completely unrelated to tech, I love figuring out how things work.",
+      "I can deadlift 405 lbs.",
+      "I'll take on any spicy food challenge.",
+      "I have 2 cats and 2 dogs, so it's a small zoo at home. Fitting, for someone who almost became a vet.",
     ],
   },
   closing:
-    "I'm still learning, still asking questions, and still figuring out where this journey will take me. But one thing I know for sure is that I want to build things that help people and encourage others to believe they can do the same.",
+    "I'm still learning and still asking questions, and I want to build things that help people. If that sounds like someone you'd like on your team, I'd love to hear from you.",
 };
 
 export const proficiencies = [
@@ -150,23 +166,55 @@ export const tracer = {
   docs: "https://docs.google.com/document/d/1cqqpQz3JiCPoTXN346Ona1IGnQxdGXHQeb_I93CM8FM/edit?usp=sharing",
   docsLabel: "Read my documentation on Google Docs",
   summary:
-    "Tracer is a Windows desktop assistant for work that is already on screen. The whole interaction is one global hotkey and one saved prompt: press Ctrl+Shift+Space, Tracer grabs the display, and that image is meant to travel with the prompt so the answer can come back in the Tracer window.",
+    "Tracer is a free Windows desktop app for asking about whatever is on your screen. Press one shortcut, drag over the part you need, and Tracer sends that screenshot with your prompt to ChatGPT on your own ChatGPT plan, with no API key. The answer comes back in the Tracer window. For Gemini and Claude, it copies the screenshot and prompt and opens their sites.",
   steps: [
-    "Electron's main process registers Ctrl+Shift+Space with globalShortcut. The shortcut still fires when another application is focused.",
-    "The main process sends a hotkey-pressed message to the Tracer window.",
-    "A preload script exposes window.tracer through contextBridge. The page does not get raw Node.js. A ping channel also checks that the sender is Tracer's own window.",
-    "The renderer captures the display, draws a single frame onto a canvas, and stores the PNG.",
-    "Next, that screenshot and the saved prompt go to the model, and the reply is shown in the window. The walkthrough below includes an example of that reply. Sending it to the model is the step still being built.",
+    "Electron's main process registers Ctrl+Shift+Space, or a shortcut you choose, with globalShortcut, so it works from any app.",
+    "Tracer hides its window and freezes every monitor. Drag a box to capture that area, right-click to keep the whole monitor, or press Escape to cancel.",
+    "The main process crops the frozen frame and hands the window a preview. Nothing is uploaded yet.",
+    "Edit the prompt or pick one from Past Prompts, Favorites, or Saved Prompts, then press Ctrl+Enter.",
+    "The main process sends the screenshot and prompt to ChatGPT's Responses API through Sign in with ChatGPT (OAuth with PKCE), and the answer streams back into the window.",
+    "The windows are sandboxed with no network access. Tokens stay in the main process, encrypted with Electron's safeStorage, and the screenshot is never written to disk.",
   ],
   stack: [
-    ["JavaScript", "Application code in the main process and the window"],
-    ["Electron", "Desktop window, global hotkey, and screen access"],
-    ["Node.js", "Runtime for the main process"],
-    ["Electron Forge", "Runs the app in development and packages it"],
-    ["Vite", "Bundles the window during development"],
-    ["HTML and CSS", "Structure and styling inside the window"],
+    ["JavaScript", "Main process, preload bridge, and windows"],
+    ["Electron", "Windows, global shortcut, screen capture, and safeStorage"],
+    ["Node.js", "Runtime for the main process and the test runner"],
+    ["OpenAI Responses API", "Streams the answer from the user's own ChatGPT plan"],
+    ["OAuth 2.0 with PKCE", "Sign in with ChatGPT in the system browser; Tracer never sees the password"],
+    ["Electron Forge and Vite", "Development, bundling, and Windows packaging"],
   ],
-  prompt: "Explain what is on my screen and tell me the next step.",
-  reply:
+  prompts: [
+    "Explain what is on my screen and tell me the next step.",
+    "Summarize this in three bullet points.",
+    "Translate this into plain English.",
+  ],
+  // Sample answers for the in-browser demo, one per saved prompt.
+  replies: [
     "user has no key named plan, so line 42 crashes before a week can be built. Load the saved profile first, then read it with user.get(\"plan\") and handle the missing case.",
+    "• plans.py stops at line 42 in build_week.\n• That user has no \"plan\" key, so user[\"plan\"] raises a KeyError.\n• Load the saved profile first, or use user.get(\"plan\") and handle a missing plan.",
+    "The program stopped because it looked up this person's workout plan, and they don't have one saved yet. It should load their profile first, or skip that step when there's no plan.",
+  ],
 };
+
+/** Projects shown on the laptop's Projects page but not on the printed résumé. */
+export const moreProjects = [
+  {
+    id: "merrynails",
+    name: "Merry Nails",
+    tagline: "Website for My Mom's Nail Salon",
+    stack: "React | React Router | Tailwind CSS | Vite | Vercel",
+    bullets: [
+      "Built a four-page React site (Home, Services, Policies, Visit Us) where customers browse services, compare options, and call the salon to book.",
+      "Kept prices, hours, contact details, and page copy in plain data files, so the salon can be updated without touching components.",
+      "Generated the sitemap, robots.txt, and local-business structured data from a single salon config at build time.",
+      "Collects no customer information: booking is a phone call, with a setting ready to point at an online booking page later.",
+    ],
+  },
+  {
+    id: "surfsafe",
+    name: "SurfSafe",
+    tagline: "Privacy-First Chrome Extension",
+    stack: "Chrome Extension",
+    bullets: [],
+  },
+];

@@ -1,8 +1,9 @@
 import { useEffect, useId, useRef } from "react";
 import { about } from "./data.js";
+import AboutBody from "./desk/AboutBody.jsx";
 import { lockPageScroll } from "./lockPageScroll.js";
 
-export default function AboutModal({ onClose }) {
+export default function AboutModal({ onClose, notebook = false }) {
   const titleId = useId();
   const dialogRef = useRef(null);
 
@@ -45,7 +46,7 @@ export default function AboutModal({ onClose }) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div
-        className="modal about-modal"
+        className={notebook ? "modal about-modal notebook" : "modal about-modal"}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -58,33 +59,7 @@ export default function AboutModal({ onClose }) {
             Close
           </button>
         </div>
-        <div className="about-photos">
-          {about.photos.map((photo) => (
-            <img
-              key={photo.src}
-              src={`${import.meta.env.BASE_URL}${photo.src}`}
-              alt={photo.alt}
-            />
-          ))}
-        </div>
-        {about.intro.map((paragraph) => (
-          <p className="about-copy" key={paragraph}>
-            {paragraph}
-          </p>
-        ))}
-        <h3 className="about-heading">{about.more.heading}</h3>
-        {about.more.paragraphs.map((paragraph) => (
-          <p className="about-copy" key={paragraph}>
-            {paragraph}
-          </p>
-        ))}
-        <h3 className="about-heading">{about.facts.heading}</h3>
-        <ul className="about-facts">
-          {about.facts.items.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-        <p className="about-copy about-closing">{about.closing}</p>
+        <AboutBody />
       </div>
     </div>
   );
