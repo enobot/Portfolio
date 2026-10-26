@@ -219,6 +219,87 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
 }
 
+/* Night (7pm to 6am on the visitor's clock): the room goes dim and a desk lamp
+   lights a pool over the résumé, with a cooler glow from the laptop screen.
+   --lamp-* and --screen-* are offsets from the scene's center, set per layout
+   below. The dark layer has both pools cut out of it. */
+.desk-scene {
+  --lamp-x: calc(-4.75 * var(--in) - 0.15 * var(--ex));
+  --lamp-y: calc(0.4 * var(--in));
+  --screen-x: calc(6.2 * var(--in) + 0.4 * var(--ex));
+  --screen-y: calc(-4.3 * var(--in));
+}
+
+.desk-scene::before,
+.desk-scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  display: none;
+  pointer-events: none;
+}
+
+.desk.is-night .desk-scene::before {
+  display: block;
+  background: rgba(12, 10, 24, 0.66);
+  -webkit-mask-image:
+    radial-gradient(circle calc(9 * var(--in)) at calc(50% + var(--lamp-x)) calc(50% + var(--lamp-y)), transparent 0%, transparent 25%, #000 100%),
+    radial-gradient(circle calc(6 * var(--in)) at calc(50% + var(--screen-x)) calc(50% + var(--screen-y)), transparent 0%, #000 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    radial-gradient(circle calc(9 * var(--in)) at calc(50% + var(--lamp-x)) calc(50% + var(--lamp-y)), transparent 0%, transparent 25%, #000 100%),
+    radial-gradient(circle calc(6 * var(--in)) at calc(50% + var(--screen-x)) calc(50% + var(--screen-y)), transparent 0%, #000 100%);
+  mask-composite: intersect;
+}
+
+.desk.is-night .desk-scene::after {
+  display: block;
+  background:
+    radial-gradient(circle calc(8 * var(--in)) at calc(50% + var(--lamp-x)) calc(50% + var(--lamp-y)), rgba(255, 196, 120, 0.16), transparent 70%),
+    radial-gradient(circle calc(5 * var(--in)) at calc(50% + var(--screen-x)) calc(50% + var(--screen-y)), rgba(190, 210, 255, 0.1), transparent 70%);
+}
+
+.desk.is-night .desk-world::before {
+  display: none;
+}
+
+/* Daytime: a cloud's shadow drifts across the desk now and then. Soft-edged
+   gradients, moved only with transform. */
+.desk-cloud {
+  position: absolute;
+  z-index: 7;
+  top: -20vh;
+  left: 0;
+  width: 90vmax;
+  height: 60vmax;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 30% 34% at 30% 50%, rgba(28, 22, 34, 0.13), transparent 70%),
+    radial-gradient(ellipse 28% 30% at 52% 40%, rgba(28, 22, 34, 0.12), transparent 70%),
+    radial-gradient(ellipse 30% 30% at 70% 56%, rgba(28, 22, 34, 0.11), transparent 70%),
+    radial-gradient(ellipse 22% 24% at 46% 64%, rgba(28, 22, 34, 0.1), transparent 70%);
+  will-change: transform;
+  animation: cloud-pass 70s linear infinite;
+  animation-delay: -18s;
+}
+
+@keyframes cloud-pass {
+  0% {
+    transform: translate(-95vmax, 0);
+  }
+  60%,
+  100% {
+    transform: translate(110vw, 24vh);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desk-cloud {
+    display: none;
+  }
+}
+
 .pose {
   position: absolute;
   inset: 0;
@@ -250,6 +331,20 @@
   filter:
     drop-shadow(calc(0.04 * var(--in)) calc(0.06 * var(--in)) calc(0.05 * var(--in)) rgba(30, 18, 8, 0.3))
     drop-shadow(calc(0.75 * var(--in)) calc(0.95 * var(--in)) calc(0.45 * var(--in)) rgba(40, 24, 10, 0.24));
+}
+
+/* AirPods: the open case and a loose bud, 5in x 2.6in, in the open space
+   above the résumé between the name tag and the laptop. */
+.decor-airpods {
+  z-index: 2;
+  left: calc(50% - 5.4 * var(--in) - 0.1 * var(--ex));
+  top: calc(50% - 8.25 * var(--in) - 0.5 * var(--ey));
+  width: calc(5 * var(--in));
+  height: calc(2.6 * var(--in));
+  transform: rotate(-6deg);
+  filter:
+    drop-shadow(0.5px 1px 0.8px rgba(30, 18, 8, 0.3))
+    drop-shadow(calc(0.2 * var(--in)) calc(0.25 * var(--in)) calc(0.12 * var(--in)) rgba(40, 24, 10, 0.22));
 }
 
 /* A breeze: the whole canopy sways around the trunk, each pad rustles a
@@ -391,7 +486,7 @@
   position: absolute;
   z-index: 2;
   left: calc(50% - 9 * var(--in) - 0.15 * var(--ex));
-  top: calc(50% - 5.5 * var(--in));
+  top: calc(50% - 5.1 * var(--in));
   width: calc(8.5 * var(--in));
   height: auto;
   aspect-ratio: 8.5 / 11;
@@ -564,6 +659,60 @@
   z-index: 5;
   top: 0.7rem;
   right: 0.8rem;
+}
+
+/* The résumé lying on the desk is too small for the glow on its links to show,
+   and animating it repainted the whole shadowed sheet every frame. */
+.letter-stack .paper *,
+.letter-stack .paper *::after {
+  animation: none !important;
+  text-shadow: none !important;
+}
+
+/* The opened résumé reads at document size, not poster size. */
+.sheet.is-open .paper {
+  padding: 2.6rem 2.8rem 2.8rem;
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+.sheet.is-open .mast {
+  padding-bottom: 0.4rem;
+}
+
+.sheet.is-open .mast h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1;
+}
+
+.sheet.is-open .contact-line {
+  margin-top: 0.8rem;
+  font-size: 0.98rem;
+}
+
+.sheet.is-open .paper section {
+  margin-top: 1.6rem;
+}
+
+.sheet.is-open .paper h2 {
+  margin-bottom: 0.6rem;
+  border-bottom-width: 2px;
+  font-size: 1rem;
+}
+
+.sheet.is-open .paper h3 {
+  font-size: 1.06rem;
+}
+
+.sheet.is-open .entry + .entry {
+  margin-top: 1rem;
+}
+
+@media (max-width: 800px) {
+  .sheet.is-open .paper {
+    padding: 1.6rem 1.2rem 2rem;
+    font-size: 0.94rem;
+  }
 }
 
 .mac,
@@ -803,38 +952,124 @@
   right: 2.3%;
 }
 
-/* Keyboard about 10.1in x 4in, starting just below the hinge. */
+/* Keyboard about 10.1in x 4in, starting just below the hinge: pink keycaps
+   with dark rose legends, laid out like a MacBook Pro. */
 .mac-keys {
   position: absolute;
-  left: 9%;
-  right: 9%;
+  left: 8.5%;
+  right: 8.5%;
   top: 6.3%;
   height: 46%;
   display: grid;
-  grid-template-rows: 0.62fr 1fr 1fr 1fr 1fr 1.05fr;
-  gap: 5px;
+  grid-template-rows: 0.55fr 1fr 1fr 1fr 1fr 1fr;
+  gap: 7px;
   padding: 8px;
-  border-radius: 6px;
+  border-radius: 8px;
+  background: rgba(120, 110, 115, 0.12);
+  box-shadow: inset 0 1px 3px rgba(60, 50, 55, 0.25);
 }
 
 .mac-key-row {
-  display: grid;
-  gap: 5px;
+  display: flex;
+  gap: 7px;
+  min-height: 0;
 }
 
-.mac-key-row.fn { grid-template-columns: repeat(14, 1fr); }
-.mac-key-row.keys:nth-child(2) { grid-template-columns: repeat(13, 1fr); }
-.mac-key-row.keys:nth-child(3) { grid-template-columns: repeat(14, 1fr); }
-.mac-key-row.keys:nth-child(4) { grid-template-columns: repeat(13, 1fr); }
-.mac-key-row.keys:nth-child(5) { grid-template-columns: repeat(12, 1fr); }
-.mac-key-row.space { grid-template-columns: 1.15fr 1.15fr 6.4fr 1.15fr 1.35fr; }
+.mac-key,
+.mac-arrows {
+  flex-basis: 0;
+  min-width: 0;
+}
 
-.mac-key-row span {
-  border-radius: 3px;
-  background: linear-gradient(#3f3f42, #2a2a2c 55%, #1c1c1e);
+.mac-key {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: linear-gradient(#fcd9e5, #f6bdd1 60%, #efa8c2);
   box-shadow:
-    0 1px 0 rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+    0 2px 0 #d98aa8,
+    0 3px 4px rgba(120, 50, 80, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  color: #7a3553;
+  font-family: var(--sans);
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.mac-key small {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.mac-key.pair {
+  grid-template-rows: auto auto;
+  align-content: center;
+  gap: 3px;
+  font-size: 17px;
+}
+
+.mac-key.fkey,
+.mac-key.mod {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Modifier legends sit in the bottom corner, as on a Mac. */
+.mac-key.mod {
+  place-items: end start;
+  padding: 0 0 8px 10px;
+}
+
+.mac-key.mod.right {
+  place-items: end end;
+  padding: 0 10px 8px 0;
+}
+
+.mac-key.mod small {
+  position: absolute;
+  top: 7px;
+  right: 9px;
+  font-size: 15px;
+}
+
+.mac-key.mod.right small {
+  right: auto;
+  left: 9px;
+}
+
+.mac-key.touch-id::after {
+  content: "";
+  width: 46%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid rgba(122, 53, 83, 0.45);
+}
+
+.mac-arrows {
+  display: flex;
+  gap: 7px;
+  align-items: flex-end;
+}
+
+.mac-arrows > .mac-key {
+  flex: 1;
+  height: 50%;
+  font-size: 13px;
+}
+
+.mac-arrow-pair {
+  display: grid;
+  flex: 1;
+  height: 100%;
+  grid-template-rows: 1fr 1fr;
+  gap: 3px;
+}
+
+.mac-arrow-pair .mac-key {
+  font-size: 11px;
 }
 
 .mac-trackpad {
@@ -853,6 +1088,46 @@
 
 /* The lid starts laid flat beyond the hinge (fully open) and swings up toward
    the camera by --lid. 700px is the 8.3in lid. */
+/* Stickers on the palm rests, either side of the trackpad (frame pixels). */
+.mac-stickers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sticker {
+  position: absolute;
+  filter: drop-shadow(1px 2px 1.5px rgba(40, 30, 30, 0.28));
+}
+
+.sticker-swirl {
+  left: 7%;
+  top: 60%;
+  width: 118px;
+  transform: rotate(-12deg);
+}
+
+.sticker-ramen {
+  left: 9%;
+  top: 77%;
+  width: 150px;
+  transform: rotate(7deg);
+}
+
+.sticker-bolt {
+  right: 15%;
+  top: 59%;
+  width: 84px;
+  transform: rotate(12deg);
+}
+
+.sticker-blossom {
+  right: 6%;
+  top: 76%;
+  width: 122px;
+  transform: rotate(-9deg);
+}
+
 .mac-lid {
   position: absolute;
   left: 0;
@@ -936,7 +1211,7 @@
   }
 
   .mac:not(.is-open):hover .mac-model {
-    transform: rotateZ(var(--tilt)) translateZ(40px);
+    transform: rotateZ(var(--tilt)) translateY(-16px) translateZ(110px);
   }
 }
 
@@ -1065,9 +1340,15 @@
 
 .mac-cards {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: calc((100% - 14px) / 2);
+  gap: 14px;
   min-height: 0;
+  padding-right: 10px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(154, 102, 120, 0.45) transparent;
 }
 
 .mac-card {
@@ -1085,15 +1366,25 @@
   display: grid;
   flex: 1;
   place-items: center;
-  min-height: 180px;
+  min-height: 0;
   font-family: var(--serif);
-  font-size: 78px;
+  font-size: 64px;
   line-height: 1;
 }
 
 .tone-tracer .mac-card-art {
   background: linear-gradient(160deg, #fff4d8, #f3d2b5);
   color: #6a4630;
+}
+
+.tone-merrynails .mac-card-art {
+  background: linear-gradient(160deg, #e6f5ec, #c9e7d6);
+  color: #3f6b52;
+}
+
+.tone-surfsafe .mac-card-art {
+  background: linear-gradient(160deg, #e4f0fb, #c8dcf1);
+  color: #2f5577;
 }
 
 .tone-fittmm .mac-card-art {
@@ -1462,7 +1753,7 @@
   position: absolute;
   z-index: 3;
   left: calc(50% - 10 * var(--in) - 0.25 * var(--ex));
-  top: calc(50% - 6.6 * var(--in) - 0.4 * var(--ey));
+  top: calc(50% - 6.2 * var(--in) - 0.4 * var(--ey));
   width: calc(3.5 * var(--in));
   aspect-ratio: 1.7 / 1;
   height: auto;
@@ -1478,6 +1769,41 @@
   width: min(760px, calc(100vw - 1.5rem));
   height: min(860px, calc(100dvh - 1.4rem));
   aspect-ratio: auto;
+}
+
+/* A small stack of business cards under the top one, each a little off
+   square, with the edges of a few more showing. They share the pose's shadow
+   and step aside when the card opens. */
+.badge .pose::before,
+.badge .pose::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(176, 124, 138, 0.35);
+  background: linear-gradient(180deg, #fffaf4, #f6ece2);
+  pointer-events: none;
+}
+
+.badge .pose::before {
+  transform: translate(calc(0.1 * var(--in)), calc(0.12 * var(--in))) rotate(7deg);
+  box-shadow:
+    1px 1px 0 #eee3d7,
+    2px 2px 0 #e7dbcd;
+}
+
+.badge .pose::after {
+  transform: translate(calc(-0.06 * var(--in)), calc(0.08 * var(--in))) rotate(-4deg);
+  box-shadow:
+    1px 1px 0 #efe5d9,
+    2px 2px 0 #e6d9cb,
+    3px 3px 0 #dfd1c1;
+}
+
+.badge.is-open .pose::before,
+.badge.is-open .pose::after {
+  display: none;
 }
 
 .badge-card {
@@ -1711,14 +2037,19 @@
 }
 
 /* Near-square windows (a narrow browser, an upright tablet in a big window):
-   a 23in x 28.4in patch with the laptop across the top and the bonsai, résumé
-   and phone in a row below it. The overhead camera is in front of the laptop
-   here, so its screen faces the viewer. */
+   a 23in x 28.4in patch with the laptop centered across the top, the bonsai
+   and the name tag on either side of it, and the phone, résumé and AirPods in
+   a row below, so both halves carry weight on both sides. The overhead camera
+   is in front of the laptop here, so its screen faces the viewer. */
 @media (min-aspect-ratio: 4/5) and (max-aspect-ratio: 11/10) {
   .desk-scene {
     --in: min(calc(100cqw / 23), calc(100cqh / 28.4));
     --ex: calc((100cqw - 23 * var(--in)) / 2);
     --ey: calc((100cqh - 28.4 * var(--in)) / 2);
+    --lamp-x: calc(-0.85 * var(--in));
+    --lamp-y: calc(7.9 * var(--in) + 0.4 * var(--ey));
+    --screen-x: 0px;
+    --screen-y: calc(-10 * var(--in) - 0.4 * var(--ey));
   }
 
   .mac:not(.is-open) {
@@ -1728,23 +2059,30 @@
   }
 
   .decor-bonsai {
-    left: calc(50% - 9.9 * var(--in) - 0.5 * var(--ex));
-    top: calc(50% + 5.4 * var(--in) + 0.4 * var(--ey));
+    left: calc(50% - 11.2 * var(--in) - 0.5 * var(--ex));
+    top: calc(50% - 8.8 * var(--in) - 0.2 * var(--ey));
   }
 
   .badge:not(.is-open) {
-    left: calc(50% - 6.7 * var(--in) - 0.3 * var(--ex));
-    top: calc(50% + 2.7 * var(--in) + 0.4 * var(--ey));
-  }
-
-  .sheet:not(.is-open) {
-    left: calc(50% - 4.25 * var(--in));
-    top: calc(50% + 2.4 * var(--in) + 0.4 * var(--ey));
+    left: calc(50% + 7.1 * var(--in) + 0.5 * var(--ex));
+    top: calc(50% - 6.6 * var(--in) - 0.2 * var(--ey));
   }
 
   .iphone:not(.is-open) {
-    left: calc(50% + 5.1 * var(--in) + 0.5 * var(--ex));
-    top: calc(50% + 4 * var(--in) + 0.4 * var(--ey));
+    left: calc(50% - 9.9 * var(--in) - 0.5 * var(--ex));
+    top: calc(50% + 4.7 * var(--in) + 0.4 * var(--ey));
+  }
+
+  .sheet:not(.is-open) {
+    left: calc(50% - 5.1 * var(--in));
+    top: calc(50% + 2.4 * var(--in) + 0.4 * var(--ey));
+  }
+
+  /* Turned on end to fit beside the résumé. */
+  .decor-airpods {
+    left: calc(50% + 5.3 * var(--in) + 0.5 * var(--ex));
+    top: calc(50% + 7 * var(--in) + 0.4 * var(--ey));
+    transform: rotate(80deg);
   }
 }
 
@@ -1754,6 +2092,10 @@
 @media (max-width: 800px), (max-aspect-ratio: 4/5) {
   .desk-scene {
     --in: min(calc(100cqw / 14.4), calc(100cqh / 29));
+    --lamp-x: calc(-2.35 * var(--in));
+    --lamp-y: calc(7.5 * var(--in));
+    --screen-x: 0px;
+    --screen-y: calc(-10.4 * var(--in));
   }
 
   .decor {

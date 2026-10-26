@@ -1,5 +1,7 @@
 // Every resting shadow is cast by one light from the upper left, so offsets point
-// down-right and grow with how far the object stands off the desk.
+// down-right and grow with how far the object stands off the desk. Shadows switch
+// rather than animate: animating a drop-shadow repaints the whole object every
+// frame.
 
 // Paper and the name tag lie flat: a contact edge and a short, soft spread.
 export const flatShadow =
@@ -7,8 +9,6 @@ export const flatShadow =
 // The phone stands about 0.3in off the desk.
 export const restShadow =
   "drop-shadow(1px 1.5px 1px rgba(30, 18, 8, 0.34)) drop-shadow(7px 8px 7px rgba(40, 24, 10, 0.2))";
-export const hoverShadow =
-  "drop-shadow(3px 5px 2px rgba(40, 24, 10, 0.32)) drop-shadow(14px 22px 16px rgba(40, 24, 10, 0.2))";
 export const liftShadow = "drop-shadow(0px 36px 30px rgba(20, 12, 8, 0.42))";
 
 export function liftTransition(reduced) {

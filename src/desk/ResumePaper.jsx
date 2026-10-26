@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { memo, useId } from "react";
 import {
   achievements,
   education,
@@ -8,6 +8,7 @@ import {
   projects,
   summary,
 } from "../data.js";
+import { projectDetails } from "./projectDetails.js";
 
 function HotLink({ href, tip, children }) {
   const tipId = useId();
@@ -61,7 +62,7 @@ function ProjectName({ project, interactive, buttonRef, tipId, onOpen }) {
   );
 }
 
-export default function ResumePaper({
+function ResumePaper({
   interactive = false,
   aboutButtonRef,
   aboutTipId,
@@ -174,6 +175,22 @@ export default function ResumePaper({
                 <span className="tagline"> — {project.tagline}</span>
               </h3>
               <p className="stack">{project.stack}</p>
+              {projectDetails[project.id]?.links.length ? (
+                <p className="project-links">
+                  {projectDetails[project.id].links.map((link, index) => (
+                    <span key={link.href}>
+                      {index > 0 ? <span className="dot" aria-hidden="true"> · </span> : null}
+                      {interactive ? (
+                        <a href={link.href} target="_blank" rel="noopener noreferrer">
+                          {link.label}
+                        </a>
+                      ) : (
+                        link.label
+                      )}
+                    </span>
+                  ))}
+                </p>
+              ) : null}
               <ul className="bullets">
                 {project.bullets.map((bullet) => (
                   <li key={bullet}>{bullet}</li>
@@ -234,3 +251,6 @@ export default function ResumePaper({
     </article>
   );
 }
+
+// Static or rarely changing; skip re-rendering when the desk opens and closes.
+export default memo(ResumePaper);

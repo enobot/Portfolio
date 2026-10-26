@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { hoverShadow, liftShadow, liftTransition, restShadow } from "./lift.js";
+import { liftShadow, liftTransition, restShadow } from "./lift.js";
 
 function MailIcon() {
   return (
@@ -41,16 +41,21 @@ function CopyIcon() {
 }
 import { MockFrame } from "react-mockframe";
 import "react-mockframe/styles/mockframe.css";
-import { profile, projects } from "../data.js";
+import { laptopProjects, profile } from "../data.js";
 import ProjectsBody from "./ProjectsBody.jsx";
 
 const cardTones = {
   tracer: "tone-tracer",
+  merrynails: "tone-merrynails",
+  surfsafe: "tone-surfsafe",
   fittmm: "tone-fittmm",
   blu: "tone-blu",
 };
 
-function ProjectPreview() {
+// Two by two on the screen. With more than four, the grid scrolls: the wheel
+// over the resting laptop scrolls it (see MacBook), and a faint scrollbar
+// shows there is more.
+const ProjectPreview = memo(function ProjectPreview() {
   return (
     <div className="mac-home">
       <header className="mac-home-bar">
@@ -58,7 +63,7 @@ function ProjectPreview() {
         <h2>Projects</h2>
       </header>
       <div className="mac-cards">
-        {projects.map((project) => (
+        {laptopProjects.map((project) => (
           <article className={`mac-card ${cardTones[project.id] || ""}`} key={project.id}>
             <div className="mac-card-art" aria-hidden="true">
               <span>{project.name.slice(0, 1)}</span>
@@ -70,33 +75,143 @@ function ProjectPreview() {
       </div>
     </div>
   );
+});
+
+// Die-cut vinyl stickers on the palm rests: nods to Naruto (an orange swirl and
+// a bowl of ramen), Sasuke (a lightning bolt), and Sakura (a cherry blossom).
+// Original shapes, not character art.
+function Stickers() {
+  const spiral = Array.from({ length: 60 }, (_, index) => {
+    const angle = index * 0.34;
+    const radius = 4 + index * 0.62;
+    return `${index === 0 ? "M" : "L"}${(50 + Math.cos(angle) * radius).toFixed(1)} ${(50 + Math.sin(angle) * radius).toFixed(1)}`;
+  }).join(" ");
+  return (
+    <div className="mac-stickers" aria-hidden="true">
+      <svg className="sticker sticker-swirl" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="46" fill="#fff" />
+        <circle cx="50" cy="50" r="40" fill="#f7931e" />
+        <path d={spiral} fill="none" stroke="#c4421a" strokeWidth="6" strokeLinecap="round" />
+      </svg>
+      <svg className="sticker sticker-ramen" viewBox="0 0 120 100">
+        <path d="M8 46 H112 Q108 92 60 94 Q12 92 8 46Z" fill="#fff" stroke="#fff" strokeWidth="10" strokeLinejoin="round" />
+        <path d="M30 40 C26 30 36 26 32 14 M50 40 C46 28 58 24 52 10 M70 40 C66 30 76 26 72 14" fill="none" stroke="#fff" strokeWidth="10" strokeLinecap="round" />
+        <path d="M30 40 C26 30 36 26 32 14 M50 40 C46 28 58 24 52 10 M70 40 C66 30 76 26 72 14" fill="none" stroke="#b9b1c9" strokeWidth="3" strokeLinecap="round" />
+        <path d="M14 50 H106 Q102 86 60 88 Q18 86 14 50Z" fill="#e8553a" />
+        <path d="M22 60 H98" stroke="#f6c453" strokeWidth="4" strokeDasharray="8 6" />
+        <ellipse cx="60" cy="50" rx="46" ry="7" fill="#f5e6c4" />
+        <path d="M24 49 q6 -5 12 0 t12 0 t12 0 t12 0 t12 0 t12 0" fill="none" stroke="#e8c87a" strokeWidth="2.4" />
+        <circle cx="82" cy="49" r="5" fill="#fff" />
+        <circle cx="82" cy="49" r="2.2" fill="#f2a2c0" />
+        <path d="M76 4 L96 44 M88 2 L104 42" stroke="#8a5a3c" strokeWidth="4" strokeLinecap="round" />
+      </svg>
+      <svg className="sticker sticker-bolt" viewBox="0 0 80 110">
+        <path d="M46 4 L12 62 H36 L28 106 L68 40 H44 L56 4Z" fill="#fff" stroke="#fff" strokeWidth="12" strokeLinejoin="round" />
+        <path d="M46 4 L12 62 H36 L28 106 L68 40 H44 L56 4Z" fill="#3b3f8f" />
+        <path d="M44 14 L22 56 H40 L36 84" fill="none" stroke="#9fb4ff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      <svg className="sticker sticker-blossom" viewBox="0 0 100 100">
+        <g transform="translate(50 52)">
+          {[0, 72, 144, 216, 288].map((angle) => (
+            <path key={`edge-${angle}`} d="M0 0 C-22 -10 -18 -40 -5 -44 L0 -36 L5 -44 C18 -40 22 -10 0 0Z" transform={`rotate(${angle})`} fill="#fff" stroke="#fff" strokeWidth="10" strokeLinejoin="round" />
+          ))}
+          {[0, 72, 144, 216, 288].map((angle) => (
+            <path key={angle} d="M0 0 C-22 -10 -18 -40 -5 -44 L0 -36 L5 -44 C18 -40 22 -10 0 0Z" transform={`rotate(${angle})`} fill="#f7a8c4" />
+          ))}
+          <circle r="8" fill="#e46a95" />
+          <circle r="3.4" fill="#f6d27a" />
+        </g>
+      </svg>
+    </div>
+  );
 }
 
-function LaptopShell() {
-  const rows = [
-    { count: 14, kind: "fn" },
-    { count: 13, kind: "keys" },
-    { count: 14, kind: "keys" },
-    { count: 13, kind: "keys" },
-    { count: 12, kind: "keys" },
-    { count: 5, kind: "space" },
-  ];
+// A MacBook Pro keyboard (US layout). Each key is [legend, width in key units,
+// kind, shifted legend]. Every row adds up to 14.5 units.
+const key = (label, width = 1, kind = "", top = "") => ({ label, width, kind, top });
+const KEY_ROWS = [
+  [
+    key("esc", 1.5, "mod"),
+    ...Array.from({ length: 12 }, (_, index) => key(`F${index + 1}`, 1, "fkey")),
+    key("", 1, "touch-id"),
+  ],
+  [
+    ...[["`", "~"], ["1", "!"], ["2", "@"], ["3", "#"], ["4", "$"], ["5", "%"], ["6", "^"], ["7", "&"], ["8", "*"], ["9", "("], ["0", ")"], ["-", "_"], ["=", "+"]].map(
+      ([label, top]) => key(label, 1, "pair", top),
+    ),
+    key("delete", 1.5, "mod right"),
+  ],
+  [
+    key("tab", 1.5, "mod"),
+    ..."QWERTYUIOP".split("").map((letter) => key(letter)),
+    key("[", 1, "pair", "{"),
+    key("]", 1, "pair", "}"),
+    key("\\", 1, "pair", "|"),
+  ],
+  [
+    key("caps lock", 1.75, "mod"),
+    ..."ASDFGHJKL".split("").map((letter) => key(letter)),
+    key(";", 1, "pair", ":"),
+    key("'", 1, "pair", '"'),
+    key("return", 1.75, "mod right"),
+  ],
+  [
+    key("shift", 2.25, "mod"),
+    ..."ZXCVBNM".split("").map((letter) => key(letter)),
+    key(",", 1, "pair", "<"),
+    key(".", 1, "pair", ">"),
+    key("/", 1, "pair", "?"),
+    key("shift", 2.25, "mod right"),
+  ],
+  [
+    key("fn", 1, "mod"),
+    key("control", 1, "mod", "⌃"),
+    key("option", 1, "mod", "⌥"),
+    key("command", 1.25, "mod", "⌘"),
+    key("", 5, "space"),
+    key("command", 1.25, "mod right", "⌘"),
+    key("option", 1, "mod right", "⌥"),
+    key("", 3, "arrows"),
+  ],
+];
 
+function Keyboard() {
+  return (
+    <div className="mac-keys">
+      {KEY_ROWS.map((row, rowIndex) => (
+        <div className={rowIndex === 0 ? "mac-key-row fn" : "mac-key-row"} key={rowIndex}>
+          {row.map((item, index) =>
+            item.kind === "arrows" ? (
+              <span className="mac-arrows" key={index} style={{ flexGrow: item.width }}>
+                <span className="mac-key">◀</span>
+                <span className="mac-arrow-pair">
+                  <span className="mac-key">▲</span>
+                  <span className="mac-key">▼</span>
+                </span>
+                <span className="mac-key">▶</span>
+              </span>
+            ) : (
+              <span className={`mac-key ${item.kind}`} key={index} style={{ flexGrow: item.width }}>
+                {item.top ? <small>{item.top}</small> : null}
+                {item.label}
+              </span>
+            ),
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const LaptopShell = memo(function LaptopShell() {
   return (
     <div className="mac-model" aria-hidden="true">
       <div className="mac-base">
         <div className="mac-base-top">
           <div className="mac-hinge" />
-          <div className="mac-keys">
-            {rows.map((row, index) => (
-              <div className={`mac-key-row ${row.kind}`} key={index}>
-                {Array.from({ length: row.count }, (_, key) => (
-                  <span key={key} />
-                ))}
-              </div>
-            ))}
-          </div>
+          <Keyboard />
           <div className="mac-trackpad" />
+          <Stickers />
         </div>
         <div className="mac-base-front" />
         <div className="mac-base-left" />
@@ -113,15 +228,32 @@ function LaptopShell() {
       </div>
     </div>
   );
-}
+});
 
 export function MacBook({ open, ready, titleId, buttonRef, onOpen, onClose, onOpenProject }) {
   const reduced = useReducedMotion();
   const transition = liftTransition(reduced);
+  const rootRef = useRef(null);
+
+  // The resting laptop is covered by its click target, so wheel turns over it
+  // are passed to the screen's project grid.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || open) return undefined;
+    function onWheel(event) {
+      const grid = root.querySelector(".mac-display .mac-cards");
+      if (!grid || grid.scrollHeight <= grid.clientHeight) return;
+      event.preventDefault();
+      grid.scrollTop += event.deltaMode === 1 ? event.deltaY * 40 : event.deltaY;
+    }
+    root.addEventListener("wheel", onWheel, { passive: false });
+    return () => root.removeEventListener("wheel", onWheel);
+  }, [open]);
 
   return (
     <motion.div
       layout
+      ref={rootRef}
       className={`mac ${open ? "is-open" : ""}`}
       style={{ borderRadius: 18 }}
       transition={transition}
@@ -199,11 +331,9 @@ export function DeskPhone({ open, ready, titleId, buttonRef, onOpen, onClose }) 
       <motion.div
         className="pose"
         initial={false}
-        animate={{
-          rotate: open ? 0 : 6,
-          filter: open ? liftShadow : restShadow,
-        }}
-        whileHover={open || reduced ? undefined : { y: -7, filter: hoverShadow }}
+        style={{ filter: open ? liftShadow : restShadow }}
+        animate={{ rotate: open ? 0 : 6 }}
+        whileHover={open || reduced ? undefined : { y: -12, scale: 1.03 }}
         transition={transition}
       >
       {!open && (

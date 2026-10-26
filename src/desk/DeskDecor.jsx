@@ -1,6 +1,9 @@
-// A still-life piece that shares the desk with the clickable objects: a tiny
-// cherry bonsai, drawn from overhead at real size (100 SVG units per inch) and
-// lit from the upper left like everything else. It isn't interactive.
+// Still-life pieces that share the desk with the clickable objects: a tiny
+// cherry bonsai and a pair of AirPods, drawn from overhead at real size (100 SVG
+// units per inch) and lit from the upper left like everything else. They aren't
+// interactive.
+
+import { memo } from "react";
 
 function seeded(seed) {
   let value = seed;
@@ -191,10 +194,69 @@ function Bonsai() {
   );
 }
 
-export default function DeskDecor() {
+// One AirPods Pro bud from above: the rounded head with its ear tip, the dark
+// mesh slot, and the stem with its silver end.
+function Bud({ x, y, turn }) {
   return (
-    <div className="decor decor-bonsai" aria-hidden="true">
-      <Bonsai />
-    </div>
+    <g transform={`translate(${x} ${y}) rotate(${turn})`}>
+      <rect x="-9" y="6" width="18" height="70" rx="9" fill="url(#decor-gloss)" stroke="#d6d6dc" strokeWidth="1" />
+      <rect x="-5" y="68" width="10" height="7" rx="3" fill="#b8b8c0" />
+      <ellipse cx="0" cy="0" rx="27" ry="25" fill="url(#decor-gloss)" stroke="#d6d6dc" strokeWidth="1" />
+      <circle cx="24" cy="10" r="16" fill="#e9e9ee" stroke="#d0d0d6" strokeWidth="1" />
+      <circle cx="26" cy="11" r="6" fill="#d6d6dd" />
+      <ellipse cx="-8" cy="-10" rx="3.4" ry="10" transform="rotate(28 -8 -10)" fill="#2d2d33" />
+      <circle cx="8" cy="-12" r="2.6" fill="#2d2d33" />
+    </g>
   );
 }
+
+// AirPods Pro opened flat, like on a desk: the case body and the tray side by
+// side on a silver hinge, one bud seated in the tray and one lying beside it.
+// About 5in x 2.6in.
+function AirPods() {
+  return (
+    <svg viewBox="0 0 500 260" role="presentation">
+      <defs>
+        <radialGradient id="decor-gloss" cx="35%" cy="30%" r="80%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="60%" stopColor="#f3f3f5" />
+          <stop offset="100%" stopColor="#d4d4da" />
+        </radialGradient>
+        <radialGradient id="decor-well" cx="40%" cy="35%" r="70%">
+          <stop offset="0%" stopColor="#fbfbfc" />
+          <stop offset="100%" stopColor="#d9d9df" />
+        </radialGradient>
+        <linearGradient id="decor-hinge" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#8f9097" />
+          <stop offset="50%" stopColor="#e6e7ea" />
+          <stop offset="100%" stopColor="#9c9da4" />
+        </linearGradient>
+      </defs>
+      <rect x="12" y="10" width="176" height="240" rx="72" fill="url(#decor-gloss)" stroke="#d2d2d8" strokeWidth="1.5" />
+      <circle cx="104" cy="132" r="3.2" fill="#55555c" />
+      <rect x="186" y="96" width="16" height="70" rx="4" fill="url(#decor-hinge)" />
+      <rect x="200" y="18" width="164" height="226" rx="66" fill="#f7f7f9" stroke="#d2d2d8" strokeWidth="1.5" />
+      <ellipse cx="282" cy="80" rx="56" ry="46" fill="url(#decor-well)" stroke="#dcdce2" strokeWidth="1" />
+      <ellipse cx="282" cy="182" rx="56" ry="46" fill="url(#decor-well)" stroke="#dcdce2" strokeWidth="1" />
+      <path d="M262 70 l12 12 m0 -12 l-12 12" stroke="#cfcfd6" strokeWidth="2" />
+      <Bud x={276} y={170} turn={-62} />
+      <Bud x={436} y={104} turn={24} />
+    </svg>
+  );
+}
+
+function DeskDecor() {
+  return (
+    <>
+      <div className="decor decor-bonsai" aria-hidden="true">
+        <Bonsai />
+      </div>
+      <div className="decor decor-airpods" aria-hidden="true">
+        <AirPods />
+      </div>
+    </>
+  );
+}
+
+// Static or rarely changing; skip re-rendering when the desk opens and closes.
+export default memo(DeskDecor);

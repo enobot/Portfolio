@@ -1,21 +1,34 @@
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useId, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { flatShadow, hoverShadow, liftShadow, liftTransition } from "./desk/lift.js";
-import AboutModal from "./AboutModal.jsx";
-import BluModal from "./BluModal.jsx";
+import { flatShadow, liftShadow, liftTransition } from "./desk/lift.js";
 import DeskDecor from "./desk/DeskDecor.jsx";
 import { DeskPhone, MacBook } from "./desk/DeskDevices.jsx";
 import NameTag from "./desk/NameTag.jsx";
 import ResumePaper from "./desk/ResumePaper.jsx";
 import "./desk/Desk.css";
-import FeedbackModal from "./FeedbackModal.jsx";
-import FittmmModal from "./FittmmModal.jsx";
 import LoadingScreen from "./LoadingScreen.jsx";
 import { lockPageScroll } from "./lockPageScroll.js";
 import StarCursor from "./StarCursor.jsx";
-import TracerModal from "./TracerModal.jsx";
+
+// The dialogs load when first opened, so the desk itself downloads less.
+const AboutModal = lazy(() => import("./AboutModal.jsx"));
+const BluModal = lazy(() => import("./BluModal.jsx"));
+const FeedbackModal = lazy(() => import("./FeedbackModal.jsx"));
+const FittmmModal = lazy(() => import("./FittmmModal.jsx"));
+const TracerModal = lazy(() => import("./TracerModal.jsx"));
+
+// Night is 7pm to 6am on the visitor's clock. ?night or ?day in the address
+// previews either one.
+function isNight() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has("night")) return true;
+  if (params.has("day")) return false;
+  const hour = new Date().getHours();
+  return hour >= 19 || hour < 6;
+}
 
 export default function App() {
+  const [night] = useState(isNight);
   const [tracerOpen, setTracerOpen] = useState(false);
   const [fittmmOpen, setFittmmOpen] = useState(false);
   const [bluOpen, setBluOpen] = useState(false);
@@ -218,7 +231,7 @@ export default function App() {
   }, [aboutOpen, bluOpen, closeDesk, feedbackOpen, fittmmOpen, ready, tracerOpen, which]);
 
   return (
-    <div className="desk">
+    <div className={night ? "desk is-night" : "desk"}>
       <StarCursor />
       {showWelcome ? (
         <LoadingScreen onDone={() => setShowWelcome(false)} />
@@ -291,8 +304,9 @@ export default function App() {
       <motion.div
         className="pose"
         initial={false}
-        animate={{ rotate: paperOpen ? 0 : -2, filter: paperOpen ? liftShadow : flatShadow }}
-        whileHover={paperOpen || prefersReduced ? undefined : { y: -6, filter: hoverShadow }}
+        style={{ filter: paperOpen ? liftShadow : flatShadow }}
+        animate={{ rotate: paperOpen ? 0 : -2 }}
+        whileHover={paperOpen || prefersReduced ? undefined : { y: -11, scale: 1.02 }}
         transition={lift}
       >
       {which !== "paper" && (
@@ -358,13 +372,16 @@ export default function App() {
       </motion.div>
       </motion.div>
       </div>
+      {night ? null : <div className="desk-cloud" aria-hidden="true" />}
       </div>
 
-      {tracerOpen ? <TracerModal onClose={closeTracer} /> : null}
-      {fittmmOpen ? <FittmmModal onClose={closeFittmm} /> : null}
-      {bluOpen ? <BluModal onClose={closeBlu} /> : null}
-      {aboutOpen ? <AboutModal onClose={closeAbout} /> : null}
-      {feedbackOpen ? <FeedbackModal onClose={closeFeedback} /> : null}
+      <Suspense fallback={null}>
+        {tracerOpen ? <TracerModal onClose={closeTracer} /> : null}
+        {fittmmOpen ? <FittmmModal onClose={closeFittmm} /> : null}
+        {bluOpen ? <BluModal onClose={closeBlu} /> : null}
+        {aboutOpen ? <AboutModal onClose={closeAbout} /> : null}
+        {feedbackOpen ? <FeedbackModal onClose={closeFeedback} /> : null}
+      </Suspense>
     </div>
   );
 }

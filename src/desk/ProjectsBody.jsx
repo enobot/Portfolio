@@ -1,10 +1,10 @@
-import { moreProjects, projects } from "../data.js";
+import { laptopProjects } from "../data.js";
 import { projectDetails } from "./projectDetails.js";
 
 export default function ProjectsBody({ onOpen }) {
   return (
     <div className="projects-page">
-      {[...projects, ...moreProjects].map((project) => {
+      {laptopProjects.map((project) => {
         const detail = projectDetails[project.id];
         if (!detail) return null;
         const stack = project.stack.split("|").map((item) => item.trim());

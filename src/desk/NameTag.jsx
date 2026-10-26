@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from "motion/react";
 import { profile } from "../data.js";
 import AboutBody from "./AboutBody.jsx";
-import { flatShadow, hoverShadow, liftShadow, liftTransition } from "./lift.js";
+import { flatShadow, liftShadow, liftTransition } from "./lift.js";
 
 export default function NameTag({ open, ready, titleId, buttonRef, onOpen, onClose }) {
   const reduced = useReducedMotion();
@@ -18,11 +18,9 @@ export default function NameTag({ open, ready, titleId, buttonRef, onOpen, onClo
       <motion.div
         className="pose"
         initial={false}
-        animate={{
-          rotate: open ? 0 : -6,
-          filter: open ? liftShadow : flatShadow,
-        }}
-        whileHover={open || reduced ? undefined : { y: -6, filter: hoverShadow }}
+        style={{ filter: open ? liftShadow : flatShadow }}
+        animate={{ rotate: open ? 0 : -6 }}
+        whileHover={open || reduced ? undefined : { y: -11, scale: 1.03 }}
         transition={transition}
       >
         {!open && (

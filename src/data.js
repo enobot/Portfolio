@@ -108,6 +108,7 @@ export const projects = [
       "Architected secure IPC communication between Electron's Main, Preload, and Renderer processes to support screen capture and AI-powered content processing.",
     ],
   },
+
   {
     id: "fittmm",
     name: "FITTMM",
@@ -130,7 +131,18 @@ export const projects = [
       "Developed Node.js/Express REST APIs for account creation and Discord integration, emphasizing secure authentication and scalable endpoint design.",
     ],
   },
-];
+  {
+    id: "merrynails",
+    name: "Merry Nails",
+    repo: "https://github.com/enobot/merrynails",
+    tagline: "Website for My Mom's Nail Salon",
+    stack: "React | React Router | Tailwind CSS | Vite | Vercel",
+    bullets: [
+      "Built a four-page React site with React Router and Tailwind CSS, deployed on Vercel, where customers browse services, compare options, and call the salon to book.",
+      "Kept prices, hours, contact details, and page copy in plain data files so the salon can be updated without touching components, and generated the sitemap, robots.txt, and local-business structured data from one config at build time.",
+      "Designed it to collect no customer information: booking is a phone call, with a setting ready to switch to an online booking page later.",
+    ],
+  },];
 
 export const experience = [
   {
@@ -196,25 +208,19 @@ export const tracer = {
   ],
 };
 
-/** Projects shown on the laptop's Projects page but not on the printed résumé. */
+/** Projects shown on the laptop's Projects page but not on the résumé yet. */
 export const moreProjects = [
-  {
-    id: "merrynails",
-    name: "Merry Nails",
-    tagline: "Website for My Mom's Nail Salon",
-    stack: "React | React Router | Tailwind CSS | Vite | Vercel",
-    bullets: [
-      "Built a four-page React site (Home, Services, Policies, Visit Us) where customers browse services, compare options, and call the salon to book.",
-      "Kept prices, hours, contact details, and page copy in plain data files, so the salon can be updated without touching components.",
-      "Generated the sitemap, robots.txt, and local-business structured data from a single salon config at build time.",
-      "Collects no customer information: booking is a phone call, with a setting ready to point at an online booking page later.",
-    ],
-  },
+
   {
     id: "surfsafe",
-    name: "SurfSafe",
+    name: "Shouldn't Wouldn't",
     tagline: "Privacy-First Chrome Extension",
     stack: "Chrome Extension",
     bullets: [],
   },
 ];
+
+/** Everything on the laptop, bigger projects first. */
+export const laptopProjects = ["tracer", "fittmm", "blu", "surfsafe", "merrynails"].map((id) =>
+  [...projects, ...moreProjects].find((project) => project.id === id),
+);

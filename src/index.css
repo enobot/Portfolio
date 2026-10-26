@@ -277,6 +277,17 @@ a {
   font-size: 0.98em;
 }
 
+.project-links {
+  margin-top: 0.15rem;
+  font-size: 0.95em;
+  font-weight: 600;
+}
+
+.project-links a {
+  color: #a03f66;
+  text-underline-offset: 0.18em;
+}
+
 .skills,
 .bullets,
 .steps {

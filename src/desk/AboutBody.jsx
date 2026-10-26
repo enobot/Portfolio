@@ -1,6 +1,7 @@
+import { memo } from "react";
 import { about } from "../data.js";
 
-export default function AboutBody() {
+function AboutBody() {
   return (
     <>
       <div className="about-photos">
@@ -33,3 +34,6 @@ export default function AboutBody() {
     </>
   );
 }
+
+// Static or rarely changing; skip re-rendering when the desk opens and closes.
+export default memo(AboutBody);
