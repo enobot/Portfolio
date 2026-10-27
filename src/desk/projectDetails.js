@@ -6,7 +6,7 @@ export const projectDetails = {
   tracer: {
     about: tracer.summary,
     status:
-      "Region capture works on Windows and 70 automated tests pass. A live signed-in ChatGPT reply hasn't been tried yet.",
+      "Tested live with a real ChatGPT account on October 26, 2026: a screenshot question and a Vietnamese translation both came back. 70 automated tests pass.",
     links: [
       { href: tracer.repo, label: "GitHub" },
       { href: tracer.docs, label: "Documentation" },
