@@ -6,8 +6,9 @@ export const projectDetails = {
   tracer: {
     about: tracer.summary,
     status:
-      "Tested live with a real ChatGPT account on October 26, 2026: a screenshot question and a Vietnamese translation both came back. 79 automated tests pass.",
+      "Version 1.0.0 for Windows 10 and 11 is out on GitHub. It isn't code-signed yet, so Windows asks before the first run. Tested live with a real ChatGPT account, and 102 automated tests run on every push.",
     links: [
+      { href: tracer.download, label: "Download for Windows" },
       { href: tracer.repo, label: "GitHub" },
       { href: tracer.docs, label: "Documentation" },
     ],
@@ -57,7 +58,7 @@ export const projectDetails = {
     about:
       "Shouldn't Wouldn't is a privacy-first Chrome extension that gently warns people when a website asks for sensitive information, with the checks running on their own computer.",
     status:
-      "Version 0.1.1 was submitted to the Chrome Web Store on October 26, 2026 and is waiting for Google's review. It has unit, accuracy and real-browser tests.",
+      "Version 0.1.1 was submitted to the Chrome Web Store on October 26, 2026 and is waiting for Google's review. Version 0.2.0 adds a choice of 12 languages for the extension's own reminders; those translations are waiting for review by native speakers. Unit, accuracy and real-browser tests run on every push.",
     links: [{ href: "https://github.com/enobot/ShouldntWouldnt", label: "GitHub" }],
     walkthrough: true,
   },

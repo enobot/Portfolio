@@ -7,78 +7,140 @@ const TRACEBACK = `Traceback (most recent call last):
     level = user["plan"]
 KeyError: 'plan'`;
 
-// The demo walks the real flow: idle → frozen (choose an area) → preview
-// (edit the prompt) → answering → answered. Escape while frozen goes back to
-// whatever was there before, like the app.
+const HOTKEY = "Ctrl+Shift+Space";
+
+// The demo walks the app's flow with its own labels: idle → frozen (drag to
+// choose an area) → sent straight away when "Send right after capture" is on,
+// or held as "captured" until Analyze screenshot when it's off → the answer
+// streams in → follow-ups. Escape while frozen keeps whatever was there before.
 export default function TracerModal({ onClose }) {
   const titleId = useId();
   const dialogRef = useRef(null);
   const desktopRef = useRef(null);
-  const timerRef = useRef(null);
+  const streamRef = useRef(null);
+  const waitRef = useRef(null);
   const dragRef = useRef(null);
   const [phase, setPhase] = useState("idle");
   const [before, setBefore] = useState("idle");
   const [box, setBox] = useState(null);
   const [capture, setCapture] = useState(null);
   const [prompt, setPrompt] = useState(tracer.prompts[0]);
-  const [shown, setShown] = useState("");
-  const [answer, setAnswer] = useState(tracer.replies[0]);
+  const [autoSend, setAutoSend] = useState(true);
+  const [turns, setTurns] = useState([]);
+  const [followUp, setFollowUp] = useState("");
+  const [status, setStatus] = useState("");
+  const [copied, setCopied] = useState(null);
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
 
+  function stopStreaming() {
+    window.clearInterval(streamRef.current);
+    window.clearTimeout(waitRef.current);
+    // Anything mid-answer finishes at once, so nothing is left half-written.
+    setTurns((list) => list.map((turn) => ({ ...turn, shown: turn.answer, waiting: false, done: true })));
+  }
+
   function freeze() {
-    window.clearInterval(timerRef.current);
-    setBefore(phaseRef.current === "frozen" ? before : phaseRef.current);
+    if (phaseRef.current === "frozen") return;
+    stopStreaming();
+    setBefore(phaseRef.current === "streaming" ? "answered" : phaseRef.current);
     setBox(null);
+    setStatus("");
     setPhase("frozen");
   }
 
   function cancelFreeze() {
     setBox(null);
-    if (before === "answering") {
-      setShown(answer);
-      setPhase("answered");
-      return;
-    }
-    setPhase(before === "frozen" ? "idle" : before);
+    setStatus(capture ? "Selection canceled. The previous screenshot was kept." : "Selection canceled.");
+    setPhase(before);
   }
 
-  function take(kind, size) {
-    setCapture({ kind, size });
-    setBox(null);
-    setShown("");
-    setPhase("preview");
-  }
-
-  function ask() {
-    if (!prompt.trim()) return;
-    const reply = tracer.replies[tracer.prompts.indexOf(prompt)] ?? tracer.replies[0];
-    setAnswer(reply);
+  function send(question, answer) {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.clearInterval(timerRef.current);
+    stopStreaming();
+    setStatus("");
     if (reduce) {
-      setShown(reply);
+      setTurns((list) => [...list, { question, answer, shown: answer, waiting: false, done: true }]);
       setPhase("answered");
       return;
     }
-    setShown("");
-    setPhase("answering");
-    let index = 0;
-    timerRef.current = window.setInterval(() => {
-      index += 3;
-      setShown(reply.slice(0, index));
-      if (index >= reply.length) {
-        window.clearInterval(timerRef.current);
-        setPhase("answered");
-      }
-    }, 24);
+    setTurns((list) => [...list, { question, answer, shown: "", waiting: true, done: false }]);
+    setPhase("streaming");
+    // "Waiting for ChatGPT…", then the answer arrives word by word.
+    waitRef.current = window.setTimeout(() => {
+      const words = answer.split(/(\s+)/);
+      let count = 0;
+      streamRef.current = window.setInterval(() => {
+        count += 2;
+        const done = count >= words.length;
+        setTurns((list) => {
+          const next = [...list];
+          const last = next[next.length - 1];
+          next[next.length - 1] = { ...last, waiting: false, shown: words.slice(0, count).join(""), done };
+          return next;
+        });
+        if (done) {
+          window.clearInterval(streamRef.current);
+          setPhase("answered");
+        }
+      }, 45);
+    }, 650);
   }
 
-  function removePreview() {
-    window.clearInterval(timerRef.current);
+  function replyFor(question) {
+    return tracer.replies[tracer.prompts.indexOf(question)] ?? tracer.replies[0];
+  }
+
+  function take(kind) {
+    stopStreaming();
+    setCapture({ kind });
+    setTurns([]);
+    setBox(null);
+    setFollowUp("");
+    if (autoSend) {
+      send(prompt, replyFor(prompt));
+      return;
+    }
+    setStatus("Captured. Nothing has been sent yet.");
+    setPhase("captured");
+  }
+
+  function analyze() {
+    if (!prompt.trim()) {
+      setStatus("Type a question first.");
+      return;
+    }
+    send(prompt, replyFor(prompt));
+  }
+
+  function sendFollowUp(event) {
+    event.preventDefault();
+    const question = followUp.trim();
+    if (!question) {
+      setStatus("Type a question first.");
+      return;
+    }
+    setFollowUp("");
+    send(question, tracer.followUp.answer);
+  }
+
+  function removeScreenshot() {
+    stopStreaming();
     setCapture(null);
-    setShown("");
+    setTurns([]);
+    setFollowUp("");
+    setStatus("Screenshot and conversation removed.");
     setPhase("idle");
+  }
+
+  async function copyAnswer(index) {
+    try {
+      await navigator.clipboard.writeText(turns[index].answer);
+      setCopied({ index, text: "Copied" });
+    } catch {
+      setCopied({ index, text: "Copy failed" });
+    }
+    window.setTimeout(() => setCopied(null), 1600);
   }
 
   function point(event) {
@@ -119,24 +181,24 @@ export default function TracerModal({ onClose }) {
       setBox(null);
       return;
     }
-    take("area", `${Math.round(box.w)} × ${Math.round(box.h)}`);
+    take("area");
   }
 
   function onContextMenu(event) {
     if (phase !== "frozen") return;
     event.preventDefault();
     dragRef.current = null;
-    take("screen", "whole screen");
+    take("monitor");
   }
 
   // The key handler is attached once and reaches the current actions here.
   const actionsRef = useRef(null);
-  actionsRef.current = { freeze, cancelFreeze, ask };
+  actionsRef.current = { freeze, cancelFreeze, analyze };
 
   useEffect(() => {
     const dialog = dialogRef.current;
     const focusable = () =>
-      [...dialog.querySelectorAll("a, button, textarea")].filter(
+      [...dialog.querySelectorAll("a, button, textarea, input")].filter(
         (node) => !node.hasAttribute("disabled"),
       );
     focusable()[0]?.focus();
@@ -156,9 +218,9 @@ export default function TracerModal({ onClose }) {
         actionsRef.current.freeze();
         return;
       }
-      if (event.ctrlKey && event.key === "Enter" && phaseRef.current === "preview") {
+      if (event.ctrlKey && event.key === "Enter" && phaseRef.current === "captured") {
         event.preventDefault();
-        actionsRef.current.ask();
+        actionsRef.current.analyze();
         return;
       }
       if (event.key !== "Tab") return;
@@ -178,13 +240,15 @@ export default function TracerModal({ onClose }) {
     document.addEventListener("keydown", onKey);
     const unlockScroll = lockPageScroll();
     return () => {
-      window.clearInterval(timerRef.current);
+      window.clearInterval(streamRef.current);
+      window.clearTimeout(waitRef.current);
       document.removeEventListener("keydown", onKey);
       unlockScroll();
     };
   }, [onClose]);
 
-  const answering = phase === "answering" || phase === "answered";
+  const busy = phase === "streaming";
+  const lastTurn = turns[turns.length - 1];
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -232,10 +296,58 @@ export default function TracerModal({ onClose }) {
         <section className="demo-section">
           <h3>Demo</h3>
           <p className="demo-lead">
-            Try it in the browser: press Ctrl+Shift+Space (or the key below),
-            then drag a box around the error. Right-click takes the whole
-            screen, and Escape cancels.
+            Try it in the browser: press Ctrl+Shift+Space (or the key below), then drag a box
+            around the error. Right-click takes the whole screen, and Escape cancels.
           </p>
+
+          <div className="tracer-panel">
+            <div className="tracer-bar">
+              <span className="demo-kicker">Tracer</span>
+              <span className="tracer-chip">ChatGPT connected</span>
+            </div>
+            <label className="prompt-field">
+              <span>Prompt</span>
+              <textarea
+                rows={2}
+                value={prompt}
+                readOnly={busy}
+                onChange={(event) => setPrompt(event.target.value)}
+              />
+            </label>
+            <div className="prompt-chips" role="group" aria-label="Saved Prompts">
+              {tracer.prompts.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  aria-pressed={prompt === item}
+                  disabled={busy}
+                  onClick={() => setPrompt(item)}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+            <label className="tracer-check">
+              <input
+                type="checkbox"
+                checked={autoSend}
+                onChange={(event) => setAutoSend(event.target.checked)}
+              />
+              Send right after capture
+            </label>
+            <p className="reply-note">
+              Press {HOTKEY}, then drag over what you want to ask about. Right-click captures the
+              whole monitor, and Esc cancels.{" "}
+              {autoSend
+                ? "Tracer sends the capture to ChatGPT with your prompt as soon as you let go."
+                : "Nothing is sent until you choose Analyze screenshot."}
+            </p>
+            {status && !capture ? (
+              <p className="tracer-status" role="status">
+                {status}
+              </p>
+            ) : null}
+          </div>
 
           <div
             ref={desktopRef}
@@ -259,7 +371,7 @@ export default function TracerModal({ onClose }) {
 
             {phase === "frozen" && (
               <p className="freeze-hint" aria-live="polite">
-                Screen frozen · drag to capture · right-click for the whole screen · Esc to cancel
+                Screen frozen · drag to capture · right-click for the whole monitor · Esc to cancel
               </p>
             )}
             {phase === "frozen" && box && box.w > 0 && (
@@ -273,46 +385,54 @@ export default function TracerModal({ onClose }) {
 
           {capture && phase !== "frozen" && (
             <div className="tracer-panel">
-              <p className="demo-kicker">
-                Preview · {capture.size} · nothing is uploaded yet
-              </p>
+              <p className="demo-kicker">{capture.kind === "monitor" ? "Captured monitor" : "Captured area"}</p>
               <pre className="shot">{TRACEBACK}</pre>
-              <label className="prompt-field">
-                <span>Prompt</span>
-                <textarea
-                  rows={2}
-                  value={prompt}
-                  readOnly={answering}
-                  onChange={(event) => setPrompt(event.target.value)}
-                />
-              </label>
-              <div className="prompt-chips" aria-label="Saved prompts">
-                {tracer.prompts.map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    aria-pressed={prompt === item}
-                    disabled={answering}
-                    onClick={() => setPrompt(item)}
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
-              {answering && (
-                <>
-                  <p className="reply-label">ChatGPT · example answer</p>
-                  <p className="reply" aria-live="polite">
-                    {shown}
-                  </p>
-                </>
-              )}
-              {phase === "answered" && (
-                <p className="reply-note">
-                  This in-browser demo shows a sample answer. The desktop app
-                  sends the screenshot and prompt to the signed-in ChatGPT plan.
+              {status ? (
+                <p className="tracer-status" role="status">
+                  {status}
                 </p>
-              )}
+              ) : null}
+
+              {turns.length > 0 && <p className="reply-label">Answers</p>}
+              {turns.map((turn, index) => (
+                <div className="tracer-turn" key={index}>
+                  <p className="tracer-you">
+                    <span>You asked:</span> {turn.question}
+                  </p>
+                  <p className="reply-label">ChatGPT answered: (example answer)</p>
+                  <p className="reply" aria-live="polite">
+                    {turn.waiting ? "Waiting for ChatGPT…" : turn.shown}
+                  </p>
+                  {turn.done ? (
+                    <button type="button" className="tracer-link" onClick={() => copyAnswer(index)}>
+                      {copied?.index === index ? copied.text : "Copy answer"}
+                    </button>
+                  ) : null}
+                </div>
+              ))}
+
+              {lastTurn?.done ? (
+                <>
+                  <form className="tracer-follow" onSubmit={sendFollowUp}>
+                    <input
+                      type="text"
+                      aria-label="Question about this screenshot"
+                      placeholder="Ask a follow-up about this screenshot"
+                      value={followUp}
+                      onChange={(event) => setFollowUp(event.target.value)}
+                    />
+                    <button type="submit">Send</button>
+                  </form>
+                  {turns.length === 1 ? (
+                    <div className="prompt-chips">
+                      <button type="button" onClick={() => setFollowUp(tracer.followUp.question)}>
+                        {tracer.followUp.question}
+                      </button>
+                    </div>
+                  ) : null}
+                  <p className="reply-note">Uses your ChatGPT plan. Follow-ups send the screenshot again.</p>
+                </>
+              ) : null}
             </div>
           )}
 
@@ -322,7 +442,7 @@ export default function TracerModal({ onClose }) {
             </button>
             {phase === "frozen" && (
               <>
-                <button type="button" className="text-button" onClick={() => take("area", "code window")}>
+                <button type="button" className="text-button" onClick={() => take("area")}>
                   Capture the code window
                 </button>
                 <button type="button" className="text-button" onClick={cancelFreeze}>
@@ -330,18 +450,35 @@ export default function TracerModal({ onClose }) {
                 </button>
               </>
             )}
-            {phase === "preview" && (
-              <button type="button" className="text-button" onClick={ask}>
-                Ask ChatGPT (Ctrl + Enter)
+            {phase === "captured" && (
+              <button type="button" className="text-button" onClick={analyze}>
+                Analyze screenshot (Ctrl + Enter)
               </button>
             )}
             {capture && phase !== "frozen" && (
-              <button type="button" className="text-button" onClick={removePreview}>
-                Remove preview
+              <button type="button" className="text-button" onClick={removeScreenshot}>
+                Remove screenshot
               </button>
             )}
           </div>
 
+          <p className="demo-lead tracer-note">
+            This in-browser demo shows sample answers. The desktop app sends the screenshot and
+            your prompt to your own ChatGPT plan, and the real answer streams back the same way.
+          </p>
+
+          <p className="repo-line">
+            Try the real thing:{" "}
+            <a className="repo-link" href={tracer.download}>
+              Download Tracer 1.0.0 for Windows
+            </a>{" "}
+            (
+            <a className="repo-link" href={tracer.release} target="_blank" rel="noopener noreferrer">
+              release notes
+            </a>
+            ). It isn&rsquo;t code-signed yet, so Windows shows &ldquo;Windows protected your
+            PC&rdquo;; choose More info, then Run anyway.
+          </p>
           <p className="repo-line">
             Check out my repo:{" "}
             <a

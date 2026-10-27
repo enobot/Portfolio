@@ -106,10 +106,10 @@ export const projects = [
     tagline: "AI-Powered Windows Desktop Assistant",
     stack: "Electron | Node.js | JavaScript | OAuth 2.0 | OpenAI API",
     bullets: [
-      "Built an Electron desktop app that freezes every monitor on a global hotkey, captures a drag-selected region, and streams a ChatGPT answer about it back into the app.",
+      "Built and released (v1.0.0) an Electron desktop app that freezes every monitor on a global hotkey, captures a drag-selected region, and streams a formatted ChatGPT answer back, with follow-up questions.",
       "Implemented Sign in with ChatGPT with OAuth 2.0 + PKCE; tokens never leave the main process, are encrypted with Electron safeStorage, refresh before expiry, and are revoked on every sign-out path.",
-      "Hardened the process boundary with sandboxed, network-isolated renderers, a 19-function preload bridge, and sender checks on every IPC handler, covered by 79 automated tests.",
-      "Profiled the packaged app: 665 ms warm start, 25 ms to crop and encode a capture, about 2% of one CPU core at idle, and flat memory across 60 repeated captures.",
+      "Hardened the process boundary with sandboxed, network-isolated renderers, a 21-function preload bridge, and sender checks on every IPC handler, covered by 102 automated tests run on every push.",
+      "Cut shortcut-to-capture latency 16% (711 → 599 ms median); the installed app starts warm in 305 ms, keeps memory flat over 50 captures, and uses no CPU or network while idle.",
     ],
   },
 
@@ -145,7 +145,7 @@ export const projects = [
       "Built an extension that warns non-technical users when a form asks for SSNs, card or bank numbers, IDs or health data (email, password and phone only on risky pages), using field metadata only; it never reads typed values or sends data.",
       "Added on-device checks for HTTP pages, HTTP form actions and lookalike domains, with warnings in a closed shadow DOM that are restored, up to a capped limit, if a page removes them.",
       "Benchmarked against a no-extension baseline on 10 page types: reminders appear 56–82 ms after a typical form loads, typing latency is unchanged (5–8 ms to the next frame), and content-script CPU time fell 65% on pages that rewrite fields every 50 ms.",
-      "Tested with unit, accuracy and Playwright browser suites across 24 test pages, including a source scan that fails if form values are read; submitted v0.1.1 to the Chrome Web Store.",
+      "Tested with unit, accuracy and Playwright browser suites, including a source scan that fails if form values are read; submitted v0.1.1 to the Chrome Web Store and added a choice of 12 languages, including right-to-left Arabic, in v0.2.0.",
     ],
   },
   {
@@ -210,28 +210,32 @@ export const achievements = [
 export const tracer = {
   repo: "https://github.com/enobot/Tracer",
   repoLabel: "github.com/enobot/Tracer",
+  // Always the newest installer; release notes for 1.0.0.
+  download: "https://github.com/enobot/Tracer/releases/latest/download/Tracer-Setup-win32-x64.exe",
+  release: "https://github.com/enobot/Tracer/releases/tag/v1.0.0",
   docs: "https://docs.google.com/document/d/1cqqpQz3JiCPoTXN346Ona1IGnQxdGXHQeb_I93CM8FM/edit?usp=sharing",
   docsLabel: "Read my documentation on Google Docs",
   summary:
     "Tracer is a free Windows desktop app for asking about whatever is on your screen. Press one shortcut, drag over the part you need, and Tracer sends that screenshot with your prompt to ChatGPT on your own ChatGPT plan, with no API key. The answer comes back in the Tracer window. For Gemini and Claude, it copies the screenshot and prompt and opens their sites.",
   steps: [
-    "Electron's main process registers Ctrl+Shift+Space, or a shortcut you choose, with globalShortcut, so it works from any app.",
-    "Tracer hides its window and freezes every monitor. Drag a box to capture that area, right-click to keep the whole monitor, or press Escape to cancel.",
-    "The main process crops the frozen frame and hands the window a preview. Nothing is uploaded yet.",
-    "Edit the prompt or pick one from Past Prompts, Favorites, or Saved Prompts, then press Ctrl+Enter.",
-    "The main process sends the screenshot and prompt to ChatGPT's Responses API through Sign in with ChatGPT (OAuth with PKCE), and the answer streams back into the window.",
+    "Electron's main process registers Ctrl+Shift+Space, or a shortcut you pick with Set Hotkey, with globalShortcut, so it works from any app.",
+    "Tracer hides its window and freezes every monitor. Drag a box to capture that area, right-click to take the whole monitor, or press Esc to cancel.",
+    "With Send right after capture on (the default), the capture goes to ChatGPT with your prompt as soon as you let go. Turn it off to look at the screenshot first, then send it with Analyze screenshot or Ctrl+Enter.",
+    "The main process sends the screenshot and prompt to ChatGPT's Responses API through Sign in with ChatGPT (OAuth with PKCE), on your own plan. The answer streams back word by word, formatted with headings, lists, tables and code.",
+    "Ask follow-ups in the box under the answer. Each one sends the screenshot again with the conversation so far.",
     "The windows are sandboxed with no network access. Tokens stay in the main process, encrypted with Electron's safeStorage, and the screenshot is never written to disk.",
+    "Closing the window leaves Tracer in the system tray, so the shortcut keeps working. The buttons come in English and 20 other languages, and answers can come back in 217.",
   ],
   stack: [
     ["JavaScript", "Main process, preload bridge, and windows"],
-    ["Electron", "Windows, global shortcut, screen capture, and safeStorage"],
+    ["Electron", "Windows, global shortcut, screen capture, tray, and safeStorage"],
     ["Node.js", "Runtime for the main process and the test runner"],
     ["OpenAI Responses API", "Streams the answer from the user's own ChatGPT plan"],
     ["OAuth 2.0 with PKCE", "Sign in with ChatGPT in the system browser; Tracer never sees the password"],
-    ["Electron Forge and Vite", "Development, bundling, and Windows packaging"],
+    ["Electron Forge and Vite", "Development, bundling, and the Windows installer"],
   ],
   prompts: [
-    "Explain what is on my screen and tell me the next step.",
+    "Explain what is visible in this screenshot.",
     "Summarize this in three bullet points.",
     "Translate this into plain English.",
   ],
@@ -241,6 +245,12 @@ export const tracer = {
     "• plans.py stops at line 42 in build_week.\n• That user has no \"plan\" key, so user[\"plan\"] raises a KeyError.\n• Load the saved profile first, or use user.get(\"plan\") and handle a missing plan.",
     "The program stopped because it looked up this person's workout plan, and they don't have one saved yet. It should load their profile first, or skip that step when there's no plan.",
   ],
+  // A follow-up the demo suggests, and its sample answer.
+  followUp: {
+    question: "How do I fix line 42?",
+    answer:
+      "Give the lookup a default so a missing plan can't crash it:\n\nlevel = user.get(\"plan\", \"beginner\")\n\nIf a missing plan should stop the week from being built instead, check for it first and show the user a message before calling build_week.",
+  },
 };
 
 /** Everything on the laptop, bigger projects first. */

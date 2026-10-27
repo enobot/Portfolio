@@ -1042,6 +1042,112 @@ a {
   color: #ffd15a;
 }
 
+/* Tracer demo: the app's top bar, auto-send setting and conversation. */
+.tracer-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tracer-chip {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid #5a534c;
+  border-radius: 999px;
+  color: #e8e1d6;
+  font-size: 0.8rem;
+}
+
+.tracer-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+  color: #f7f3ea;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+.tracer-check input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #f4a7c3;
+}
+
+.modal .tracer-status {
+  margin-top: 0.6rem;
+  color: #ffd0e2;
+  font-size: 0.9rem;
+}
+
+.tracer-turn + .tracer-turn {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid #3a3531;
+}
+
+.modal .tracer-you {
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.6rem;
+  background: #2f2a27;
+  font-size: 0.95rem;
+}
+
+.tracer-you span {
+  color: #c8c0b4;
+}
+
+.tracer-link {
+  margin-top: 0.4rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #f4a7c3;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.tracer-follow {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+
+.tracer-follow input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid #5a534c;
+  border-radius: 0.35rem;
+  background: #2a2724;
+  color: #f7f3ea;
+  font: inherit;
+}
+
+.tracer-follow button {
+  padding: 0.45rem 0.9rem;
+  border: 1px solid #f4a7c3;
+  border-radius: 0.35rem;
+  background: #f4a7c3;
+  color: #1d1b19;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tracer-follow input:focus-visible,
+.tracer-follow button:focus-visible,
+.tracer-link:focus-visible,
+.tracer-check input:focus-visible {
+  outline: 2px solid #ffd15a;
+  outline-offset: 2px;
+}
+
+.modal .tracer-note {
+  margin-top: 0.85rem;
+}
+
 .saved-prompt {
   margin-top: 0.45rem;
 }
