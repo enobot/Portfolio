@@ -1,13 +1,5 @@
 import { memo, useId } from "react";
-import {
-  achievements,
-  education,
-  experience,
-  proficiencies,
-  profile,
-  projects,
-  summary,
-} from "../data.js";
+import { experience, proficiencies, profile, resumeEducation, resumeProjects } from "../data.js";
 import { projectDetails } from "./projectDetails.js";
 
 function HotLink({ href, tip, children }) {
@@ -119,57 +111,45 @@ function ResumePaper({
           <span className="dot" aria-hidden="true">
             ·
           </span>
-          <HotLink href={profile.linkedin} tip="Check out my LinkedIn">
-            {profile.linkedinLabel}
+          <HotLink href={profile.gmailUrl} tip="Send me a direct email!">
+            {profile.email}
           </HotLink>
           <span className="dot" aria-hidden="true">
             ·
           </span>
-          <HotLink href={profile.gmailUrl} tip="Send me a direct email!">
-            {profile.email}
+          <HotLink href={profile.linkedin} tip="Check out my LinkedIn">
+            linkedin.com/in/tracythutran
           </HotLink>
+          <span className="dot" aria-hidden="true">
+            ·
+          </span>
+          <HotLink href={profile.github} tip="Check out my GitHub">
+            github.com/enobot
+          </HotLink>
+          <span className="dot" aria-hidden="true">
+            ·
+          </span>
+          <span>tracythutran.com</span>
         </p>
       </header>
 
       <section>
-        <h2>Professional Summary</h2>
-        <p>{summary}</p>
-      </section>
-
-      <section>
-        <h2>Technical Proficiencies</h2>
-        <ul className="skills">
-          {proficiencies.map(([label, value]) => (
-            <li key={label}>
-              <strong>{label}:</strong> {value}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section>
         <h2>Education</h2>
-        <div className="entry">
-          <div className="entry-head">
-            <p className="dates">{education.dates}</p>
-            <p className="place">{education.place}</p>
-          </div>
+        <div className="entry-head">
           <p className="role">
-            <strong>{education.degree}</strong>, <SchoolLink />
+            <strong>{resumeEducation.degree}</strong>, <SchoolLink /> · {resumeEducation.gpa}
           </p>
-          <p>{education.gpa}</p>
+          <p className="place">{resumeEducation.when}</p>
         </div>
-        <div className="entry">
-          <p className="role">
-            <strong>{education.certificate.title}</strong>
-          </p>
-          <p>{education.certificate.detail}</p>
-        </div>
+        <p>{resumeEducation.honors}</p>
+        <p className="role">
+          <strong>{resumeEducation.certificate}</strong>, {resumeEducation.certificateFrom}
+        </p>
       </section>
 
       <section>
-        <h2>Software Engineering Projects</h2>
-        {projects.map((project) => {
+        <h2>Projects</h2>
+        {resumeProjects.map((project) => {
           const control = projectControls[project.id];
           return (
             <div className="entry" key={project.name}>
@@ -179,9 +159,9 @@ function ResumePaper({
                 ) : (
                   project.name
                 )}
-                <span className="tagline"> — {project.tagline}</span>
+                <span className="tagline"> — {project.tagline}</span>{" "}
+                <span className="stack-inline">| {project.stack}</span>
               </h3>
-              <p className="stack">{project.stack}</p>
               {projectDetails[project.id]?.links.length ? (
                 <p className="project-links">
                   {projectDetails[project.id].links.map((link, index) => (
@@ -212,17 +192,19 @@ function ResumePaper({
         <h2>Experience</h2>
         {experience.map((job) => (
           <div className="entry" key={job.role}>
-            <p className="dates">{job.dates}</p>
-            <p className="role">
-              <strong>{job.role}</strong>
-              {job.org === "school" ? (
-                <>
-                  , <SchoolLink />
-                </>
-              ) : (
-                <>, {job.org}</>
-              )}
-            </p>
+            <div className="entry-head">
+              <p className="role">
+                <strong>{job.role}</strong>
+                {job.org === "school" ? (
+                  <>
+                    , <SchoolLink />
+                  </>
+                ) : (
+                  <>, {job.org}</>
+                )}
+              </p>
+              <p className="place">{job.dates}</p>
+            </div>
             <ul className="bullets">
               {job.bullets.map((bullet) => (
                 <li key={bullet}>{bullet}</li>
@@ -233,12 +215,12 @@ function ResumePaper({
       </section>
 
       <section>
-        <h2>Achievements</h2>
-        <ul className="bullets">
-          {achievements.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
+        <h2>Technical Skills</h2>
+        {proficiencies.map(([label, value]) => (
+          <p className="skill-line" key={label}>
+            <strong>{label}:</strong> {value}
+          </p>
+        ))}
       </section>
 
       <p className="get-in-touch">

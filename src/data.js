@@ -184,7 +184,7 @@ export const projects = [
 
 export const experience = [
   {
-    dates: "Aug 2025 — Present",
+    dates: "Aug 2025 – Present",
     role: "IT Telecommunications Student Assistant",
     org: "school",
     bullets: [
@@ -193,7 +193,7 @@ export const experience = [
     ],
   },
   {
-    dates: "Jul 2025 — Jan 2026",
+    dates: "Jul 2025 – Jan 2026",
     role: "Coding Instructor",
     org: "Code Ninjas",
     bullets: [
@@ -251,6 +251,39 @@ export const tracer = {
     answer:
       "Give the lookup a default so a missing plan can't crash it:\n\nlevel = user.get(\"plan\", \"beginner\")\n\nIf a missing plan should stop the week from being built instead, check for it first and show the user a message before calling build_week.",
   },
+};
+
+/** The résumé paper on the desk mirrors the PDF résumé
+ *  (handoff/resume/resume.html): the same projects, order, taglines and
+ *  stacks. Bullets come from `projects` so the laptop and the résumé can't
+ *  drift apart; Merry Nails keeps the PDF's single line. */
+export const resumeProjects = [
+  { id: "tracer", tagline: "Windows screenshot assistant for ChatGPT", stack: "Electron, Node.js, JavaScript, OAuth 2.0 (PKCE)" },
+  { id: "surfsafe", tagline: "Privacy-first Chrome extension", stack: "TypeScript, Chrome Extensions API (Manifest V3), Playwright" },
+  { id: "fittmm", tagline: "Fitness planning app, web + Android", stack: "React, FastAPI, MySQL, Kotlin, Java, Firebase" },
+  { id: "portfolio", tagline: "Interactive résumé portfolio", stack: "React, Vite, Motion, Vercel" },
+  { id: "getsy", tagline: "Product-details service (Hack Reactor system design)", stack: "Node.js, Express, PostgreSQL, MongoDB, k6, New Relic" },
+  {
+    id: "merrynails",
+    tagline: "Website for a family-owned salon",
+    stack: "React, React Router, Tailwind CSS, Vercel",
+    bullets: [
+      "Built and deployed a four-page site where customers browse services and call to book; prices, hours and policies live in data files so the salon can update them without code changes.",
+    ],
+  },
+].map((entry) => {
+  const project = projects.find((item) => item.id === entry.id);
+  return { ...project, ...entry, bullets: entry.bullets ?? project.bullets };
+});
+
+export const resumeEducation = {
+  degree: "B.S. Computer Science",
+  gpa: "GPA: 3.71/4.00",
+  when: "Expected May 2027",
+  honors:
+    "Dean's List (Fall 2025, Spring 2026) · Emeritus Scholarship (merit-based) · Coursework: Software Engineering, Algorithm Engineering, Compilers & Languages",
+  certificate: "Software Engineering Immersive Certificate",
+  certificateFrom: "Hack Reactor",
 };
 
 /** Everything on the laptop, bigger projects first. */
