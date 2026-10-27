@@ -1578,6 +1578,13 @@
   right: 0.7rem;
 }
 
+/* The phone's screen has a big rounded corner and the camera island at the
+   top, so Close sits lower, on the "Contact" row, fully inside the screen. */
+.iphone.is-open .device-close {
+  top: 3.6rem;
+  right: 1.1rem;
+}
+
 .iphone.is-open .device-close {
   color: #fffaf6;
   background: rgba(28, 25, 24, 0.72);
