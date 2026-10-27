@@ -1560,7 +1560,8 @@
   gap: 0.35rem;
 }
 
-.mac-live .about-photos img {
+.mac-live .about-photos img,
+.mac-live .about-photo-slot {
   height: 72px;
   object-position: center 30%;
 }
@@ -1946,7 +1947,8 @@
   text-align: center;
 }
 
-.badge-live .about-photos img {
+.badge-live .about-photos img,
+.badge-live .about-photo-slot {
   height: clamp(140px, 22vh, 220px);
 }
 

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { profile } from "../data.js";
 import AboutBody from "./AboutBody.jsx";
@@ -6,6 +7,10 @@ import { flatShadow, liftShadow, liftTransition } from "./lift.js";
 export default function NameTag({ prepared, open, ready, titleId, buttonRef, onOpen, onClose }) {
   const reduced = useReducedMotion();
   const transition = liftTransition(reduced);
+  // The photos stay out of the page load; hovering, focusing or pressing the tag starts them, so they are
+  // usually in by the time it finishes opening.
+  const [photosWanted, setPhotosWanted] = useState(false);
+  const wantPhotos = () => setPhotosWanted(true);
 
   return (
     <motion.div
@@ -28,6 +33,9 @@ export default function NameTag({ prepared, open, ready, titleId, buttonRef, onO
             className="lift-hit"
             ref={buttonRef}
             aria-label="Open about me"
+            onPointerEnter={wantPhotos}
+            onPointerDown={wantPhotos}
+            onFocus={wantPhotos}
             onClick={onOpen}
           >
             <span className="tip" aria-hidden="true">About Me</span>
@@ -52,7 +60,7 @@ export default function NameTag({ prepared, open, ready, titleId, buttonRef, onO
             aria-hidden={ready ? undefined : true}
           >
             <h2 id={titleId}>Hi, I'm Tracy!</h2>
-            {prepared || open ? <AboutBody /> : null}
+            {prepared || open ? <AboutBody showPhotos={photosWanted || open} /> : null}
           </motion.div>
         </div>
       </motion.div>

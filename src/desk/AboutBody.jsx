@@ -1,17 +1,28 @@
 import { memo } from "react";
 import { about } from "../data.js";
 
-function AboutBody() {
+const base = import.meta.env.BASE_URL;
+
+// The name tag renders this before anyone opens it, so it passes showPhotos=false until someone shows interest;
+// the empty slots keep the same size, so nothing shifts when the photos arrive.
+function AboutBody({ showPhotos = true }) {
   return (
     <>
       <div className="about-photos">
-        {about.photos.map((photo) => (
-          <img
-            key={photo.src}
-            src={`${import.meta.env.BASE_URL}${photo.src}`}
-            alt={photo.alt}
-          />
-        ))}
+        {about.photos.map((photo) =>
+          showPhotos ? (
+            <picture key={photo.src}>
+              <source
+                type="image/webp"
+                srcSet={`${base}${photo.webp}-480.webp 480w, ${base}${photo.webp}-960.webp 960w`}
+                sizes="(max-width: 640px) 90vw, 360px"
+              />
+              <img src={`${base}${photo.src}`} alt={photo.alt} decoding="async" />
+            </picture>
+          ) : (
+            <span key={photo.src} className="about-photo-slot" />
+          ),
+        )}
       </div>
       <p className="about-copy about-lead">{about.intro}</p>
       {about.sections.map((section) => (

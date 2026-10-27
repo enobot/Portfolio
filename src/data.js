@@ -22,10 +22,12 @@ export const about = {
   photos: [
     {
       src: "photos/tracy-color.jpg",
+      webp: "photos/tracy-color",
       alt: "Tracy Tran with pink hair",
     },
     {
       src: "photos/tracy-portrait.jpg",
+      webp: "photos/tracy-portrait",
       alt: "Black and white portrait of Tracy Tran",
     },
   ],

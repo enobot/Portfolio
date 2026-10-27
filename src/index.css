@@ -652,7 +652,14 @@ a {
   margin-top: 1.15rem;
 }
 
-.about-photos img {
+.about-photos picture {
+  display: block;
+}
+
+/* An empty slot stands in for a photo until it is wanted, at the same size. */
+.about-photos img,
+.about-photo-slot {
+  display: block;
   width: 100%;
   height: clamp(220px, 32vw, 340px);
   object-fit: cover;
@@ -665,7 +672,8 @@ a {
     grid-template-columns: 1fr;
   }
 
-  .about-photos img {
+  .about-photos img,
+  .about-photo-slot {
     height: 280px;
   }
 }
