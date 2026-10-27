@@ -609,7 +609,7 @@
 
 .sheet.is-open .paper {
   padding: clamp(2.6rem, 5.8cqi, 3.4rem) clamp(2.8rem, 6.3cqi, 3.6rem) clamp(2.8rem, 6.3cqi, 3.6rem);
-  font-size: clamp(0.98rem, 2.2cqi, 1.3rem);
+  font-size: clamp(0.9rem, 2.02cqi, 1.2rem);
   line-height: 1.5;
 }
 
@@ -624,7 +624,7 @@
 
 .sheet.is-open .contact-line {
   margin-top: 0.8rem;
-  font-size: clamp(0.98rem, 2.2cqi, 1.3rem);
+  font-size: clamp(0.9rem, 2.02cqi, 1.2rem);
 }
 
 .sheet.is-open .paper section {
@@ -634,11 +634,11 @@
 .sheet.is-open .paper h2 {
   margin-bottom: 0.6rem;
   border-bottom-width: 2px;
-  font-size: clamp(1rem, 2.25cqi, 1.32rem);
+  font-size: clamp(0.92rem, 2.07cqi, 1.21rem);
 }
 
 .sheet.is-open .paper h3 {
-  font-size: clamp(1.06rem, 2.4cqi, 1.4rem);
+  font-size: clamp(0.98rem, 2.2cqi, 1.29rem);
 }
 
 .sheet.is-open .get-in-touch {
@@ -652,7 +652,7 @@
 @media (max-width: 800px) {
   .sheet.is-open .paper {
     padding: 1.6rem 1.2rem 2rem;
-    font-size: 0.94rem;
+    font-size: 0.88rem;
   }
 }
 

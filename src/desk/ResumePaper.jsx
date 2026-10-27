@@ -148,6 +148,15 @@ function ResumePaper({
       </section>
 
       <section>
+        <h2>Technical Skills</h2>
+        {proficiencies.map(([label, value]) => (
+          <p className="skill-line" key={label}>
+            <strong>{label}:</strong> {value}
+          </p>
+        ))}
+      </section>
+
+      <section>
         <h2>Projects</h2>
         {resumeProjects.map((project) => {
           const control = projectControls[project.id];
@@ -211,15 +220,6 @@ function ResumePaper({
               ))}
             </ul>
           </div>
-        ))}
-      </section>
-
-      <section>
-        <h2>Technical Skills</h2>
-        {proficiencies.map(([label, value]) => (
-          <p className="skill-line" key={label}>
-            <strong>{label}:</strong> {value}
-          </p>
         ))}
       </section>
 
