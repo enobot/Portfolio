@@ -142,7 +142,7 @@ export const projects = [
     tagline: "Privacy-First Chrome Extension",
     stack: "TypeScript | Chrome Extensions API (Manifest V3) | Playwright",
     bullets: [
-      "Built an extension that warns non-technical users when a form asks for SSNs, card or bank numbers, passwords or health data, classifying fields from metadata only; it never reads typed values and makes no network requests.",
+      "Built an extension that warns non-technical users when a form asks for SSNs, card or bank numbers, IDs or health data (email, password and phone only on risky pages), using field metadata only; it never reads typed values or sends data.",
       "Added on-device checks for HTTP pages, HTTP form actions and lookalike domains, with warnings in a closed shadow DOM that are restored, up to a capped limit, if a page removes them.",
       "Benchmarked against a no-extension baseline on 10 page types: reminders appear 56–82 ms after a typical form loads, typing latency is unchanged (5–8 ms to the next frame), and content-script CPU time fell 65% on pages that rewrite fields every 50 ms.",
       "Tested with unit, accuracy and Playwright browser suites across 24 test pages, including a source scan that fails if form values are read; submitted v0.1.1 to the Chrome Web Store.",
