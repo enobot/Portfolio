@@ -672,7 +672,6 @@
   pointer-events: none;
 }
 
-.mac.is-open .device-scale,
 .iphone.is-open .device-scale {
   pointer-events: auto;
 }
@@ -1235,6 +1234,17 @@
 .iphone.is-open .iphone-screen {
   overflow: auto;
   overscroll-behavior: contain;
+}
+
+/* Clicks only land on the open laptop's screen. Everything around it (the
+   bezel, the base and the transparent box they sit in) lets clicks through to
+   the dimmed desk, which closes the laptop. */
+.mac.is-open {
+  pointer-events: none;
+}
+
+.mac.is-open .mockframe .screen {
+  pointer-events: auto;
 }
 
 /* Opening the laptop crossfades the T/F/B/S cards into the Projects page: the
@@ -1980,15 +1990,56 @@
   }
 }
 
-.badge-close,
-.sheet-close,
-.device-close {
+/* These also carry the generic `.close` class, which strips button chrome, so
+   the pill needs the extra class in its selector to win. */
+.close.badge-close,
+.close.sheet-close,
+.close.device-close {
   min-width: 4.4rem;
   min-height: 2.4rem;
   padding: 0.35rem 0.7rem;
+  border: 1px solid rgba(196, 120, 146, 0.35);
   border-radius: 999px;
-  background: rgba(255, 252, 247, 0.94);
+  background: rgba(255, 252, 247, 0.96);
   box-shadow: 0 4px 10px rgba(40, 24, 10, 0.12);
+}
+
+.close.badge-close:hover,
+.close.sheet-close:hover,
+.close.device-close:hover,
+.close.badge-close:focus-visible,
+.close.sheet-close:focus-visible,
+.close.device-close:focus-visible {
+  background: #fff0f6;
+}
+
+/* Close gets its own strip at the top of each opened object, and the content
+   scrolls below that strip, so it can never slide under the button. */
+.mac.is-open .mac-live {
+  top: 3.2rem;
+  padding-top: 0.4rem;
+}
+
+.mac.is-open .mac-screen {
+  background: #fffcf7;
+}
+
+.sheet.is-open .pose {
+  background: var(--paper);
+}
+
+.sheet.is-open .sheet-clip {
+  height: calc(100% - 3.2rem);
+  margin-top: 3.2rem;
+}
+
+.sheet.is-open .sheet-clip .paper {
+  padding-top: 0.4rem;
+}
+
+.badge.is-open .badge-live {
+  top: 3.2rem;
+  padding-top: 0.4rem;
 }
 
 .badge-close {
