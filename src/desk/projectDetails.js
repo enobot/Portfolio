@@ -6,7 +6,7 @@ export const projectDetails = {
   tracer: {
     about: tracer.summary,
     status:
-      "Tested live with a real ChatGPT account on October 26, 2026: a screenshot question and a Vietnamese translation both came back. 70 automated tests pass.",
+      "Tested live with a real ChatGPT account on October 26, 2026: a screenshot question and a Vietnamese translation both came back. 79 automated tests pass.",
     links: [
       { href: tracer.repo, label: "GitHub" },
       { href: tracer.docs, label: "Documentation" },
@@ -55,10 +55,10 @@ export const projectDetails = {
   },
   surfsafe: {
     about:
-      "Shouldn't Wouldn't (the repository is called SurfSafe) is a privacy-first Chrome extension that gently warns people when a website asks for sensitive information, with the checks running on their own computer.",
+      "Shouldn't Wouldn't is a privacy-first Chrome extension that gently warns people when a website asks for sensitive information, with the checks running on their own computer.",
     status:
       "Version 0.1.1 was submitted to the Chrome Web Store on October 26, 2026 and is waiting for Google's review. It has unit, accuracy and real-browser tests.",
-    links: [{ href: "https://github.com/enobot/SurfSafe", label: "GitHub" }],
+    links: [{ href: "https://github.com/enobot/ShouldntWouldnt", label: "GitHub" }],
     walkthrough: true,
   },
 };

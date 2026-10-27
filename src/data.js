@@ -108,7 +108,7 @@ export const projects = [
     bullets: [
       "Built an Electron desktop app that freezes every monitor on a global hotkey, captures a drag-selected region, and streams a ChatGPT answer about it back into the app.",
       "Implemented Sign in with ChatGPT with OAuth 2.0 + PKCE; tokens never leave the main process, are encrypted with Electron safeStorage, refresh before expiry, and are revoked on every sign-out path.",
-      "Hardened the process boundary with sandboxed, network-isolated renderers, a 19-function preload bridge, and sender checks on every IPC handler, covered by 70 automated tests.",
+      "Hardened the process boundary with sandboxed, network-isolated renderers, a 19-function preload bridge, and sender checks on every IPC handler, covered by 79 automated tests.",
       "Profiled the packaged app: 665 ms warm start, 25 ms to crop and encode a capture, about 2% of one CPU core at idle, and flat memory across 60 repeated captures.",
     ],
   },
@@ -138,7 +138,7 @@ export const projects = [
   {
     id: "surfsafe",
     name: "Shouldn't Wouldn't",
-    repo: "https://github.com/enobot/SurfSafe",
+    repo: "https://github.com/enobot/ShouldntWouldnt",
     tagline: "Privacy-First Chrome Extension",
     stack: "TypeScript | Chrome Extensions API (Manifest V3) | Playwright",
     bullets: [

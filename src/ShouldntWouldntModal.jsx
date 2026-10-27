@@ -2,10 +2,10 @@ import { useEffect, useId, useRef, useState } from "react";
 import { lockPageScroll } from "./lockPageScroll.js";
 import "./ShouldntWouldntModal.css";
 
-const REPO = "https://github.com/enobot/SurfSafe";
+const REPO = "https://github.com/enobot/ShouldntWouldnt";
 
 // The wording is the extension's own (copy.ts, disclaimer.ts and types.ts in
-// the SurfSafe repository), and the rules below follow its controller, so the
+// the ShouldntWouldnt repository), and the rules below follow its controller, so the
 // demo behaves like the real thing on these sample pages.
 const NOTE = {
   ssn: "Sensitive Information: This website appears to be asking for your Social Security number. Only share this information with organizations you trust.",
@@ -581,7 +581,7 @@ export default function ShouldntWouldntModal({ onClose }) {
           <p className="repo-line">
             Check out my repo:{" "}
             <a className="repo-link" href={REPO} target="_blank" rel="noopener noreferrer">
-              github.com/enobot/SurfSafe
+              github.com/enobot/ShouldntWouldnt
             </a>
           </p>
         </section>
