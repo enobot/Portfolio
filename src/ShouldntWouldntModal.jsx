@@ -226,7 +226,7 @@ export default function ShouldntWouldntModal({ onClose }) {
   useEffect(() => {
     const dialog = dialogRef.current;
     const focusable = () =>
-      [...dialog.querySelectorAll("a, button, input, textarea")].filter(
+      [...dialog.querySelectorAll("a, button, input, textarea, video")].filter(
         (node) => !node.hasAttribute("disabled"),
       );
     focusable()[0]?.focus();
@@ -397,6 +397,27 @@ export default function ShouldntWouldntModal({ onClose }) {
               <dd>Node&rsquo;s test runner for unit and accuracy tests, and Playwright with Chromium for real-browser tests</dd>
             </div>
           </dl>
+        </section>
+
+        <section className="demo-section">
+          <h3>Video</h3>
+          <p className="demo-lead">
+            A screen recording of the real extension, version 0.2.0, in Chromium on sample pages
+            served from my computer. Everything typed in it is made up.
+          </p>
+          <video
+            className="demo-video is-recording"
+            controls
+            playsInline
+            preload="metadata"
+            width="1440"
+            height="1054"
+            poster={`${import.meta.env.BASE_URL}shouldnt-wouldnt/poster.jpg`}
+            src={`${import.meta.env.BASE_URL}shouldnt-wouldnt/demo.mp4`}
+          >
+            A recording of Shouldn&rsquo;t Wouldn&rsquo;t marking sensitive fields, masking a
+            number, warning about an insecure page and a lookalike address, and switching language.
+          </video>
         </section>
 
         <section className="demo-section">

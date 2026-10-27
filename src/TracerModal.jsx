@@ -198,7 +198,7 @@ export default function TracerModal({ onClose }) {
   useEffect(() => {
     const dialog = dialogRef.current;
     const focusable = () =>
-      [...dialog.querySelectorAll("a, button, textarea, input")].filter(
+      [...dialog.querySelectorAll("a, button, textarea, input, video")].filter(
         (node) => !node.hasAttribute("disabled"),
       );
     focusable()[0]?.focus();
@@ -291,6 +291,26 @@ export default function TracerModal({ onClose }) {
               </div>
             ))}
           </dl>
+        </section>
+
+        <section className="demo-section">
+          <h3>Video</h3>
+          <p className="demo-lead">
+            A screen recording of Tracer 1.0.0 on Windows, signed in to ChatGPT. The Python file
+            and its error are a demo I set up; the answers are ChatGPT&rsquo;s real replies.
+          </p>
+          <video
+            className="demo-video is-recording"
+            controls
+            playsInline
+            preload="metadata"
+            width="1100"
+            height="916"
+            poster={`${import.meta.env.BASE_URL}tracer/poster.jpg`}
+            src={`${import.meta.env.BASE_URL}tracer/demo.mp4`}
+          >
+            A recording of Tracer explaining a Python error and answering a follow-up question.
+          </video>
         </section>
 
         <section className="demo-section">
