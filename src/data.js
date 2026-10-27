@@ -15,7 +15,7 @@ export const profile = {
 };
 
 export const summary =
-  "Computer Science student and full-stack developer with experience building full-stack web and desktop applications. Skilled in JavaScript, Python, React, Node.js, FastAPI, and MySQL. Experienced in leading development teams, designing REST APIs, debugging applications, and building practical software solutions.";
+  "Computer Science student (B.S. expected May 2027) and full-stack developer who ships desktop, web, browser-extension and Android software. Works in JavaScript/TypeScript, React, Node.js, Python/FastAPI, Electron and SQL, with a focus on privacy, security and tested code.";
 
 export const about = {
   greeting: "Hi, I'm Tracy!",
@@ -42,7 +42,7 @@ export const about = {
     {
       heading: "What I like to build",
       paragraphs: [
-        "Software for real people. Tracer started from how many steps it takes to get help with whatever is on screen, and it's partly inspired by my parents' experience with technology and language barriers. Merry Nails is the website for my mom's salon. FITTMM was a five-person team project that I led.",
+        "Software for real people. Tracer started from how many steps it takes to get help with whatever is on screen, and it's partly inspired by my parents' experience with technology and language barriers. Merry Nails is the website for my mom's salon. FITTMM was a three-person team project that I led.",
         "I care about the parts people don't see, too: keeping data private, making things easy to use, and testing what I ship.",
       ],
     },
@@ -72,22 +72,25 @@ export const about = {
 };
 
 export const proficiencies = [
-  ["Languages", "Python, JavaScript, SQL, HTML, CSS"],
-  ["Frameworks & Backend", "React, FastAPI, Node.js, Express, Electron"],
-  ["Databases", "MySQL, Relational Database Design"],
+  ["Languages", "JavaScript, TypeScript, Python, SQL, Java, Kotlin, C++, HTML/CSS"],
   [
-    "Engineering",
-    "Full-Stack Development, RESTful APIs, Authentication, API Integration, Debugging, IPC",
+    "Frameworks, Backend & Databases",
+    "React, Node.js, Express, FastAPI, Electron, Android SDK, Tailwind CSS, PostgreSQL, MySQL, MongoDB, Firebase (Auth, Firestore)",
   ],
   [
     "Tools & Support",
-    "Git/GitHub, Technical Documentation, IT Support, Access Management, IT Security, Vite",
+    "Git/GitHub, Claude, Cursor, ChatGPT, Playwright, Lighthouse, Chrome DevTools, k6, New Relic, NGINX, Vercel, technical documentation, IT support",
+  ],
+  [
+    "Concepts",
+    "REST APIs, OAuth 2.0 (PKCE), Chrome extensions (Manifest V3), automated testing, performance profiling, access management",
   ],
 ];
 
 export const education = {
   dates: "Aug 2025 — May 2027",
   degree: "B.S. Computer Science",
+  gpa: "GPA: 3.71/4.00",
   place: "Fullerton, CA",
   certificate: {
     title: "Software Engineering Certificate, Hack Reactor",
@@ -101,11 +104,12 @@ export const projects = [
     id: "tracer",
     name: "Tracer",
     tagline: "AI-Powered Windows Desktop Assistant",
-    stack: "Electron | Node.js | JavaScript | Vite | IPC | OCR | LLM APIs",
+    stack: "Electron | Node.js | JavaScript | OAuth 2.0 | OpenAI API",
     bullets: [
-      "Developed an AI-powered Windows desktop assistant to analyze on-screen content and generate contextual explanations, summaries, and translations.",
-      "Implemented user-configurable global hotkeys using Electron, enabling users to activate the assistant from any application.",
-      "Architected secure IPC communication between Electron's Main, Preload, and Renderer processes to support screen capture and AI-powered content processing.",
+      "Built an Electron desktop app that freezes every monitor on a global hotkey, captures a drag-selected region, and streams a ChatGPT answer about it back into the app.",
+      "Implemented Sign in with ChatGPT with OAuth 2.0 + PKCE; tokens never leave the main process, are encrypted with Electron safeStorage, refresh before expiry, and are revoked on every sign-out path.",
+      "Hardened the process boundary with sandboxed, network-isolated renderers, a 19-function preload bridge, and sender checks on every IPC handler, covered by 70 automated tests.",
+      "Profiled the packaged app: 665 ms warm start, 25 ms to crop and encode a capture, about 2% of one CPU core at idle, and flat memory across 60 repeated captures.",
     ],
   },
 
@@ -114,21 +118,55 @@ export const projects = [
     name: "FITTMM",
     repo: "https://github.com/enobot/FITTMM",
     tagline: "Full-Stack Fitness Web Application",
-    stack: "React | JavaScript | FastAPI | Python | MySQL | REST APIs",
+    stack: "React | FastAPI | MySQL | Kotlin | Java | Firebase",
     bullets: [
-      "Led a 5-person development team in building a full-stack fitness application, coordinating task delegation, frontend development, and feature integration.",
-      "Developed React/JavaScript UI and a state-driven multi-step workflow for personalized weekly workout plans.",
-      "Implemented RESTful FastAPI endpoints and normalized MySQL schemas to persist user profiles and workout routines.",
+      "Led a 3-person team building a workout-planning web app; owned the repository and merged 11 of the team's 16 merged pull requests.",
+      "Built the React frontend (sign-in, multi-step plan builder, workout recording, progress history, lb/kg plate calculator) and integrated it with teammates' FastAPI/MySQL REST API.",
+      "Building the Android version in Kotlin and Java on Firebase Auth and Firestore, with a repository layer for plans, sessions and profiles.",
     ],
   },
   {
     id: "blu",
     name: "BLU",
     tagline: "Full-Stack Social Platform for Gamers",
-    stack: "Node.js | Express | JavaScript | REST APIs | Discord Integration",
+    stack: "React | JavaScript | REST APIs",
     bullets: [
       "Built component-driven navigation and authentication flows for registration, login, and profile management.",
-      "Developed Node.js/Express REST APIs for account creation and Discord integration, emphasizing secure authentication and scalable endpoint design.",
+      "Built the navigation bar, About modal, profile picture and mail components for the team's React frontend.",
+    ],
+  },
+  {
+    id: "surfsafe",
+    name: "Shouldn't Wouldn't",
+    repo: "https://github.com/enobot/SurfSafe",
+    tagline: "Privacy-First Chrome Extension",
+    stack: "TypeScript | Chrome Extensions API (Manifest V3) | Playwright",
+    bullets: [
+      "Built an extension that warns non-technical users when a form asks for SSNs, card or bank numbers, passwords or health data, classifying fields from metadata only; it never reads typed values and makes no network requests.",
+      "Added on-device checks for HTTP pages, HTTP form actions and lookalike domains, with warnings in a closed shadow DOM that are restored, up to a capped limit, if a page removes them.",
+      "Benchmarked against a no-extension baseline on 10 page types: reminders appear 56–82 ms after a typical form loads, typing latency is unchanged (5–8 ms to the next frame), and content-script CPU time fell 65% on pages that rewrite fields every 50 ms.",
+      "Tested with unit, accuracy and Playwright browser suites across 24 test pages, including a source scan that fails if form values are read; submitted v0.1.1 to the Chrome Web Store.",
+    ],
+  },
+  {
+    id: "portfolio",
+    name: "tracythutran.com",
+    repo: "https://github.com/enobot/Portfolio",
+    tagline: "Interactive Résumé Portfolio",
+    stack: "React | Vite | Motion | Vercel",
+    bullets: [
+      "Profiled slow mobile loads with Lighthouse and DevTools traces, then cut largest contentful paint from 5.7 s to 3.1 s (Lighthouse mobile 49 → 84, desktop 85 → 100) by serving the first screen as static HTML, deferring web fonts, and rendering the 3D desk after first paint.",
+      "Replaced a ~1,400-node animated SVG and a text-shadow animation with compositor-friendly transforms and opacity, cutting main-thread work per interaction 18–48% and page weight 22%, verified with side-by-side A/B runs.",
+    ],
+  },
+  {
+    id: "getsy",
+    name: "Getsy",
+    tagline: "Product-Details Service (Hack Reactor System Design)",
+    stack: "Node.js | Express | PostgreSQL | MongoDB | k6 | New Relic",
+    bullets: [
+      "Inherited a legacy product service and built its PostgreSQL version, comparing it against MongoDB on a 50M-row dataset (10M sellers, 10M stores, 30M products) generated with a streaming CSV seeder.",
+      "Added delete and update endpoints, load-tested the read endpoint with k6 up to 1,400 virtual users, and instrumented the service with New Relic.",
     ],
   },
   {
@@ -147,13 +185,11 @@ export const projects = [
 export const experience = [
   {
     dates: "Aug 2025 — Present",
-    role: "IT Student Assistant",
+    role: "IT Telecommunications Student Assistant",
     org: "school",
     bullets: [
-      "Resolved 200+ technical support tickets per week involving account access, authentication, login, phone, and network issues.",
-      "Configured Zoom Phone accounts, activated Ethernet data jacks, and managed access permissions in accordance with university IT procedures.",
-      "Diagnosed technical issues, documented solutions, and collaborated with IT teams to resolve service requests efficiently.",
-      "Created technical documentation and troubleshooting guides to improve issue resolution and knowledge sharing.",
+      "Resolve support tickets from faculty, staff and students covering account access, authentication, phone and network issues.",
+      "Configure Zoom Phone accounts, activate Ethernet data jacks, and manage access permissions under university IT security procedures; write troubleshooting guides for recurring issues.",
     ],
   },
   {
@@ -161,8 +197,7 @@ export const experience = [
     role: "Coding Instructor",
     org: "Code Ninjas",
     bullets: [
-      "Taught JavaScript and Python programming through hands-on Roblox and Minecraft development projects.",
-      "Guided students through programming logic, algorithms, debugging, and error resolution while adapting explanations to different skill levels.",
+      "Taught JavaScript and Python through Roblox and Minecraft game projects, coaching students through programming logic and debugging at their own level.",
     ],
   },
 ];
@@ -208,19 +243,7 @@ export const tracer = {
   ],
 };
 
-/** Projects shown on the laptop's Projects page but not on the résumé yet. */
-export const moreProjects = [
-
-  {
-    id: "surfsafe",
-    name: "Shouldn't Wouldn't",
-    tagline: "Privacy-First Chrome Extension",
-    stack: "Chrome Extension | Manifest V3 | TypeScript | Playwright",
-    bullets: [],
-  },
-];
-
 /** Everything on the laptop, bigger projects first. */
 export const laptopProjects = ["tracer", "fittmm", "blu", "surfsafe", "merrynails"].map((id) =>
-  [...projects, ...moreProjects].find((project) => project.id === id),
+  projects.find((project) => project.id === id),
 );

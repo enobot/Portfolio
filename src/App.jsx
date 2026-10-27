@@ -34,6 +34,7 @@ export default function App() {
   const tracerTipId = useId();
   const fittmmTipId = useId();
   const bluTipId = useId();
+  const shouldntWouldntTipId = useId();
   const aboutTipId = useId();
   const paperTipId = useId();
   const macTitleId = useId();
@@ -42,6 +43,7 @@ export default function App() {
   const tracerButtonRef = useRef(null);
   const fittmmButtonRef = useRef(null);
   const bluButtonRef = useRef(null);
+  const shouldntWouldntButtonRef = useRef(null);
   const aboutButtonRef = useRef(null);
   const feedbackButtonRef = useRef(null);
   const paperRef = useRef(null);
@@ -74,7 +76,7 @@ export default function App() {
   }, []);
   const closeShouldntWouldnt = useCallback(() => {
     setShouldntWouldntOpen(false);
-    projectOpenerRef.current?.focus();
+    (projectOpenerRef.current || shouldntWouldntButtonRef.current)?.focus();
     projectOpenerRef.current = null;
   }, []);
   const closeAbout = useCallback(() => {
@@ -129,6 +131,10 @@ export default function App() {
   const openFittmmFromResume = useCallback(() => {
     projectOpenerRef.current = null;
     setFittmmOpen(true);
+  }, []);
+  const openShouldntWouldntFromResume = useCallback(() => {
+    projectOpenerRef.current = null;
+    setShouldntWouldntOpen(true);
   }, []);
   const openBluFromResume = useCallback(() => {
     projectOpenerRef.current = null;
@@ -225,7 +231,7 @@ export default function App() {
 
   useEffect(() => {
     if (!ready || !which) return undefined;
-    if (tracerOpen || fittmmOpen || bluOpen || aboutOpen || feedbackOpen) return undefined;
+    if (tracerOpen || fittmmOpen || bluOpen || shouldntWouldntOpen || aboutOpen || feedbackOpen) return undefined;
     const root =
       which === "paper"
         ? sheetRef.current
@@ -263,7 +269,7 @@ export default function App() {
 
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [aboutOpen, bluOpen, closeDesk, feedbackOpen, fittmmOpen, ready, tracerOpen, which]);
+  }, [aboutOpen, bluOpen, closeDesk, feedbackOpen, fittmmOpen, ready, shouldntWouldntOpen, tracerOpen, which]);
 
   return (
     <div className="desk">
@@ -386,11 +392,14 @@ export default function App() {
         fittmmTipId={fittmmTipId}
         bluButtonRef={bluButtonRef}
         bluTipId={bluTipId}
+        shouldntWouldntButtonRef={shouldntWouldntButtonRef}
+        shouldntWouldntTipId={shouldntWouldntTipId}
         feedbackButtonRef={feedbackButtonRef}
         onAbout={openAboutFromResume}
         onTracer={openTracerFromResume}
         onFittmm={openFittmmFromResume}
         onBlu={openBluFromResume}
+        onShouldntWouldnt={openShouldntWouldntFromResume}
         onFeedback={openFeedback}
       />
       ) : null}

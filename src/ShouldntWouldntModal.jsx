@@ -575,7 +575,7 @@ export default function ShouldntWouldntModal({ onClose }) {
 
           <p className="sw-caveat">
             This in-browser copy uses the extension&rsquo;s own wording and rules. The real one runs
-            in Chrome; version 0.1.1 hasn&rsquo;t been submitted to the Chrome Web Store yet.
+            in Chrome; version 0.1.1 was submitted to the Chrome Web Store and is waiting for review.
           </p>
 
           <p className="repo-line">

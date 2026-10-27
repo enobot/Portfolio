@@ -42,11 +42,22 @@ export const projectDetails = {
     ],
     walkthrough: true,
   },
+  portfolio: {
+    about: "This site: an interactive desk in React, Vite and Motion.",
+    status: "Live on Vercel. Measurements are in PERFORMANCE_AUDIT.md in the repository.",
+    links: [
+      { href: "https://github.com/enobot/Portfolio", label: "GitHub" },
+      {
+        href: "https://github.com/enobot/Portfolio/blob/main/PERFORMANCE_AUDIT.md",
+        label: "Performance audit",
+      },
+    ],
+  },
   surfsafe: {
     about:
       "Shouldn't Wouldn't (the repository is called SurfSafe) is a privacy-first Chrome extension that gently warns people when a website asks for sensitive information, with the checks running on their own computer.",
     status:
-      "Version 0.1.1 has unit and real-browser tests. It hasn't been submitted to the Chrome Web Store yet.",
+      "Version 0.1.1 was submitted to the Chrome Web Store on October 26, 2026 and is waiting for Google's review. It has unit, accuracy and real-browser tests.",
     links: [{ href: "https://github.com/enobot/SurfSafe", label: "GitHub" }],
     walkthrough: true,
   },

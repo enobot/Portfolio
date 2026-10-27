@@ -74,17 +74,21 @@ function ResumePaper({
   fittmmTipId,
   bluButtonRef,
   bluTipId,
+  shouldntWouldntButtonRef,
+  shouldntWouldntTipId,
   feedbackButtonRef,
   onAbout,
   onTracer,
   onFittmm,
   onBlu,
+  onShouldntWouldnt,
   onFeedback,
 }) {
   const projectControls = {
     tracer: { buttonRef: tracerButtonRef, tipId: tracerTipId, onOpen: onTracer },
     fittmm: { buttonRef: fittmmButtonRef, tipId: fittmmTipId, onOpen: onFittmm },
     blu: { buttonRef: bluButtonRef, tipId: bluTipId, onOpen: onBlu },
+    surfsafe: { buttonRef: shouldntWouldntButtonRef, tipId: shouldntWouldntTipId, onOpen: onShouldntWouldnt },
   };
 
   return (
@@ -153,6 +157,7 @@ function ResumePaper({
           <p className="role">
             <strong>{education.degree}</strong>, <SchoolLink />
           </p>
+          <p>{education.gpa}</p>
         </div>
         <div className="entry">
           <p className="role">
