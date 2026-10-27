@@ -1237,6 +1237,10 @@
   overscroll-behavior: contain;
 }
 
+/* Opening the laptop crossfades the T/F/B/S cards into the Projects page: the
+   cards fade out while zooming in slightly, as if you were moving into the
+   screen, and the page fades in as its content rises into place. Opacity and
+   transform only, so the browser can run it off the main thread. */
 .mac-preview {
   position: absolute;
   z-index: 1;
@@ -1245,10 +1249,13 @@
   pointer-events: none;
   opacity: 1;
   background: #fffcf7;
+  transform-origin: 50% 40%;
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 .mac-preview.is-hidden {
   opacity: 0;
+  transform: scale(1.04);
 }
 
 .mac-home {
@@ -1375,12 +1382,23 @@
   color: var(--ink);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.22s ease;
+  transition: opacity 0.5s ease 0.08s;
 }
 
 .mac-live.is-shown {
   opacity: 1;
   pointer-events: auto;
+}
+
+.mac-live > h2,
+.mac-live > .projects-page {
+  transform: translateY(12px);
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) 0.08s;
+}
+
+.mac-live.is-shown > h2,
+.mac-live.is-shown > .projects-page {
+  transform: none;
 }
 
 /* The opened screen: a comfortable reading column with room between projects. */
@@ -2170,11 +2188,20 @@
   .badge-live,
   .mac-screen,
   .screen-preview,
+  .mac-preview,
   .mac-live,
+  .mac-live > h2,
+  .mac-live > .projects-page,
   .desk-dim,
   .iphone .phone-actions a,
   .iphone .phone-actions button {
     transition: none;
+  }
+
+  .mac-preview.is-hidden,
+  .mac-live > h2,
+  .mac-live > .projects-page {
+    transform: none;
   }
 }
 
