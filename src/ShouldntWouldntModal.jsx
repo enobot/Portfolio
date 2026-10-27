@@ -59,6 +59,23 @@ const PRIVACY = [
   "Because your privacy should always come first.",
 ];
 
+// The languages offered by version 0.2.0, each shown in its own script as in
+// the extension's popup. The demo itself stays in English.
+const LANGUAGES = [
+  { code: "en", name: "English", english: "English" },
+  { code: "es", name: "Español", english: "Spanish" },
+  { code: "zh-CN", name: "简体中文", english: "Chinese (Simplified)" },
+  { code: "zh-TW", name: "繁體中文", english: "Chinese (Traditional)" },
+  { code: "vi", name: "Tiếng Việt", english: "Vietnamese" },
+  { code: "tl", name: "Tagalog", english: "Tagalog (Filipino)" },
+  { code: "ko", name: "한국어", english: "Korean" },
+  { code: "ar", name: "العربية", english: "Arabic", dir: "rtl" },
+  { code: "fr", name: "Français", english: "French" },
+  { code: "ru", name: "Русский", english: "Russian" },
+  { code: "pt", name: "Português", english: "Portuguese" },
+  { code: "ht", name: "Kreyòl ayisyen", english: "Haitian Creole" },
+];
+
 // Sample pages with fake labels, like the repository's mock pages.
 const PAGES = [
   {
@@ -187,6 +204,8 @@ export default function ShouldntWouldntModal({ onClose }) {
   const [pageId, setPageId] = useState(PAGES[0].id);
   const [enabled, setEnabled] = useState(true);
   const [popupOpen, setPopupOpen] = useState(false);
+  const [language, setLanguage] = useState("en");
+  const [languagesOpen, setLanguagesOpen] = useState(false);
   // What the extension keeps in memory for one page; a new page starts fresh.
   const [dismissed, setDismissed] = useState([]);
   const [revealed, setRevealed] = useState([]);
@@ -349,8 +368,15 @@ export default function ShouldntWouldntModal({ onClose }) {
               the form sends over HTTP, or the address looks like another brand&rsquo;s.
             </li>
             <li>
-              The popup shows the site, the connection, the counts, and a status. The only thing
-              it saves is whether protection is on.
+              The popup shows the site, the connection, the counts, and a status. The only things
+              it saves are whether protection is on and your language.
+            </li>
+            <li>
+              Since version 0.2.0, a welcome page right after install asks which of 12 languages
+              the extension should speak, from Spanish and Vietnamese to Arabic (right to left).
+              Only the extension&rsquo;s own words change; websites are never translated. Labels
+              written in those languages are recognized too, so a Spanish &ldquo;N&uacute;mero de
+              Seguro Social&rdquo; field gets a note.
             </li>
           </ol>
         </section>
@@ -416,6 +442,44 @@ export default function ShouldntWouldntModal({ onClose }) {
               <div className="sw-popup" role="group" aria-label="Shouldn't Wouldn't popup">
                 <h4>Shouldn&rsquo;t Wouldn&rsquo;t</h4>
                 <p>Think Twice Before You Share.</p>
+                <div className="sw-language">
+                  <button
+                    type="button"
+                    className="sw-language-button"
+                    aria-expanded={languagesOpen}
+                    onClick={() => setLanguagesOpen((open) => !open)}
+                  >
+                    Language: {language === "auto" ? "Browser language" : LANGUAGES.find((item) => item.code === language).name}
+                  </button>
+                  {languagesOpen ? (
+                    <ul className="sw-languages">
+                      {[{ code: "auto", name: "Browser language" }, ...LANGUAGES].map((item) => (
+                        <li key={item.code}>
+                          <button
+                            type="button"
+                            lang={item.code === "auto" ? undefined : item.code}
+                            dir={item.dir}
+                            aria-pressed={language === item.code}
+                            onClick={() => {
+                              setLanguage(item.code);
+                              setLanguagesOpen(false);
+                            }}
+                          >
+                            {item.name}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  {language !== "en" && language !== "auto" ? (
+                    <p className="sw-language-note">
+                      In the extension, the reminders and this popup switch to{" "}
+                      {LANGUAGES.find((item) => item.code === language).english}
+                      {LANGUAGES.find((item) => item.code === language).dir === "rtl" ? ", laid out right to left" : ""}.
+                      This demo stays in English.
+                    </p>
+                  ) : null}
+                </div>
                 <button
                   type="button"
                   className="sw-switch"
@@ -574,8 +638,10 @@ export default function ShouldntWouldntModal({ onClose }) {
           </div>
 
           <p className="sw-caveat">
-            This in-browser copy uses the extension&rsquo;s own wording and rules. The real one runs
-            in Chrome; version 0.1.1 was submitted to the Chrome Web Store and is waiting for review.
+            This in-browser copy uses the extension&rsquo;s own English wording and rules. The real
+            one runs in Chrome. Version 0.1.1 was submitted to the Chrome Web Store and is waiting
+            for review; version 0.2.0 adds the 12 languages, whose translations are waiting for
+            review by native speakers.
           </p>
 
           <p className="repo-line">
