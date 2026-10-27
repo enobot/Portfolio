@@ -1,75 +1,164 @@
 # tracythutran.com
 
-My interactive résumé, at **[tracythutran.com](https://www.tracythutran.com)**. The page is a wooden desk: pick up the résumé, the laptop, the phone or the name tag and it lifts toward you and opens into something you can read.
+My portfolio and interactive résumé, live at **[tracythutran.com](https://www.tracythutran.com)**.
+
+## Overview
+
+I wanted a portfolio that shows my background, my résumé, my projects and my design taste in one place, and that a recruiter would actually remember. So the page is a wooden desk seen from above. Pick up the résumé, the laptop, the phone or the name tag and it lifts toward you and opens into something you can read. The site is for recruiters, hiring managers and engineers who want to look at my work.
+
+## Features
 
 | On the desk | Opens into |
 |---|---|
 | Résumé paper | The full résumé. Project names open their walkthroughs. |
 | Laptop | Projects, with links and walkthroughs |
-| Phone | Contact: email, LinkedIn, GitHub |
+| Phone | Contact: email, LinkedIn, GitHub, and a copy-email button |
 | Name tag | About me |
 
-The project walkthroughs run in the browser:
+Walkthroughs run in the browser:
 
 - **Tracer:** freeze the screen, drag a box around an error, and get an example answer.
 - **FITTMM:** recorded clips of the web app and the Android progress.
 - **BLU:** a demo with sample players.
-- **Shouldn't Wouldn't:** the Chrome extension's reminders and popup on sample forms.
+- **Shouldn't Wouldn't:** the extension's reminders and popup on sample forms, using its real wording and rules.
 
-## Built with
+Other features:
 
-- **React 19 and Vite 8**
-- **Motion** for the lift animations, which run as layout animations so each object grows from where it sits on the desk
-- **react-mockframe** for the MacBook and iPhone frames
-- **Plain CSS** with container-query units, so the desk scales as one scene from a phone to a wide monitor
-- **Vercel** hosting, with Cloudflare DNS for the domain
+- **A welcome screen** with falling cherry blossoms that move away from the cursor.
+- **"Get in touch"** opens a short form that turns into an email in your own mail app. Nothing is sent to a server.
+- **On phones and narrow windows** the desk rearranges, and the laptop opens straight into a full-screen Projects list.
 
-## Performance
+## Technologies
 
-The desk loads the first screen from static HTML, builds the 3D scene after the first paint, and keeps its idle animations on the GPU compositor. Compared side by side with the previous version:
+- **React 19 and Vite 8:** components and the build.
+- **Motion (`motion/react`):** the lift animations. They're layout animations, so each object grows out of the spot where it sits on the desk.
+- **react-mockframe:** the MacBook and iPhone frames.
+- **Plain CSS with container-query units:** the whole desk is sized in one "inch" unit derived from the window, so it scales as one scene from a phone to a wide monitor.
+- **Vercel** for hosting, **Cloudflare** for DNS.
 
-| | Before | After |
-|---|---|---|
-| Lighthouse mobile (live site) | 49 | 84 |
-| Largest contentful paint, mobile (live site) | 5.7 s | 3.1 s |
-| Lighthouse desktop (live site) | 85 | 100 |
-| Page weight | 826 KB | 641 KB |
-| Main-thread work per interaction | | 18–48% less |
+## Architecture
 
-Methods, raw numbers and what's still slow are in [PERFORMANCE_AUDIT.md](PERFORMANCE_AUDIT.md).
+```
+index.html ─ static welcome title (paints before any JavaScript runs)
+   │
+main.jsx ─▶ App.jsx ── state: which object is open, posed, ready
+              │
+              ├─ LoadingScreen        welcome screen and petals
+              ├─ desk-world           built right after the first paint
+              │    ├─ ResumePaper     résumé text from data.js
+              │    ├─ MacBook         Projects (ProjectsBody)
+              │    ├─ DeskPhone       Contact
+              │    ├─ NameTag         About (AboutBody)
+              │    └─ DeskDecor       bonsai and AirPods (pre-drawn images)
+              └─ walkthrough modals   lazy-loaded the first time one opens
+```
 
-## Accessibility
+- **Load order.** The welcome screen paints first. The desk is built in a React transition right after that, and the hidden screens (the readable résumé, About and Projects) are prepared 400 ms later. Opening something then doesn't have to build it.
+- **Opening an object.** `openDesk` records what was clicked and sets `which` and `posed`. Motion animates the object from its place on the desk to the center. When the animation finishes, `ready` turns on, and keyboard focus moves into the open object.
+- **Content.** All résumé, About and project text lives in `src/data.js` and `src/desk/projectDetails.js`, separate from the components.
 
-- Every desk object is a real button.
-- Opened objects and dialogs keep keyboard focus inside them, and Escape closes them.
-- Focus returns to whatever opened them.
-- `prefers-reduced-motion` turns the lifting, swaying and glowing off.
+## Project structure
 
-## Where things are
+```
+src/
+  App.jsx                desk state, focus handling, load order
+  data.js                résumé, About and project text
+  index.css              base styles, résumé paper, dialogs
+  desk/
+    Desk.css             desk scene, layouts for each screen shape
+    ResumePaper.jsx      the résumé
+    DeskDevices.jsx      laptop and phone
+    NameTag.jsx          name tag and About
+    DeskDecor.jsx        bonsai, petals, AirPods
+    projectDetails.js    project links and status lines
+  *Modal.jsx             project walkthroughs, loaded on demand
+  formSafety.js          limits and cleanup for the Get in touch form
+public/
+  photos/                About photos
+  fittmm/                FITTMM demo clips
+PERFORMANCE_AUDIT.md     measurements behind the performance work
+```
 
-| Path | What it holds |
-|---|---|
-| `src/data.js` | All résumé and About text |
-| `src/desk/projectDetails.js` | Project links and status lines |
-| `src/App.jsx` | The desk: which object is open, focus handling, loading order |
-| `src/desk/` | The desk objects (`ResumePaper`, `DeskDevices`, `NameTag`, `DeskDecor`) and their styles in `Desk.css` |
-| `src/*Modal.jsx` | The project walkthroughs, loaded only when opened |
-| `public/` | Photos and the FITTMM clips |
+## Run it locally
 
-## Run it
+You need Node.js 20 or newer.
 
 ```bash
+git clone https://github.com/enobot/Portfolio.git
+cd Portfolio
 npm install
 npm run dev
 ```
 
-Production build, written to `dist/`:
+Production build (written to `dist/`):
 
 ```bash
 npm run build
 npm run preview
 ```
 
-## Deploy
+There are no environment variables or secrets.
 
-Every push to `main` deploys to Vercel. `.github/workflows/pages.yml` also publishes the same build to GitHub Pages. Asset paths are relative, so `dist/` works at a domain root or a subpath on any static host.
+## How to use
+
+Wait for the welcome screen, then click (or Tab to) anything on the desk. Escape or the Close button puts it back. Inside the résumé, glowing project names open their walkthroughs.
+
+## Testing and validation
+
+There are no automated tests in this repository yet. Here is what I checked, and how.
+
+**Performance**, measured on Oct 26, 2026. Full method and raw numbers are in [PERFORMANCE_AUDIT.md](PERFORMANCE_AUDIT.md).
+- **Lighthouse on the live site,** 3 runs each, medians:
+
+  | | Before | After |
+  |---|---|---|
+  | Mobile score | 49 | 84 |
+  | Largest contentful paint, mobile | 5.7 s | 3.1 s |
+  | Desktop score | 85 | 100 |
+  | Page weight | 826 KB | 641 KB |
+
+- **Side-by-side runs of the old and new builds** on the same machine, alternating:
+  - main-thread work per interaction is 18–48% lower;
+  - desktop résumé scrolling went from 53 to 85 fps;
+  - idle animation no longer forces a layout every frame.
+- **Memory:** 64 open and close actions with no growth in DOM nodes or event listeners.
+
+**Screen sizes:** checked at 390×844, 768×1024, 1440×900 and 1920×1080. No overflow, no blank space below the page, and every opened object fits inside the window.
+
+**Console:** no errors or warnings in a fresh browser, including opening and closing the walkthroughs.
+
+**Interaction checks:** Escape closes only the topmost open thing, and focus returns to what opened it.
+
+**Not tested yet:** Firefox, Safari (including iOS), real phones and tablets, and screen readers. All automated checks ran in Chromium (Microsoft Edge 156).
+
+## Security and privacy
+
+- **No backend, no database, no cookies, no analytics.** It's a static site.
+- **The "Get in touch" form never leaves your browser.** It strips control characters, limits each field's length, checks the email format, and then builds a `mailto:` link.
+- **External links** open in a new tab with `rel="noopener noreferrer"`.
+- **No secrets** are in the code.
+
+## Challenges and what I learned
+
+- **Making one scene fit every screen.** Earlier versions patched sizes per breakpoint and never looked right. Sizing everything from one unit derived from the window fixed it, so the desk scales as a whole.
+- **Slow first paint on phones.** The welcome title only appeared once React had built the entire desk, and the font stylesheet blocked rendering. Moving the title into the HTML and loading the desk afterwards cut mobile LCP from about 5.7 s to 3.1 s.
+- **Animations that looked cheap but weren't.** The bonsai was about 1,400 SVG nodes, and swaying them forced the browser to recompute layout every frame. The glow on project names animated `text-shadow`, which repaints text. Redrawing the tree as images and fading a copy of the glowing text fixed both. I learned to check what an animation costs, not just how it looks.
+- **Not every optimization helps.** Adding `will-change: transform` to the desk objects made opening the résumé slower on a slow phone (712 → 952 ms), so I took it out.
+- **Measuring carefully.** One benchmark ran while my disk was full, and another ran after a local server had stopped. Both gave misleading numbers. Testing old and new builds side by side, and checking the servers before every run, fixed that.
+
+## Limitations and future work
+
+- **Closing the laptop on a slow phone** takes about half a second to paint. Fading the Projects screen instead of animating it back to the desk would help.
+- **The bonsai's animations** still cause a style recalculation every frame while other things move.
+- **Testing:** no automated tests yet. Component tests for opening, closing and focus would be the first ones to add.
+- **Not yet tested** on Safari, Firefox or real devices.
+- **Unused code at load:** about 63 KB of the gzipped script.
+
+## Development Transparency
+
+I designed and architected this site, including the desk concept, the features, the visual design, the interactions and its technical direction. I used AI-assisted development tools for parts of the implementation, debugging, performance testing and documentation. I reviewed what they produced against my design and remain responsible for the site's decisions, behavior and known limitations.
+
+## Author
+
+Tracy Tran, Computer Science student at California State University, Fullerton (graduating May 2027).
+[tracythutran.com](https://www.tracythutran.com) · [GitHub](https://github.com/enobot) · [LinkedIn](https://www.linkedin.com/in/tracythutran/)
