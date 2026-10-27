@@ -433,8 +433,9 @@
   top: 0;
   bottom: 0;
   margin: auto;
-  height: min(920px, calc(100dvh - 1.4rem), calc((100vw - 1.4rem) / 0.7727));
-  width: min(calc(920px * 0.7727), calc((100dvh - 1.4rem) * 0.7727), calc(100vw - 1.4rem));
+  /* Letter-shaped, as tall as 94% of a tall window, never smaller than before. */
+  height: min(max(920px, 94dvh), calc(100dvh - 1.4rem), calc((100vw - 1.4rem) / 0.7727));
+  width: min(calc(max(920px, 94dvh) * 0.7727), calc((100dvh - 1.4rem) * 0.7727), calc(100vw - 1.4rem));
   aspect-ratio: auto;
   --fit: var(--open-fit, 1);
 }
@@ -598,10 +599,17 @@
   text-shadow: none !important;
 }
 
-/* The opened résumé reads at document size, not poster size. */
+/* The opened résumé reads at document size, not poster size. Type is sized
+   from the sheet's own width (cqi), so a bigger sheet means bigger, easier
+   text; the clamps keep it from shrinking below or growing past sensible
+   sizes. */
+.sheet.is-open .sheet-clip {
+  container-type: inline-size;
+}
+
 .sheet.is-open .paper {
-  padding: 2.6rem 2.8rem 2.8rem;
-  font-size: 0.98rem;
+  padding: clamp(2.6rem, 5.8cqi, 3.4rem) clamp(2.8rem, 6.3cqi, 3.6rem) clamp(2.8rem, 6.3cqi, 3.6rem);
+  font-size: clamp(0.98rem, 2.2cqi, 1.3rem);
   line-height: 1.5;
 }
 
@@ -610,13 +618,13 @@
 }
 
 .sheet.is-open .mast h1 {
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: max(clamp(2rem, 5vw, 3rem), min(6.7cqi, 3.4rem));
   line-height: 1;
 }
 
 .sheet.is-open .contact-line {
   margin-top: 0.8rem;
-  font-size: 0.98rem;
+  font-size: clamp(0.98rem, 2.2cqi, 1.3rem);
 }
 
 .sheet.is-open .paper section {
@@ -626,11 +634,15 @@
 .sheet.is-open .paper h2 {
   margin-bottom: 0.6rem;
   border-bottom-width: 2px;
-  font-size: 1rem;
+  font-size: clamp(1rem, 2.25cqi, 1.32rem);
 }
 
 .sheet.is-open .paper h3 {
-  font-size: 1.06rem;
+  font-size: clamp(1.06rem, 2.4cqi, 1.4rem);
+}
+
+.sheet.is-open .get-in-touch {
+  font-size: 0.94em;
 }
 
 .sheet.is-open .entry + .entry {
@@ -1469,8 +1481,12 @@
   margin-top: 0.4rem;
 }
 
+/* Links and buttons share one pill, so both centre their label the same way. */
 .mac-links a,
 .mac-links button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 1.85rem;
   padding: 0.15rem 0.5rem;
   border-radius: 999px;
