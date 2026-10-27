@@ -16,6 +16,7 @@ function HotLink({ href, tip, children }) {
     <span className="hot-wrap">
       <a
         className="hot"
+        data-glow={typeof children === "string" ? children : undefined}
         href={href}
         target="_blank"
         rel="noopener noreferrer"
@@ -49,6 +50,7 @@ function ProjectName({ project, interactive, buttonRef, tipId, onOpen }) {
       <button
         type="button"
         className="hot"
+        data-glow={project.name}
         ref={buttonRef}
         aria-describedby={tipId}
         onClick={onOpen}
@@ -239,6 +241,7 @@ function ResumePaper({
           <button
             type="button"
             className="hot get-in-touch-button"
+            data-glow="Get in touch"
             ref={feedbackButtonRef}
             onClick={onFeedback}
           >

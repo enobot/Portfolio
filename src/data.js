@@ -215,7 +215,7 @@ export const moreProjects = [
     id: "surfsafe",
     name: "Shouldn't Wouldn't",
     tagline: "Privacy-First Chrome Extension",
-    stack: "Chrome Extension",
+    stack: "Chrome Extension | Manifest V3 | TypeScript | Playwright",
     bullets: [],
   },
 ];

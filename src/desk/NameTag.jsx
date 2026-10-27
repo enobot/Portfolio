@@ -3,7 +3,7 @@ import { profile } from "../data.js";
 import AboutBody from "./AboutBody.jsx";
 import { flatShadow, liftShadow, liftTransition } from "./lift.js";
 
-export default function NameTag({ open, ready, titleId, buttonRef, onOpen, onClose }) {
+export default function NameTag({ prepared, open, ready, titleId, buttonRef, onOpen, onClose }) {
   const reduced = useReducedMotion();
   const transition = liftTransition(reduced);
 
@@ -11,7 +11,6 @@ export default function NameTag({ open, ready, titleId, buttonRef, onOpen, onClo
     <motion.div
       layout
       className={`badge ${open ? "is-open" : ""}`}
-      style={{ borderRadius: 8 }}
       transition={transition}
     >
       <div className="badge-seat" aria-hidden="true" />
@@ -53,7 +52,7 @@ export default function NameTag({ open, ready, titleId, buttonRef, onOpen, onClo
             aria-hidden={ready ? undefined : true}
           >
             <h2 id={titleId}>Hi, I'm Tracy!</h2>
-            <AboutBody />
+            {prepared || open ? <AboutBody /> : null}
           </motion.div>
         </div>
       </motion.div>

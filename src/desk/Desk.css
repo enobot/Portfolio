@@ -247,9 +247,8 @@
   top: calc(50% - 7.5 * var(--in) - 0.4 * var(--ey));
   width: calc(4.8 * var(--in));
   height: calc(4.8 * var(--in));
-  filter:
-    drop-shadow(calc(0.04 * var(--in)) calc(0.06 * var(--in)) calc(0.05 * var(--in)) rgba(30, 18, 8, 0.3))
-    drop-shadow(calc(0.75 * var(--in)) calc(0.95 * var(--in)) calc(0.45 * var(--in)) rgba(40, 24, 10, 0.24));
+  /* One SVG unit of the drawing (the drawing is 480 units across). */
+  --u: calc(4.8 * var(--in) / 480);
 }
 
 /* AirPods: the open case and a loose bud, 5in x 2.6in, in the open space
@@ -266,39 +265,51 @@
     drop-shadow(calc(0.2 * var(--in)) calc(0.25 * var(--in)) calc(0.12 * var(--in)) rgba(40, 24, 10, 0.22));
 }
 
-/* A breeze: the whole canopy sways around the trunk, each pad rustles a
-   little out of step, and now and then a petal lets go and drifts down. */
-.bonsai-canopy,
-.bonsai-pad {
-  transform-box: view-box;
-  transform-origin: 240px 256px;
+/* The bonsai's pictures. Each casts its own shadow; the canopy halves sway
+   around the trunk out of step, and a few petals let go and drift down. All
+   of it moves with transform and opacity only, so it never repaints. */
+.bonsai-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.bonsai-pot {
+  filter:
+    drop-shadow(calc(0.04 * var(--in)) calc(0.06 * var(--in)) calc(0.05 * var(--in)) rgba(30, 18, 8, 0.3))
+    drop-shadow(calc(0.75 * var(--in)) calc(0.95 * var(--in)) calc(0.45 * var(--in)) rgba(40, 24, 10, 0.24));
 }
 
 .bonsai-canopy {
+  transform-origin: 50% 53.3%;
+  filter: drop-shadow(calc(0.6 * var(--in)) calc(0.8 * var(--in)) calc(0.4 * var(--in)) rgba(40, 24, 10, 0.2));
+  will-change: transform;
   animation: bonsai-sway 7s ease-in-out infinite;
 }
 
-.bonsai-pad {
-  animation: bonsai-rustle 5s ease-in-out infinite;
+.bonsai-canopy-back {
+  animation-duration: 5.4s;
+  animation-delay: -2.2s;
 }
 
 .bonsai-petal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(16 * var(--u));
+  height: calc(16 * var(--u));
+  margin: calc(-8 * var(--u)) 0 0 calc(-8 * var(--u));
+  background: center / contain no-repeat;
   opacity: 0;
-  transform-box: view-box;
+  will-change: transform, opacity;
   animation: bonsai-petal 10s linear infinite;
 }
 
 @keyframes bonsai-sway {
   0%,
   100% { transform: rotate(-2.6deg); }
-  50% { transform: rotate(2.8deg) translate(4px, 2px); }
-}
-
-@keyframes bonsai-rustle {
-  0%,
-  100% { transform: translate(0, 0) rotate(0deg); }
-  30% { transform: translate(5px, -3px) rotate(1.4deg); }
-  65% { transform: translate(-3px, 4px) rotate(-1.2deg); }
+  50% { transform: rotate(2.8deg) translate(calc(4 * var(--u)), calc(2 * var(--u))); }
 }
 
 /* Falling toward the desk reads, from overhead, as drifting outward, tumbling
@@ -306,30 +317,29 @@
 @keyframes bonsai-petal {
   0% {
     opacity: 0;
-    transform: translate(var(--x), var(--y)) rotate(0deg) scale(1.8);
+    transform: translate(calc(var(--x) * var(--u)), calc(var(--y) * var(--u))) rotate(0deg) scale(1.8);
   }
   8% {
     opacity: 1;
   }
   35% {
-    transform: translate(calc(var(--x) + var(--dx) * 0.3 + 14px), calc(var(--y) + var(--dy) * 0.35)) rotate(140deg) scale(1.7, 0.7);
+    transform: translate(calc((var(--x) + var(--dx) * 0.3 + 14) * var(--u)), calc((var(--y) + var(--dy) * 0.35) * var(--u))) rotate(140deg) scale(1.7, 0.7);
   }
   70% {
-    transform: translate(calc(var(--x) + var(--dx) * 0.75 - 10px), calc(var(--y) + var(--dy) * 0.8)) rotate(260deg) scale(1.5, 1.2);
+    transform: translate(calc((var(--x) + var(--dx) * 0.75 - 10) * var(--u)), calc((var(--y) + var(--dy) * 0.8) * var(--u))) rotate(260deg) scale(1.5, 1.2);
   }
   82% {
     opacity: 1;
-    transform: translate(calc(var(--x) + var(--dx)), calc(var(--y) + var(--dy))) rotate(310deg) scale(1.4);
+    transform: translate(calc((var(--x) + var(--dx)) * var(--u)), calc((var(--y) + var(--dy)) * var(--u))) rotate(310deg) scale(1.4);
   }
   100% {
     opacity: 0;
-    transform: translate(calc(var(--x) + var(--dx)), calc(var(--y) + var(--dy))) rotate(310deg) scale(1.4);
+    transform: translate(calc((var(--x) + var(--dx)) * var(--u)), calc((var(--y) + var(--dy)) * var(--u))) rotate(310deg) scale(1.4);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bonsai-canopy,
-  .bonsai-pad {
+  .bonsai-canopy {
     animation: none;
   }
 

@@ -96,7 +96,7 @@ const fallen = [
 const petal = "M0 8 C-7 4 -6 -6 -1.6 -8 L0 -5.8 L1.6 -8 C6 -6 7 4 0 8Z";
 
 // Petals that let go of the canopy and drift down onto the desk on a loop.
-// x/y start inside a pad; dx/dy is where the breeze carries them.
+// x/y start inside a pad; dx/dy is where the breeze carries them (SVG units).
 const drifting = [
   { x: 150, y: 170, dx: 120, dy: 190, time: 9, delay: 0 },
   { x: 318, y: 120, dx: 150, dy: 120, time: 11, delay: -3 },
@@ -107,90 +107,76 @@ const drifting = [
   { x: 340, y: 170, dx: 190, dy: 60, time: 9.5, delay: -7 },
 ];
 
-function Blossom({ x, y, r, turn }) {
-  return (
-    <g transform={`translate(${x} ${y}) rotate(${turn}) scale(${r / 8})`}>
-      {[0, 72, 144, 216, 288].map((angle) => (
-        <path key={angle} d={petal} transform={`rotate(${angle}) translate(0 -7)`} fill="#fff1f6" />
-      ))}
-      <circle r="3" fill="#e98aa9" />
-      <circle r="1.2" fill="#f4c96a" />
-    </g>
-  );
-}
+// The bonsai is drawn once into three pictures (pot, and the canopy split in
+// two so the halves sway slightly out of step) instead of ~1,400 live SVG
+// nodes. Swaying a picture is a compositor-only transform, so the tree no
+// longer re-renders on every frame. The markup is the same drawing as before.
+const blossom = ({ x, y, r, turn }) =>
+  `<g transform="translate(${x} ${y}) rotate(${turn}) scale(${r / 8})">` +
+  [0, 72, 144, 216, 288].map((angle) => `<path d="${petal}" transform="rotate(${angle}) translate(0 -7)" fill="#fff1f6"/>`).join("") +
+  `<circle r="3" fill="#e98aa9"/><circle r="1.2" fill="#f4c96a"/></g>`;
+
+const padMarkup = (pad) =>
+  `<g filter="url(#shade)">` +
+  pad.puffs.map((puff) => `<circle cx="${puff.x}" cy="${puff.y}" r="${puff.r}" fill="${puff.fill}"/>`).join("") +
+  pad.lights.map((light) => `<circle cx="${light.x}" cy="${light.y}" r="${light.r}" fill="#fff0f5" opacity="0.75"/>`).join("") +
+  pad.leaves.map((leaf) => `<ellipse cx="${leaf.x}" cy="${leaf.y}" rx="7" ry="3.4" transform="rotate(${leaf.turn} ${leaf.x} ${leaf.y})" fill="#93b56f"/>`).join("") +
+  pad.flowers.map(blossom).join("") +
+  `</g>`;
+
+const picture = (body) =>
+  `data:image/svg+xml,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480"><defs>` +
+      `<linearGradient id="pot" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5f1f8"/><stop offset="55%" stop-color="#ddd3e8"/><stop offset="100%" stop-color="#bdb0cc"/></linearGradient>` +
+      `<filter id="shade" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="6" dy="8" stdDeviation="6" flood-color="#3a1f22" flood-opacity="0.34"/></filter>` +
+      `</defs>${body}</svg>`,
+  )}`;
+
+const POT = picture(
+  fallen.map((spot) => `<path d="${petal}" transform="translate(${spot.x} ${spot.y}) rotate(${spot.turn}) scale(1.4)" fill="#f7bcd0"/>`).join("") +
+    `<rect x="90" y="136" width="300" height="220" rx="44" fill="url(#pot)"/>` +
+    `<rect x="104" y="150" width="272" height="192" rx="34" fill="#cfc3dc"/>` +
+    `<rect x="112" y="158" width="256" height="176" rx="28" fill="#5f6f45"/>` +
+    moss.map((dot) => `<circle cx="${dot.x}" cy="${dot.y}" r="${dot.r}" fill="${dot.dark ? "#4d5c37" : "#7b8d58"}"/>`).join("") +
+    `<path d="M214 244 Q236 226 262 240 Q276 262 254 282 Q226 290 214 268Z" fill="#452d20"/>`,
+);
+
+// Branches sit under every blossom pad, so they go in the back picture.
+const CANOPY_BACK = picture(
+  `<g stroke="#4f3426" stroke-linecap="round" fill="none">` +
+    `<path d="M232 260 Q190 220 150 170" stroke-width="16"/><path d="M240 250 Q280 170 310 132" stroke-width="15"/>` +
+    `<path d="M248 262 Q320 270 368 272" stroke-width="13"/><path d="M236 270 Q220 300 206 322" stroke-width="12"/>` +
+    twigs.map((twig) => `<path d="${twig}" stroke-width="4"/>`).join("") +
+    `</g>` +
+    [1, 3].map((index) => padMarkup(bonsai[index])).join(""),
+);
+
+const CANOPY_FRONT = picture([0, 2, 4].map((index) => padMarkup(bonsai[index])).join(""));
+
+const PETAL = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="-9 -9 18 18"><path d="${petal}" fill="#f9c3d5"/></svg>`)}`;
 
 function Bonsai() {
   return (
-    <svg viewBox="0 0 480 480" role="presentation">
-      <defs>
-        <linearGradient id="decor-pot" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#f5f1f8" />
-          <stop offset="55%" stopColor="#ddd3e8" />
-          <stop offset="100%" stopColor="#bdb0cc" />
-        </linearGradient>
-        <filter id="decor-pad-shade" x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="6" dy="8" stdDeviation="6" floodColor="#3a1f22" floodOpacity="0.34" />
-        </filter>
-      </defs>
-      {fallen.map((spot, index) => (
-        <path key={index} d={petal} transform={`translate(${spot.x} ${spot.y}) rotate(${spot.turn}) scale(1.4)`} fill="#f7bcd0" />
-      ))}
-      <rect x="90" y="136" width="300" height="220" rx="44" fill="url(#decor-pot)" />
-      <rect x="104" y="150" width="272" height="192" rx="34" fill="#cfc3dc" />
-      <rect x="112" y="158" width="256" height="176" rx="28" fill="#5f6f45" />
-      {moss.map((dot, index) => (
-        <circle key={index} cx={dot.x} cy={dot.y} r={dot.r} fill={dot.dark ? "#4d5c37" : "#7b8d58"} />
-      ))}
-      <path d="M214 244 Q236 226 262 240 Q276 262 254 282 Q226 290 214 268Z" fill="#452d20" />
-      <g className="bonsai-canopy">
-      <g stroke="#4f3426" strokeLinecap="round" fill="none">
-        <path d="M232 260 Q190 220 150 170" strokeWidth="16" />
-        <path d="M240 250 Q280 170 310 132" strokeWidth="15" />
-        <path d="M248 262 Q320 270 368 272" strokeWidth="13" />
-        <path d="M236 270 Q220 300 206 322" strokeWidth="12" />
-        {twigs.map((twig) => (
-          <path key={twig} d={twig} strokeWidth="4" />
-        ))}
-      </g>
-      {bonsai.map((pad, padIndex) => (
-        <g
-          key={padIndex}
-          className="bonsai-pad"
-          filter="url(#decor-pad-shade)"
-          style={{ animationDelay: `${padIndex * -1.1}s`, animationDuration: `${4.6 + padIndex * 0.7}s` }}
-        >
-          {pad.puffs.map((puff, index) => (
-            <circle key={index} cx={puff.x} cy={puff.y} r={puff.r} fill={puff.fill} />
-          ))}
-          {pad.lights.map((light, index) => (
-            <circle key={index} cx={light.x} cy={light.y} r={light.r} fill="#fff0f5" opacity="0.75" />
-          ))}
-          {pad.leaves.map((leaf, index) => (
-            <ellipse key={index} cx={leaf.x} cy={leaf.y} rx="7" ry="3.4" transform={`rotate(${leaf.turn} ${leaf.x} ${leaf.y})`} fill="#93b56f" />
-          ))}
-          {pad.flowers.map((flower, index) => (
-            <Blossom key={index} {...flower} />
-          ))}
-        </g>
-      ))}
-      </g>
+    <>
+      <img className="bonsai-layer bonsai-pot" src={POT} alt="" draggable="false" />
+      <img className="bonsai-layer bonsai-canopy bonsai-canopy-back" src={CANOPY_BACK} alt="" draggable="false" />
+      <img className="bonsai-layer bonsai-canopy" src={CANOPY_FRONT} alt="" draggable="false" />
       {drifting.map((drift, index) => (
-        <path
+        <span
           key={index}
           className="bonsai-petal"
-          d={petal}
-          fill="#f9c3d5"
           style={{
-            "--x": `${drift.x}px`,
-            "--y": `${drift.y}px`,
-            "--dx": `${drift.dx}px`,
-            "--dy": `${drift.dy}px`,
+            "--x": drift.x,
+            "--y": drift.y,
+            "--dx": drift.dx,
+            "--dy": drift.dy,
+            backgroundImage: `url("${PETAL}")`,
             animationDuration: `${drift.time}s`,
             animationDelay: `${drift.delay}s`,
           }}
         />
       ))}
-    </svg>
+    </>
   );
 }
 

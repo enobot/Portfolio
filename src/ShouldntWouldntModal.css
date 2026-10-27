@@ -1,0 +1,292 @@
+/* Shouldn't Wouldn't demo: a small browser window showing the extension's
+   reminders and popup. Colors and type follow the extension's own styles. */
+.sw-pages {
+  margin-bottom: 0.85rem;
+}
+
+.sw-browser {
+  position: relative;
+  background: #fff;
+  border: 1px solid #b7b0a4;
+  box-shadow: 0 10px 24px rgba(60, 46, 30, 0.12);
+}
+
+.sw-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.55rem;
+  background: #f3efe7;
+  border-bottom: 1px solid #d5d0c8;
+}
+
+.modal .sw-address {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.3rem 0.75rem;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #ddd6cb;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.sw-url {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sw-secure {
+  flex: none;
+  color: #5c574f;
+}
+
+.sw-insecure {
+  flex: none;
+  color: #9f1239;
+  font-weight: 600;
+}
+
+.sw-ext {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.sw-ext:hover,
+.sw-ext[aria-expanded="true"] {
+  background: #e7e1d6;
+}
+
+/* The toolbar icon: a wine-red tile with a light band, as the extension draws it. */
+.sw-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 22%;
+  background: linear-gradient(#7a2430 0 56%, #fff7f7 56% 68%, #7a2430 68%);
+}
+
+.sw-popup {
+  position: absolute;
+  z-index: 2;
+  top: 2.95rem;
+  right: 0.5rem;
+  width: min(320px, calc(100% - 1rem));
+  max-height: 24rem;
+  overflow: auto;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
+  padding: 14px 16px 16px;
+  color: #2a1218;
+  background: #fffdfb;
+  border: 1px solid #d5d0c8;
+  border-radius: 8px;
+  box-shadow: 0 14px 34px rgba(40, 20, 24, 0.25);
+  font: 14px/1.45 system-ui, "Segoe UI", sans-serif;
+  text-align: left;
+}
+
+.sw-popup h4 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.sw-popup h5 {
+  margin: 14px 0 6px;
+  font-size: 14px;
+}
+
+.modal .sw-popup p {
+  margin: 6px 0;
+  font-size: 14px;
+}
+
+.sw-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 6px 10px;
+  color: #3f1520;
+  background: #fff;
+  border: 1px solid #7a2430;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.sw-state {
+  min-width: 2.2em;
+  padding: 1px 6px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-weight: 650;
+  text-align: center;
+}
+
+.sw-switch[aria-checked="true"] .sw-state {
+  color: #fff;
+  background: #7a2430;
+  border-color: #7a2430;
+}
+
+.modal .sw-popup .sw-status {
+  font-weight: 650;
+}
+
+.sw-k {
+  color: #6b4a52;
+}
+
+.sw-page {
+  min-height: 15rem;
+  padding: 1rem 1.2rem 1.3rem;
+  color: #241418;
+  font: 16px/1.45 Georgia, "Times New Roman", serif;
+  text-align: left;
+}
+
+.sw-page h4 {
+  margin: 0 0 0.4rem;
+  font-size: 1.45rem;
+}
+
+.sw-field {
+  display: block;
+  margin-top: 0.75rem;
+}
+
+.sw-field span {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.sw-field input,
+.sw-field textarea {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 22rem;
+  padding: 0.3rem 0.45rem;
+  font: inherit;
+  color: inherit;
+  background: #fff;
+  border: 1px solid #b9aeb0;
+  border-radius: 4px;
+}
+
+.sw-field textarea {
+  resize: vertical;
+}
+
+.sw-field .is-marked {
+  box-shadow: inset 0 0 0 1px #9f1239, 0 0 0 1px #9f1239;
+}
+
+/* Visual masking only, like the extension: the value itself is untouched. */
+.sw-field .is-masked {
+  -webkit-text-security: disc;
+}
+
+.sw-note,
+.sw-panel {
+  box-sizing: border-box;
+  max-width: 36rem;
+  margin: 4px 0 8px;
+  padding: 8px 10px;
+  color: #3f1d24;
+  background: #fff7f7;
+  border: 1px solid #9f1239;
+  border-radius: 6px;
+  font: 14px/1.45 Georgia, "Times New Roman", serif;
+}
+
+.sw-panel:focus {
+  outline: 2px solid #1e3a5f;
+  outline-offset: 2px;
+}
+
+.modal .sw-note p,
+.modal .sw-panel p {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.sw-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sw-row button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  color: #3f1d24;
+  background: #fff;
+  border: 1px solid #7a2430;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.sw-row .sw-quiet {
+  background: transparent;
+  border-color: transparent;
+  text-decoration: underline;
+}
+
+.sw-row svg {
+  flex: none;
+  width: 1.1em;
+  height: 1.1em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.sw-row button:focus-visible,
+.sw-switch:focus-visible {
+  outline: 2px solid #1e3a5f;
+  outline-offset: 2px;
+}
+
+.sw-submit {
+  margin-top: 1rem;
+  padding: 0.35rem 0.9rem;
+  font: inherit;
+  color: inherit;
+  background: #fff;
+  border: 1px solid #241418;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal .sw-sent {
+  margin-top: 0.6rem;
+  color: #3d5a2a;
+  font-size: 0.95rem;
+}
+
+.modal .sw-caveat {
+  margin-top: 0.75rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+  .sw-page {
+    padding: 0.85rem 0.9rem 1.1rem;
+  }
+}

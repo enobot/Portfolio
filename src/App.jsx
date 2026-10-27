@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useId, useRef, useState } from "react";
+import { lazy, startTransition, Suspense, useCallback, useEffect, useId, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { flatShadow, liftShadow, liftTransition } from "./desk/lift.js";
 import DeskDecor from "./desk/DeskDecor.jsx";
@@ -15,15 +15,19 @@ const AboutModal = lazy(() => import("./AboutModal.jsx"));
 const BluModal = lazy(() => import("./BluModal.jsx"));
 const FeedbackModal = lazy(() => import("./FeedbackModal.jsx"));
 const FittmmModal = lazy(() => import("./FittmmModal.jsx"));
+const ShouldntWouldntModal = lazy(() => import("./ShouldntWouldntModal.jsx"));
 const TracerModal = lazy(() => import("./TracerModal.jsx"));
 
 export default function App() {
   const [tracerOpen, setTracerOpen] = useState(false);
   const [fittmmOpen, setFittmmOpen] = useState(false);
   const [bluOpen, setBluOpen] = useState(false);
+  const [shouldntWouldntOpen, setShouldntWouldntOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [deskReady, setDeskReady] = useState(false);
+  const [extrasReady, setExtrasReady] = useState(false);
   const [which, setWhich] = useState(null);
   const [posed, setPosed] = useState(false);
   const [ready, setReady] = useState(false);
@@ -68,6 +72,11 @@ export default function App() {
     (projectOpenerRef.current || bluButtonRef.current)?.focus();
     projectOpenerRef.current = null;
   }, []);
+  const closeShouldntWouldnt = useCallback(() => {
+    setShouldntWouldntOpen(false);
+    projectOpenerRef.current?.focus();
+    projectOpenerRef.current = null;
+  }, []);
   const closeAbout = useCallback(() => {
     setAboutOpen(false);
     (aboutOpenerRef.current || aboutButtonRef.current)?.focus();
@@ -93,6 +102,7 @@ export default function App() {
     if (id === "tracer") setTracerOpen(true);
     else if (id === "fittmm") setFittmmOpen(true);
     else if (id === "blu") setBluOpen(true);
+    else if (id === "surfsafe") setShouldntWouldntOpen(true);
   }, []);
   const closeDesk = useCallback(() => {
     if (!which) return;
@@ -106,11 +116,47 @@ export default function App() {
     setFeedbackOpen(false);
     feedbackButtonRef.current?.focus();
   }, []);
+  // Steady handlers, so the readable résumé (memoized) only re-renders when
+  // it actually changes, not on every desk state change.
+  const openAboutFromResume = useCallback(() => {
+    aboutOpenerRef.current = aboutButtonRef.current;
+    setAboutOpen(true);
+  }, []);
+  const openTracerFromResume = useCallback(() => {
+    projectOpenerRef.current = null;
+    setTracerOpen(true);
+  }, []);
+  const openFittmmFromResume = useCallback(() => {
+    projectOpenerRef.current = null;
+    setFittmmOpen(true);
+  }, []);
+  const openBluFromResume = useCallback(() => {
+    projectOpenerRef.current = null;
+    setBluOpen(true);
+  }, []);
+  const openFeedback = useCallback(() => setFeedbackOpen(true), []);
 
   useEffect(() => {
     if (!which) return undefined;
     return lockPageScroll();
   }, [which]);
+
+  // The welcome screen paints first. The desk renders behind it as an
+  // interruptible transition, so the petals keep moving while it builds. A
+  // timer rather than an animation frame: frames pause in background tabs.
+  useEffect(() => {
+    const timer = window.setTimeout(() => startTransition(() => setDeskReady(true)), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  // What only shows once something is opened (the readable résumé, About,
+  // Projects) is built a moment later, still behind the welcome screen, so it
+  // neither slows the first paint nor lands on the first click.
+  useEffect(() => {
+    if (!deskReady) return undefined;
+    const timer = window.setTimeout(() => startTransition(() => setExtrasReady(true)), 400);
+    return () => window.clearTimeout(timer);
+  }, [deskReady]);
 
   useEffect(() => {
     const sheet = sheetRef.current;
@@ -148,7 +194,7 @@ export default function App() {
       observer.disconnect();
       window.removeEventListener("resize", apply);
     };
-  }, [pageCount]);
+  }, [deskReady, pageCount]);
 
   const lastDesk = useRef(null);
   useEffect(() => {
@@ -225,6 +271,7 @@ export default function App() {
       {showWelcome ? (
         <LoadingScreen onDone={() => setShowWelcome(false)} />
       ) : null}
+      {deskReady || !showWelcome ? (
       <div
         className={`desk-world ${posed ? "is-lifted" : ""}`}
         inert={showWelcome ? true : undefined}
@@ -254,6 +301,7 @@ export default function App() {
       <DeskDecor />
       <div ref={badgeBoxRef}>
         <NameTag
+          prepared={extrasReady}
           open={which === "badge" && posed}
           ready={which === "badge" && ready}
           titleId={badgeTitleId}
@@ -264,6 +312,7 @@ export default function App() {
       </div>
       <div ref={macBoxRef}>
         <MacBook
+          prepared={extrasReady}
           open={which === "mac" && posed}
           ready={which === "mac" && ready}
           titleId={macTitleId}
@@ -287,7 +336,6 @@ export default function App() {
         layout
         className={`sheet ${paperOpen ? "is-open" : ""}`}
         ref={sheetRef}
-        style={{ borderRadius: 2 }}
         transition={lift}
       >
       <motion.div
@@ -327,8 +375,9 @@ export default function App() {
       </div>
       <div className="sheet-clip">
       <div className="paper-fit">
+      {extrasReady || which === "paper" ? (
       <ResumePaper
-        interactive={which === "paper" && posed}
+        interactive={paperOpen}
         aboutButtonRef={aboutButtonRef}
         aboutTipId={aboutTipId}
         tracerButtonRef={tracerButtonRef}
@@ -338,35 +387,26 @@ export default function App() {
         bluButtonRef={bluButtonRef}
         bluTipId={bluTipId}
         feedbackButtonRef={feedbackButtonRef}
-        onAbout={() => {
-          aboutOpenerRef.current = aboutButtonRef.current;
-          setAboutOpen(true);
-        }}
-        onTracer={() => {
-          projectOpenerRef.current = null;
-          setTracerOpen(true);
-        }}
-        onFittmm={() => {
-          projectOpenerRef.current = null;
-          setFittmmOpen(true);
-        }}
-        onBlu={() => {
-          projectOpenerRef.current = null;
-          setBluOpen(true);
-        }}
-        onFeedback={() => setFeedbackOpen(true)}
+        onAbout={openAboutFromResume}
+        onTracer={openTracerFromResume}
+        onFittmm={openFittmmFromResume}
+        onBlu={openBluFromResume}
+        onFeedback={openFeedback}
       />
+      ) : null}
       </div>
       </div>
       </motion.div>
       </motion.div>
       </div>
       </div>
+      ) : null}
 
       <Suspense fallback={null}>
         {tracerOpen ? <TracerModal onClose={closeTracer} /> : null}
         {fittmmOpen ? <FittmmModal onClose={closeFittmm} /> : null}
         {bluOpen ? <BluModal onClose={closeBlu} /> : null}
+        {shouldntWouldntOpen ? <ShouldntWouldntModal onClose={closeShouldntWouldnt} /> : null}
         {aboutOpen ? <AboutModal onClose={closeAbout} /> : null}
         {feedbackOpen ? <FeedbackModal onClose={closeFeedback} /> : null}
       </Suspense>

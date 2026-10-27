@@ -44,8 +44,10 @@ export const projectDetails = {
   },
   surfsafe: {
     about:
-      "Shouldn't Wouldn't (the repository is called SurfSafe) is a privacy-first Chrome extension that will warn people when a website asks for sensitive information, with the checks running on their own computer.",
-    status: "Just getting started: the repository is set up and the extension is being designed.",
-    links: [],
+      "Shouldn't Wouldn't (the repository is called SurfSafe) is a privacy-first Chrome extension that gently warns people when a website asks for sensitive information, with the checks running on their own computer.",
+    status:
+      "Version 0.1.1 has unit and real-browser tests. It hasn't been submitted to the Chrome Web Store yet.",
+    links: [{ href: "https://github.com/enobot/SurfSafe", label: "GitHub" }],
+    walkthrough: true,
   },
 };

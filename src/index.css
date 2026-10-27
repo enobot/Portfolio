@@ -55,7 +55,7 @@ body::before {
   height: 100vh;
   height: 100dvh;
   background-color: #c4a06a;
-  background-image: url("./oak-desk.jpg");
+  background-image: url("./oak-desk.webp");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -207,38 +207,56 @@ a {
   line-height: 1.25;
 }
 
+/* Glowing links: a soft steady glow on the text, plus a brighter glow on a
+   copy of the text (::after) that only fades in and out. Fading opacity runs on
+   the compositor; animating text-shadow itself repainted the text every frame
+   and made the open résumé stutter while scrolling. */
 .paper h3 .hot,
 .contact-line a[href*="linkedin.com"],
 .get-in-touch-button.hot {
+  position: relative;
   border-bottom-color: rgba(214, 92, 140, 0.9);
   text-shadow:
-    0 0 8px rgba(255, 168, 204, 0.85),
-    0 0 16px rgba(255, 150, 196, 0.45);
+    0 0 6px rgba(255, 168, 204, 0.55),
+    0 0 14px rgba(255, 150, 196, 0.28);
+}
+
+.paper h3 .hot::after,
+.contact-line a[href*="linkedin.com"]::after,
+.get-in-touch-button.hot::after {
+  content: attr(data-glow);
+  position: absolute;
+  inset: 0;
+  padding: inherit;
+  color: transparent;
+  text-shadow:
+    0 0 10px rgba(255, 168, 204, 1),
+    0 0 22px rgba(255, 140, 190, 0.8),
+    0 0 36px rgba(255, 186, 214, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
   animation: project-glow 2.8s ease-in-out infinite;
 }
 
-.paper h3 .hot:hover,
-.paper h3 .hot:focus-visible,
-.contact-line a[href*="linkedin.com"]:hover,
-.contact-line a[href*="linkedin.com"]:focus-visible,
-.get-in-touch-button.hot:hover,
-.get-in-touch-button.hot:focus-visible {
+.paper h3 .hot:hover::after,
+.paper h3 .hot:focus-visible::after,
+.contact-line a[href*="linkedin.com"]:hover::after,
+.contact-line a[href*="linkedin.com"]:focus-visible::after,
+.get-in-touch-button.hot:hover::after,
+.get-in-touch-button.hot:focus-visible::after {
   animation: none;
+  opacity: 0;
 }
 
 @keyframes project-glow {
   0%,
   100% {
-    text-shadow:
-      0 0 6px rgba(255, 168, 204, 0.55),
-      0 0 14px rgba(255, 150, 196, 0.28);
+    opacity: 0;
   }
 
   50% {
-    text-shadow:
-      0 0 10px rgba(255, 168, 204, 1),
-      0 0 22px rgba(255, 140, 190, 0.8),
-      0 0 36px rgba(255, 186, 214, 0.45);
+    opacity: 1;
   }
 }
 
@@ -1169,7 +1187,10 @@ a {
   .closing-note,
   .paper h3 .hot,
   .contact-line a[href*="linkedin.com"],
-  .get-in-touch-button.hot {
+  .get-in-touch-button.hot,
+  .paper h3 .hot::after,
+  .contact-line a[href*="linkedin.com"]::after,
+  .get-in-touch-button.hot::after {
     transition: none;
     animation: none;
     transform: none;

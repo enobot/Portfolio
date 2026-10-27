@@ -230,7 +230,7 @@ const LaptopShell = memo(function LaptopShell() {
   );
 });
 
-export function MacBook({ open, ready, titleId, buttonRef, onOpen, onClose, onOpenProject }) {
+export function MacBook({ prepared, open, ready, titleId, buttonRef, onOpen, onClose, onOpenProject }) {
   const reduced = useReducedMotion();
   const transition = liftTransition(reduced);
   const rootRef = useRef(null);
@@ -255,7 +255,6 @@ export function MacBook({ open, ready, titleId, buttonRef, onOpen, onClose, onOp
       layout
       ref={rootRef}
       className={`mac ${open ? "is-open" : ""}`}
-      style={{ borderRadius: 18 }}
       transition={transition}
     >
       <div className="mac-seat" aria-hidden="true" />
@@ -291,7 +290,7 @@ export function MacBook({ open, ready, titleId, buttonRef, onOpen, onClose, onOp
                   aria-hidden={ready ? undefined : true}
                 >
                   <h2 id={titleId}>Projects</h2>
-                  <ProjectsBody onOpen={onOpenProject} />
+                  {prepared || open ? <ProjectsBody onOpen={onOpenProject} /> : null}
                 </div>
               </div>
             </MockFrame>
@@ -324,7 +323,6 @@ export function DeskPhone({ open, ready, titleId, buttonRef, onOpen, onClose }) 
     <motion.div
       layout
       className={`iphone ${open ? "is-open" : ""}`}
-      style={{ borderRadius: 36 }}
       transition={transition}
     >
       <div className="phone-seat" aria-hidden="true" />
