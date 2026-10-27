@@ -1144,8 +1144,13 @@
   }
 }
 
+/* The open laptop fills most of a large window (up to 90% of its width and 88%
+   of its height), and never drops below its old size on smaller screens. */
 .mac.is-open {
-  --scale: min(1, calc((100vw - 1.5rem) / 1212px), calc((100dvh - 1.5rem) / 736px));
+  --scale: max(
+    min(1, calc((100vw - 1.5rem) / 1212px), calc((100dvh - 1.5rem) / 736px)),
+    min(1.6, calc(90vw / 1212px), calc(88dvh / 736px))
+  );
   z-index: 12;
   left: 0;
   right: 0;
