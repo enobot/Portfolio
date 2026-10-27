@@ -141,7 +141,14 @@ function ResumePaper({
           </p>
           <p className="place">{resumeEducation.when}</p>
         </div>
-        <p>{resumeEducation.honors}</p>
+        <p className="skill-line">
+          <strong>Honors:</strong> {resumeEducation.honors}
+        </p>
+        {resumeEducation.coursework.map(([label, value]) => (
+          <p className="skill-line" key={label}>
+            <strong>{label}:</strong> {value}
+          </p>
+        ))}
         <p className="role">
           <strong>{resumeEducation.certificate}</strong>, {resumeEducation.certificateFrom}
         </p>
