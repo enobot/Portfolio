@@ -1580,7 +1580,19 @@
   text-align: left;
   cursor: pointer;
   box-shadow: 0 6px 12px rgba(80, 40, 60, 0.05);
-  transition: transform 0.15s ease, background 0.15s ease;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  --tint: #ffe3ef;
+  --edge: rgba(214, 92, 140, 0.75);
+}
+
+.iphone .phone-actions a:nth-child(2) {
+  --tint: #ece4ff;
+  --edge: rgba(95, 105, 180, 0.7);
+}
+
+.iphone .phone-actions a:nth-child(3) {
+  --tint: #f3e7da;
+  --edge: rgba(150, 100, 70, 0.6);
 }
 
 .phone-icon {
@@ -1647,6 +1659,41 @@
 .iphone .phone-actions a:first-child {
   background: #fff;
   border-color: rgba(232, 160, 184, 0.7);
+}
+
+/* Hovering or tabbing to a contact card fills it with its icon's colour and
+   lifts it a little, so it reads as something you can click. */
+@media (hover: hover) {
+  .iphone .phone-actions a:hover,
+  .iphone .phone-actions button:hover {
+    background: var(--tint);
+    border-color: var(--edge);
+    box-shadow: 0 10px 20px rgba(80, 40, 60, 0.14), 0 0 0 3px rgba(255, 186, 214, 0.35);
+    transform: translateY(-2px);
+  }
+}
+
+.iphone .phone-actions a:focus-visible,
+.iphone .phone-actions button:focus-visible {
+  background: var(--tint);
+  border-color: var(--edge);
+  box-shadow: 0 10px 20px rgba(80, 40, 60, 0.14), 0 0 0 3px rgba(255, 186, 214, 0.35);
+  outline: 2px solid var(--edge);
+  outline-offset: 2px;
+}
+
+.iphone .phone-actions a:hover .phone-icon,
+.iphone .phone-actions button:hover .phone-icon,
+.iphone .phone-actions a:focus-visible .phone-icon,
+.iphone .phone-actions button:focus-visible .phone-icon {
+  background: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iphone .phone-actions a:hover,
+  .iphone .phone-actions button:hover {
+    transform: none;
+  }
 }
 
 .phone-address {
