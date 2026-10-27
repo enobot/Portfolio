@@ -1424,7 +1424,18 @@
   font-size: 2rem;
   line-height: 1.1;
   margin-block: 0 1.4rem;
-  padding-right: 4rem;
+  text-align: center;
+}
+
+/* A short underline in the same pink as the lines between projects. */
+.mac-live h2::after {
+  content: "";
+  display: block;
+  width: 3.5rem;
+  height: 2px;
+  margin: 0.5rem auto 0;
+  border-radius: 1px;
+  background: rgba(232, 160, 184, 0.85);
 }
 
 .mac-live .mac-project {
