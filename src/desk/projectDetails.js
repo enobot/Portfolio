@@ -14,6 +14,14 @@ export const projectDetails = {
     ],
     walkthrough: true,
   },
+  drawgorithms: {
+    about:
+      "Drawgorithms runs your JavaScript one step at a time and draws what it does: variables, arrays, maps, trees, linked lists and the call stack, next to the line that ran. It's for practicing coding-interview problems by watching your own code, bugs included.",
+    status:
+      "In development and not deployed yet. The heap, graph, trie, deque and union-find drawings in the clips are on a branch that isn't merged into main yet.",
+    links: [{ href: "https://github.com/enobot/Drawgorithm", label: "GitHub" }],
+    walkthrough: true,
+  },
   merrynails: {
     about:
       "The website for Merry Nails Salon, my mom's nail salon in Sherman Oaks. Customers can browse services, compare options, see sample photos, and call to book.",

@@ -50,6 +50,7 @@ const cardTones = {
   surfsafe: "tone-surfsafe",
   fittmm: "tone-fittmm",
   blu: "tone-blu",
+  drawgorithms: "tone-drawgorithms",
 };
 
 // Two by two on the screen. With more than four, the grid scrolls: the wheel

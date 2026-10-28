@@ -68,12 +68,15 @@ function ResumePaper({
   bluTipId,
   shouldntWouldntButtonRef,
   shouldntWouldntTipId,
+  drawgorithmsButtonRef,
+  drawgorithmsTipId,
   feedbackButtonRef,
   onAbout,
   onTracer,
   onFittmm,
   onBlu,
   onShouldntWouldnt,
+  onDrawgorithms,
   onFeedback,
 }) {
   const projectControls = {
@@ -81,6 +84,7 @@ function ResumePaper({
     fittmm: { buttonRef: fittmmButtonRef, tipId: fittmmTipId, onOpen: onFittmm },
     blu: { buttonRef: bluButtonRef, tipId: bluTipId, onOpen: onBlu },
     surfsafe: { buttonRef: shouldntWouldntButtonRef, tipId: shouldntWouldntTipId, onOpen: onShouldntWouldnt },
+    drawgorithms: { buttonRef: drawgorithmsButtonRef, tipId: drawgorithmsTipId, onOpen: onDrawgorithms },
   };
 
   return (

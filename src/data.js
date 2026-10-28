@@ -116,6 +116,19 @@ export const projects = [
   },
 
   {
+    id: "drawgorithms",
+    name: "Drawgorithms",
+    repo: "https://github.com/enobot/Drawgorithm",
+    tagline: "Step-by-Step Code Visualizer for Interview Practice",
+    stack: "React | TypeScript | Web Workers | Monaco Editor | Vitest",
+    bullets: [
+      "Built a browser app that runs a learner's JavaScript in its own tree-walking interpreter (acorn parser, Web Worker, no eval), records every step, and draws variables, arrays, hash maps, trees, linked lists and the call stack beside the line that ran, forward and backward.",
+      "Shared unchanged snapshots between steps so handing a run to the page stays fast (reversing a 200-node list: about 1.5 s → 66–70 ms; an 800,000-character string over 600 steps: over 512 MB → 2.5 MB), with step, operation, recursion and size limits that stop runaway code with a clear message.",
+      "Wrote an original 75-exercise practice set where each available exercise's expected outputs are recomputed by an independent method and its reference solution must pass in the interpreter; differential tests check the interpreter's answers against native JavaScript.",
+      "Adding heap, graph, trie, deque and union-find drawings built only from recorded reads and writes, with every step checked for clipped or overlapping labels at desktop and phone sizes.",
+    ],
+  },
+  {
     id: "fittmm",
     name: "FITTMM",
     repo: "https://github.com/enobot/FITTMM",
@@ -258,13 +271,24 @@ export const tracer = {
 /** The résumé paper on the desk mirrors the PDF résumé
  *  (handoff/resume/resume.html): the same projects, order, taglines and
  *  stacks. Bullets come from `projects` so the laptop and the résumé can't
- *  drift apart; Merry Nails keeps the PDF's single line. */
+ *  drift apart; Merry Nails keeps the PDF's single line and Drawgorithms its
+ *  two. Getsy made room for Drawgorithms on the one page; its entry stays in
+ *  `projects`. */
 export const resumeProjects = [
   { id: "tracer", tagline: "Windows screenshot assistant for ChatGPT", stack: "Electron, Node.js, JavaScript, OAuth 2.0 (PKCE)" },
+  {
+    id: "drawgorithms",
+    tagline: "Step-by-step code visualizer for interview practice",
+    stack: "React, TypeScript, Web Workers, Vitest",
+    bullets: [
+      "Built a browser app that runs a learner's JavaScript in its own tree-walking interpreter (acorn, Web Worker, no eval), records every step, and draws variables, arrays, maps, trees, linked lists and the call stack beside the line that ran.",
+      "Shared unchanged snapshots between steps, cutting the hand-off of a 200-node list reversal from about 1.5 s to 66–70 ms; differential tests check the interpreter against native JavaScript, and practice answers are recomputed independently.",
+    ],
+  },
   { id: "surfsafe", tagline: "Privacy-first Chrome extension", stack: "TypeScript, Chrome Extensions API (Manifest V3), Playwright" },
   { id: "fittmm", tagline: "Fitness planning app, web + Android", stack: "React, FastAPI, MySQL, Kotlin, Java, Firebase" },
   { id: "portfolio", tagline: "Interactive résumé portfolio", stack: "React, Vite, Motion, Vercel" },
-  { id: "getsy", tagline: "Product-details service (Hack Reactor system design)", stack: "Node.js, Express, PostgreSQL, MongoDB, k6, New Relic" },
+
   {
     id: "merrynails",
     tagline: "Website for a family-owned salon",
@@ -293,6 +317,6 @@ export const resumeEducation = {
 };
 
 /** Everything on the laptop, bigger projects first. */
-export const laptopProjects = ["tracer", "fittmm", "blu", "surfsafe", "merrynails"].map((id) =>
+export const laptopProjects = ["tracer", "drawgorithms", "fittmm", "blu", "surfsafe", "merrynails"].map((id) =>
   projects.find((project) => project.id === id),
 );

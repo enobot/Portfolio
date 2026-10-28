@@ -1360,6 +1360,11 @@
   color: #3d4578;
 }
 
+.tone-drawgorithms .mac-card-art {
+  background: linear-gradient(160deg, #e2f6f2, #c4e8e1);
+  color: #2b5f58;
+}
+
 .mac-card h3,
 .mac-card p {
   margin: 0;

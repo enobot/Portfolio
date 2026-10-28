@@ -13,6 +13,7 @@ import StarCursor from "./StarCursor.jsx";
 // The dialogs load when first opened, so the desk itself downloads less.
 const AboutModal = lazy(() => import("./AboutModal.jsx"));
 const BluModal = lazy(() => import("./BluModal.jsx"));
+const DrawgorithmsModal = lazy(() => import("./DrawgorithmsModal.jsx"));
 const FeedbackModal = lazy(() => import("./FeedbackModal.jsx"));
 const FittmmModal = lazy(() => import("./FittmmModal.jsx"));
 const ShouldntWouldntModal = lazy(() => import("./ShouldntWouldntModal.jsx"));
@@ -23,6 +24,7 @@ export default function App() {
   const [fittmmOpen, setFittmmOpen] = useState(false);
   const [bluOpen, setBluOpen] = useState(false);
   const [shouldntWouldntOpen, setShouldntWouldntOpen] = useState(false);
+  const [drawgorithmsOpen, setDrawgorithmsOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
@@ -35,6 +37,7 @@ export default function App() {
   const fittmmTipId = useId();
   const bluTipId = useId();
   const shouldntWouldntTipId = useId();
+  const drawgorithmsTipId = useId();
   const aboutTipId = useId();
   const paperTipId = useId();
   const macTitleId = useId();
@@ -44,6 +47,7 @@ export default function App() {
   const fittmmButtonRef = useRef(null);
   const bluButtonRef = useRef(null);
   const shouldntWouldntButtonRef = useRef(null);
+  const drawgorithmsButtonRef = useRef(null);
   const aboutButtonRef = useRef(null);
   const feedbackButtonRef = useRef(null);
   const paperRef = useRef(null);
@@ -79,6 +83,11 @@ export default function App() {
     (projectOpenerRef.current || shouldntWouldntButtonRef.current)?.focus();
     projectOpenerRef.current = null;
   }, []);
+  const closeDrawgorithms = useCallback(() => {
+    setDrawgorithmsOpen(false);
+    (projectOpenerRef.current || drawgorithmsButtonRef.current)?.focus();
+    projectOpenerRef.current = null;
+  }, []);
   const closeAbout = useCallback(() => {
     setAboutOpen(false);
     (aboutOpenerRef.current || aboutButtonRef.current)?.focus();
@@ -105,6 +114,7 @@ export default function App() {
     else if (id === "fittmm") setFittmmOpen(true);
     else if (id === "blu") setBluOpen(true);
     else if (id === "surfsafe") setShouldntWouldntOpen(true);
+    else if (id === "drawgorithms") setDrawgorithmsOpen(true);
   }, []);
   const closeDesk = useCallback(() => {
     if (!which) return;
@@ -135,6 +145,10 @@ export default function App() {
   const openShouldntWouldntFromResume = useCallback(() => {
     projectOpenerRef.current = null;
     setShouldntWouldntOpen(true);
+  }, []);
+  const openDrawgorithmsFromResume = useCallback(() => {
+    projectOpenerRef.current = null;
+    setDrawgorithmsOpen(true);
   }, []);
   const openBluFromResume = useCallback(() => {
     projectOpenerRef.current = null;
@@ -231,7 +245,7 @@ export default function App() {
 
   useEffect(() => {
     if (!ready || !which) return undefined;
-    if (tracerOpen || fittmmOpen || bluOpen || shouldntWouldntOpen || aboutOpen || feedbackOpen) return undefined;
+    if (tracerOpen || fittmmOpen || bluOpen || shouldntWouldntOpen || drawgorithmsOpen || aboutOpen || feedbackOpen) return undefined;
     const root =
       which === "paper"
         ? sheetRef.current
@@ -269,7 +283,7 @@ export default function App() {
 
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [aboutOpen, bluOpen, closeDesk, feedbackOpen, fittmmOpen, ready, shouldntWouldntOpen, tracerOpen, which]);
+  }, [aboutOpen, bluOpen, closeDesk, drawgorithmsOpen, feedbackOpen, fittmmOpen, ready, shouldntWouldntOpen, tracerOpen, which]);
 
   return (
     <div className="desk">
@@ -394,12 +408,15 @@ export default function App() {
         bluTipId={bluTipId}
         shouldntWouldntButtonRef={shouldntWouldntButtonRef}
         shouldntWouldntTipId={shouldntWouldntTipId}
+        drawgorithmsButtonRef={drawgorithmsButtonRef}
+        drawgorithmsTipId={drawgorithmsTipId}
         feedbackButtonRef={feedbackButtonRef}
         onAbout={openAboutFromResume}
         onTracer={openTracerFromResume}
         onFittmm={openFittmmFromResume}
         onBlu={openBluFromResume}
         onShouldntWouldnt={openShouldntWouldntFromResume}
+        onDrawgorithms={openDrawgorithmsFromResume}
         onFeedback={openFeedback}
       />
       ) : null}
@@ -416,6 +433,7 @@ export default function App() {
         {fittmmOpen ? <FittmmModal onClose={closeFittmm} /> : null}
         {bluOpen ? <BluModal onClose={closeBlu} /> : null}
         {shouldntWouldntOpen ? <ShouldntWouldntModal onClose={closeShouldntWouldnt} /> : null}
+        {drawgorithmsOpen ? <DrawgorithmsModal onClose={closeDrawgorithms} /> : null}
         {aboutOpen ? <AboutModal onClose={closeAbout} /> : null}
         {feedbackOpen ? <FeedbackModal onClose={closeFeedback} /> : null}
       </Suspense>

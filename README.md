@@ -21,6 +21,7 @@ Walkthroughs run in the browser:
 - **FITTMM:** recorded clips of the web app and the Android progress.
 - **BLU:** a demo with sample players.
 - **Shouldn't Wouldn't:** the extension's reminders and popup on sample forms, using its real wording and rules.
+- **Drawgorithms:** recorded clips of the app: a tree drawn as it's typed, a binary search step by step, heap, graph, union-find, trie and deque drawings, and the practice checks.
 
 Other features:
 
@@ -76,6 +77,7 @@ src/
 public/
   photos/                About photos
   fittmm/                FITTMM demo clips
+  drawgorithms/          Drawgorithms demo clips and their poster stills
 PERFORMANCE_AUDIT.md     measurements behind the performance work
 ```
 
