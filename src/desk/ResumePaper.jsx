@@ -144,11 +144,10 @@ function ResumePaper({
         <p className="skill-line">
           <strong>Honors:</strong> {resumeEducation.honors}
         </p>
-        {resumeEducation.coursework.map(([label, value]) => (
-          <p className="skill-line" key={label}>
-            <strong>{label}:</strong> {value}
-          </p>
-        ))}
+        <p className="skill-line">
+          <strong>Relevant Coursework:</strong> {resumeEducation.coursework};{" "}
+          <em>In&nbsp;progress: {resumeEducation.courseworkInProgress}</em>
+        </p>
         <p className="role">
           <strong>{resumeEducation.certificate}</strong>, {resumeEducation.certificateFrom}
         </p>

@@ -283,16 +283,11 @@ export const resumeEducation = {
   gpa: "GPA: 3.71/4.00",
   when: "Expected May 2027",
   honors: "Dean's List (Fall 2025, Spring 2026) · Emeritus Scholarship (merit-based)",
-  coursework: [
-    [
-      "Relevant Coursework",
-      "Data Structures, Software Engineering, Operating Systems, Computer Organization & Assembly Language, SaaS Architecture & Implementation, Cybersecurity Foundations, Python Programming, Mathematical Structures (Discrete Math), Statistics",
-    ],
-    [
-      "In Progress",
-      "Algorithm Engineering, Compilers & Languages, File Structures & Databases, Web Front-End Engineering, Android App Development",
-    ],
-  ],
+  coursework:
+    "Data Structures, Software Engineering, Operating Systems, Computer Organization & Assembly Language, SaaS Architecture & Implementation, Cybersecurity Foundations, Python Programming, Mathematical Structures (Discrete Math), Statistics",
+  // Shown in italics after the finished courses.
+  courseworkInProgress:
+    "Algorithm Engineering, Compilers & Languages, File Structures & Databases, Web Front-End Engineering, Android App Development",
   certificate: "Software Engineering Immersive Certificate",
   certificateFrom: "Hack Reactor",
 };
