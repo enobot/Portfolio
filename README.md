@@ -25,7 +25,7 @@ Walkthroughs run in the browser:
 
 Other features:
 
-- **A welcome screen** with falling cherry blossoms that move away from the cursor, and a cherry blossom loading bar that gains a petal as each part of the page finishes loading.
+- **A welcome screen** with falling cherry blossoms that move away from the cursor, and a slowly turning cherry blossom loading bar that gains a petal as each part of the page finishes loading.
 - **"Get in touch"** opens a short form that turns into an email in your own mail app. Nothing is sent to a server.
 - **On phones and narrow windows** the desk rearranges, and the laptop opens straight into a full-screen Projects list.
 

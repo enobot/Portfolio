@@ -62,7 +62,7 @@
   position: absolute;
   top: 100%;
   left: 50%;
-  width: clamp(60px, 7vw, 96px);
+  width: clamp(76px, 9vw, 120px);
   margin-top: clamp(1.25rem, 4.5vh, 3rem);
   translate: -50% 0;
   filter: drop-shadow(0 0 6px rgba(255, 186, 214, 0.45));
@@ -70,11 +70,13 @@
   animation: bloom-in 0.6s ease both;
 }
 
+/* The whole flower turns slowly while it grows. */
 .welcome-bloom svg {
   display: block;
   width: 100%;
   height: auto;
   overflow: visible;
+  animation: bloom-spin 10s linear infinite;
 }
 
 .bloom-outline {
@@ -118,13 +120,22 @@
   filter: drop-shadow(0 0 16px rgba(255, 170, 205, 0.9));
 }
 
+/* bloom-spin is listed again so it keeps turning without restarting. */
 .welcome-bloom.is-full svg {
-  animation: bloom-pop 0.9s ease;
+  animation:
+    bloom-spin 10s linear infinite,
+    bloom-pop 0.9s ease;
 }
 
 @keyframes bloom-in {
   from {
     opacity: 0;
+  }
+}
+
+@keyframes bloom-spin {
+  to {
+    rotate: 1turn;
   }
 }
 
@@ -141,6 +152,7 @@
   }
 
   .welcome-bloom,
+  .welcome-bloom svg,
   .welcome-bloom.is-full svg {
     animation: none;
   }
