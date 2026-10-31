@@ -289,7 +289,11 @@ export default function App() {
     <div className="desk">
       <StarCursor />
       {showWelcome ? (
-        <LoadingScreen onDone={() => setShowWelcome(false)} />
+        <LoadingScreen
+          deskReady={deskReady}
+          extrasReady={extrasReady}
+          onDone={() => setShowWelcome(false)}
+        />
       ) : null}
       {deskReady || !showWelcome ? (
       <div

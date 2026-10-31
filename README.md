@@ -25,7 +25,7 @@ Walkthroughs run in the browser:
 
 Other features:
 
-- **A welcome screen** with falling cherry blossoms that move away from the cursor.
+- **A welcome screen** with falling cherry blossoms that move away from the cursor, and a cherry blossom loading bar that gains a petal as each part of the page finishes loading.
 - **"Get in touch"** opens a short form that turns into an email in your own mail app. Nothing is sent to a server.
 - **On phones and narrow windows** the desk rearranges, and the laptop opens straight into a full-screen Projects list.
 
@@ -44,7 +44,7 @@ index.html ─ static welcome title (paints before any JavaScript runs)
    │
 main.jsx ─▶ App.jsx ── state: which object is open, posed, ready
               │
-              ├─ LoadingScreen        welcome screen and petals
+              ├─ LoadingScreen        welcome screen, petals, blossom loader
               ├─ desk-world           built right after the first paint
               │    ├─ ResumePaper     résumé text from data.js
               │    ├─ MacBook         Projects (ProjectsBody)
@@ -55,6 +55,7 @@ main.jsx ─▶ App.jsx ── state: which object is open, posed, ready
 ```
 
 - **Load order.** The welcome screen paints first. The desk is built in a React transition right after that, and the hidden screens (the readable résumé, About and Projects) are prepared 400 ms later. Opening something then doesn't have to build it.
+- **Loading blossom.** The welcome screen waits for five steps: the fonts, the desk, the wood photo, the desk's pictures and the hidden screens. Its blossom gains a petal for each, at least 0.7 s apart so it visibly grows. The screen stays up for at least 4.3 s, and after 10 s it fills the blossom and leaves anyway, so one slow file can't keep anyone out. A file that fails to load counts as done and logs a warning. The steps are watched in `src/loadProgress.js`.
 - **Opening an object.** `openDesk` records what was clicked and sets `which` and `posed`. Motion animates the object from its place on the desk to the center. When the animation finishes, `ready` turns on, and keyboard focus moves into the open object.
 - **Content.** All résumé, About and project text lives in `src/data.js` and `src/desk/projectDetails.js`, separate from the components.
 
@@ -74,6 +75,8 @@ src/
     projectDetails.js    project links and status lines
   *Modal.jsx             project walkthroughs, loaded on demand
   formSafety.js          limits and cleanup for the Get in touch form
+  loadProgress.js        what the loading blossom waits for, and its timing
+  loadProgress.test.js   tests for the blossom's timing rules
 public/
   photos/                About photos
   fittmm/                FITTMM demo clips
@@ -99,6 +102,12 @@ npm run build
 npm run preview
 ```
 
+Automated tests (Node's built-in test runner, no extra packages):
+
+```bash
+npm test
+```
+
 There are no environment variables or secrets.
 
 ## How to use
@@ -107,7 +116,9 @@ Wait for the welcome screen, then click (or Tab to) anything on the desk. Escape
 
 ## Testing and validation
 
-There are no automated tests in this repository yet. Here is what I checked, and how.
+`npm test` runs the automated tests. So far they cover the loading blossom's timing rules: the pace between petals, the 4.3 s minimum, waiting for slow steps, the 10 s limit, and reduced motion. Everything else below was checked by hand.
+
+**Loading blossom**, checked on Oct 31, 2026, on the production build with a local test server that could delay or block the wood photo. With the photo delayed 7 s, the last petal waited for it and the screen left at 7.8 s. With the photo held back, the screen gave up at 10 s. With the photo missing (404), it counted as done and logged a warning. With everything fast, the screen left at 4.4 s, as it did before the blossom. The title stays in the same place as the static HTML title at 375, 1440 and 1920 px wide.
 
 **Performance**, measured on Oct 26, 2026. Full method and raw numbers are in [PERFORMANCE_AUDIT.md](PERFORMANCE_AUDIT.md).
 - **Lighthouse on the live site,** 3 runs each, medians:

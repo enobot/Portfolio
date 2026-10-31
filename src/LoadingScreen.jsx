@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { PETALS, TICK, tickBlossom, useLoadSteps } from "./loadProgress.js";
 import "./LoadingScreen.css";
 
 const PETAL_TONES = [
@@ -105,20 +106,79 @@ function makePetal(width, height, anywhere) {
   };
 }
 
-export default function LoadingScreen({ onDone }) {
+// The loader's petal: petalPath's notched shape at 46 units long. Moved out
+// by 22 units, its base sits at the flower's centre.
+const BLOOM_PETAL = "M0 23C-27.09 10.12-22.25-19.32-5.7-23L0-16.56 5.7-23C22.25-19.32 27.09 10.12 0 23Z";
+
+const PETAL_SPOTS = Array.from(
+  { length: PETALS },
+  (_, index) => `rotate(${(360 * index) / PETALS}) translate(0 -22)`,
+);
+
+// The progress bar: a cherry blossom that gains a petal per loading step.
+// Outlines show where the missing petals will grow. They are all drawn
+// before the petals so an empty outline never crosses a grown petal.
+function Blossom({ shown }) {
+  return (
+    <div
+      className={shown === PETALS ? "welcome-bloom is-full" : "welcome-bloom"}
+      role="progressbar"
+      aria-label="Loading"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={Math.round((shown / PETALS) * 100)}
+    >
+      <svg viewBox="-50 -50 100 100" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="welcome-petal-fill" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0" stopColor="#f39dbd" />
+            <stop offset="1" stopColor="#fff1f6" />
+          </linearGradient>
+        </defs>
+        {PETAL_SPOTS.map((spot) => (
+          <path key={spot} className="bloom-outline" transform={spot} d={BLOOM_PETAL} />
+        ))}
+        {PETAL_SPOTS.map((spot, index) => (
+          <g key={spot} transform={spot}>
+            <g className={index < shown ? "bloom-petal is-open" : "bloom-petal"}>
+              <path d={BLOOM_PETAL} />
+              <path className="bloom-vein" d="M0 19.7V-6.6" />
+            </g>
+          </g>
+        ))}
+        <circle className="bloom-heart" r="5.5" />
+      </svg>
+    </div>
+  );
+}
+
+export default function LoadingScreen({ deskReady, extrasReady, onDone }) {
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
+  const steps = useLoadSteps(deskReady, extrasReady);
+  const stepsRef = useRef(steps);
+  stepsRef.current = steps;
   const canvasRef = useRef(null);
+  const [shown, setShown] = useState(0);
   const [leaving, setLeaving] = useState(false);
 
+  // A timer rather than animation frames, which pause in background tabs.
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const hold = reduce ? 900 : 4300;
     const fade = reduce ? 180 : 700;
-    const leaveTimer = setTimeout(() => setLeaving(true), hold);
-    const doneTimer = setTimeout(() => onDoneRef.current(), hold + fade);
+    const start = performance.now();
+    let state = { shown: 0, lastAt: -Infinity, leave: false };
+    let doneTimer = 0;
+    const timer = setInterval(() => {
+      state = tickBlossom(state, stepsRef.current, performance.now() - start, reduce);
+      setShown(state.shown);
+      if (!state.leave) return;
+      clearInterval(timer);
+      setLeaving(true);
+      doneTimer = setTimeout(() => onDoneRef.current(), fade);
+    }, TICK);
     return () => {
-      clearTimeout(leaveTimer);
+      clearInterval(timer);
       clearTimeout(doneTimer);
     };
   }, []);
@@ -230,11 +290,14 @@ export default function LoadingScreen({ onDone }) {
     <div className={leaving ? "welcome welcome-leave" : "welcome"} role="status" aria-live="polite">
       <canvas className="welcome-petals" ref={canvasRef} aria-hidden="true" />
       <div className="welcome-copy">
-        <p className="welcome-title">
-          WELCOME TO MY
-          <br />
-          INTERACTIVE RESUME
-        </p>
+        <div className="welcome-stack">
+          <p className="welcome-title">
+            WELCOME TO MY
+            <br />
+            INTERACTIVE RESUME
+          </p>
+          <Blossom shown={shown} />
+        </div>
       </div>
     </div>
   );
