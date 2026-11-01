@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { PETALS, TICK, tickBlossom, useLoadSteps } from "./loadProgress.js";
 import "./LoadingScreen.css";
 
+// [tip, base]: cherry pinks and moonlit lavender.
 const PETAL_TONES = [
-  ["#ffe6ef", "#f7a9c4"],
-  ["#fff0f5", "#f4b8cd"],
-  ["#ffdbe8", "#ee97b6"],
-  ["#fff6f0", "#f5c3d2"],
+  ["#f9ebf8", "#d284a0"],
+  ["#f1c4de", "#cf95bc"],
+  ["#e9c2e9", "#b58bc4"],
+  ["#f9ebf8", "#f1c4de"],
 ];
 
 // Petals are pushed away from the pointer inside this radius (CSS px).
@@ -47,7 +48,7 @@ function makeSprites(ratio) {
       petalPath(ctx, size * 0.84);
       ctx.fillStyle = fill;
       ctx.fill();
-      ctx.strokeStyle = "rgba(214, 112, 150, 0.35)";
+      ctx.strokeStyle = "rgba(188, 83, 116, 0.35)";
       ctx.lineWidth = ratio;
       ctx.beginPath();
       ctx.moveTo(0, size * 0.36);
@@ -63,14 +64,14 @@ function makeSprites(ratio) {
       ctx.rotate((Math.PI * 2 * index) / 5);
       ctx.translate(0, -bloomSize * 0.2);
       const fill = ctx.createLinearGradient(0, bloomSize * 0.2, 0, -bloomSize * 0.2);
-      fill.addColorStop(0, "#f39dbd");
-      fill.addColorStop(1, "#fff1f6");
+      fill.addColorStop(0, "#d284a0");
+      fill.addColorStop(1, "#f9ebf8");
       petalPath(ctx, bloomSize * 0.42);
       ctx.fillStyle = fill;
       ctx.fill();
       ctx.restore();
     }
-    ctx.fillStyle = "#f6d27a";
+    ctx.fillStyle = "#f0cfa8";
     ctx.beginPath();
     ctx.arc(0, 0, bloomSize * 0.07, 0, Math.PI * 2);
     ctx.fill();
@@ -131,8 +132,8 @@ function Blossom({ shown }) {
       <svg viewBox="-50 -50 100 100" aria-hidden="true" focusable="false">
         <defs>
           <linearGradient id="welcome-petal-fill" x1="0" y1="1" x2="0" y2="0">
-            <stop offset="0" stopColor="#f39dbd" />
-            <stop offset="1" stopColor="#fff1f6" />
+            <stop offset="0" stopColor="#d284a0" />
+            <stop offset="1" stopColor="#f9ebf8" />
           </linearGradient>
         </defs>
         {PETAL_SPOTS.map((spot) => (

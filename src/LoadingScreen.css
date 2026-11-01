@@ -9,9 +9,10 @@
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
+  /* Moonlit night: a lilac glow over deep indigo. */
   background:
-    radial-gradient(ellipse at 50% 42%, rgba(255, 182, 210, 0.16) 0%, transparent 46%),
-    radial-gradient(ellipse at 50% 38%, #453c38 0%, #2a2724 46%, #141210 100%);
+    radial-gradient(ellipse at 50% 42%, rgba(233, 194, 233, 0.16) 0%, transparent 46%),
+    radial-gradient(ellipse at 50% 38%, #453a5b 0%, #2e2543 46%, #1c1228 100%);
   transition: opacity 0.7s ease;
 }
 
@@ -45,11 +46,11 @@
   font-size: clamp(2rem, 6.4vw, 5.6rem);
   line-height: 0.96;
   letter-spacing: 0.045em;
-  color: #fffaf6;
+  color: #f9ebf8;
   text-shadow:
-    0 0 12px rgba(255, 186, 214, 0.95),
-    0 0 28px rgba(255, 160, 200, 0.75),
-    0 0 60px rgba(255, 214, 230, 0.45);
+    0 0 12px rgba(233, 194, 233, 0.95),
+    0 0 28px rgba(181, 139, 196, 0.75),
+    0 0 60px rgba(241, 196, 222, 0.45);
 }
 
 /* The blossom hangs below the title without taking up space, so the title
@@ -65,7 +66,7 @@
   width: clamp(76px, 9vw, 120px);
   margin-top: clamp(1.25rem, 4.5vh, 3rem);
   translate: -50% 0;
-  filter: drop-shadow(0 0 6px rgba(255, 186, 214, 0.45));
+  filter: drop-shadow(0 0 6px rgba(233, 194, 233, 0.45));
   transition: filter 0.8s ease;
   animation: bloom-in 0.6s ease both;
 }
@@ -80,8 +81,8 @@
 }
 
 .bloom-outline {
-  fill: rgba(255, 220, 232, 0.06);
-  stroke: rgba(255, 214, 230, 0.42);
+  fill: rgba(233, 194, 233, 0.06);
+  stroke: rgba(233, 194, 233, 0.42);
   stroke-width: 1.2;
 }
 
@@ -107,17 +108,18 @@
 
 .bloom-petal .bloom-vein {
   fill: none;
-  stroke: rgba(214, 112, 150, 0.35);
+  stroke: rgba(188, 83, 116, 0.35);
   stroke-width: 1;
   stroke-linecap: round;
 }
 
+/* Rose-champagne gold, like the gold trim in the palette. */
 .bloom-heart {
-  fill: #f6d27a;
+  fill: #f0cfa8;
 }
 
 .welcome-bloom.is-full {
-  filter: drop-shadow(0 0 16px rgba(255, 170, 205, 0.9));
+  filter: drop-shadow(0 0 16px rgba(241, 196, 222, 0.9));
 }
 
 /* bloom-spin is listed again so it keeps turning without restarting. */
