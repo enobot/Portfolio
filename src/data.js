@@ -32,7 +32,7 @@ export const about = {
     },
   ],
   intro:
-    "I'm a Computer Science student at Cal State Fullerton, graduating in May 2027, and a full-stack developer who likes building software that makes everyday life a little easier, especially for people who don't love complicated technology.",
+    "I'm a Computer Science student at Cal State Fullerton, graduating in May 2027, and a full-stack developer who likes building software that makes everyday life a little easier, especially for people who don't love complicated technology. I'm also a Software Engineer at Melissa, where I do backend work that verifies, standardizes and cleans up millions of global data records.",
   sections: [
     {
       heading: "How I got here",
@@ -199,12 +199,21 @@ export const projects = [
 
 export const experience = [
   {
-    dates: "Aug 2025 – Present",
+    dates: "Nov 2026 – Present",
+    role: "Software Engineer I",
+    org: "Melissa",
+    bullets: [
+      "Build backend and database features on a data-quality engineering team, working with SQL and C#/.NET.",
+      "Verify, standardize and clean up millions of global data records through data processing, integration and validation.",
+    ],
+  },
+  {
+    dates: "Aug 2025 – Nov 2026",
     role: "IT Telecommunications Student Assistant",
     org: "school",
     bullets: [
-      "Resolve support tickets from faculty, staff and students covering account access, authentication, phone and network issues.",
-      "Configure Zoom Phone accounts, activate Ethernet data jacks, and manage access permissions under university IT security procedures; write troubleshooting guides for recurring issues.",
+      "Resolved support tickets from faculty, staff and students covering account access, authentication, phone and network issues.",
+      "Configured Zoom Phone accounts, activated Ethernet data jacks, and managed access permissions under university IT security procedures; wrote troubleshooting guides for recurring issues.",
     ],
   },
   {
